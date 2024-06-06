@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="/assets/css/core.css">
+    <title>{{ pagename }} | {{ env.app_name }}</title>
+	</head>
+	<body class="d-flex flex-column jc-center">
+		<nav class="nav-primary w-100"><div class="d-flex flex-row ai-center container">
+			<img class="me-3" src="/assets/img/logo.svg" height=28>
+			<div class="d-flex flex-row fc-white">
+				<div class="me-4">home</div>
+				<div class="me-4">games</div>
+				<div class="me-4">catalog</div>
+				<div class="me-4">library</div>
+				<div class="d-flex flex-row ai-center">more<i class="bi bi-caret-down-fill ms-2 fs-n2"></i></div>
+			</div>
+		</div></nav>	
+		<main class="container">{% block content %}{% endblock %}</main>
+		<script src="/assets/js/core.js"></script>
+	</body>
+</html>
