@@ -174,10 +174,3 @@ dist
 
 # Finder (MacOS) folder config
 .DS_Store
-
-
-# custom config:
-
-# we dont need to save data lol
-database/*
-files/*
