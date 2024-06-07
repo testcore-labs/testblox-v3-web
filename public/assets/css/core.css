@@ -1615,4 +1615,8 @@ input:autofill:active {
   height: 100%;
 }
 
+.dropdown:not([open]) {
+  display: none;
+}
+
 /*# sourceMappingURL=core.css.map */

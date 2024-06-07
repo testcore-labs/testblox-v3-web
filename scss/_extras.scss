@@ -33,3 +33,9 @@
 .ratio-rectangle {
   @include aspect-ratio(300, 250);
 }
+
+.dropdown {
+  &:not([open]) {
+  display: none;
+  }
+}

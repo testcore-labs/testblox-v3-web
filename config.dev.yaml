@@ -3,7 +3,7 @@ desc: oops..
 domain: tstblx.win
 
 backup: false
-behind_proxy: false
+behind_proxy: false # CloudFlare Mode ACtivated
 
 currency:
   name: pizza
@@ -15,4 +15,6 @@ language: en-US
 
 # http config
 port: 80
-ssl: true
+
+# use nginx noob
+#ssl: true
