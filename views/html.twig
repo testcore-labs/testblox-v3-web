@@ -12,10 +12,10 @@
 		<nav class="navbar navbar-dark {#bg-primary#}bg-body-secondary w-100" style="padding: 0.125em 0;">
 			<div class="px-2 container-xl">
 				<a class="navbar-brand fs-6 p-0 me-2" href="/"><img src="/assets/img/logo.svg" height=30></a>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
-				<div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
+				<div class="collapse navbar-collapse justify-content-between" id="navbar-content">
 					<ul class="navbar-nav w-100 mb-2 mb-lg-0">
 						<li class="nav-item">
 							<a class="nav-link active" aria-current="page" href="#">home</a>
@@ -61,9 +61,9 @@
 			</div>
 		</nav>
 
-		<nav class="navbar bg-dark-subtle p-0 m-0 w-100">
+		<nav class="navbar bg-dark-subtle p-0 m-0 w-100 collapse navbar-collapse" id="navbar-content">
 			<div class="px-2 container-xl">
-				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+				<ul class="navbar-nav me-auto">
 					<li class="nav-item">
 						<a class="nav-link p-1 active" aria-current="page" href="#">avatar</a>
 					</li>
@@ -71,9 +71,7 @@
 			</div>
 		</nav>
 		</div>
-		<main class="container-xl p-2">
-    <p>Hello, world!</p><button type="button" class="btn btn-primary">Base class</button>
-		</main>
+		<div>{% block content_before %}{% endblock %}<main class="container-xl p-2">{% block content %}{% endblock %}</main>{% block content_after %}{% endblock %}</div>
 		<script nomodule>window.MSInputMethodContext && document.documentMode && document.write('<link rel="stylesheet" href="/css/bootstrap-ie11.min.css"><script src="https://cdn.jsdelivr.net/combine/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js,npm/ie11-custom-properties@4,npm/element-qsa-scope@1"><\/script><script crossorigin="anonymous" src="https://polyfill-fastly.io/v3/polyfill.min.js?features=default%2CNumber.parseInt%2CNumber.parseFloat%2CArray.prototype.find%2CArray.prototype.includes"><\/script>');</script>
 		<script src="/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 		<script src="/assets/js/core.js"></script>

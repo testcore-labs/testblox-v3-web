@@ -18,16 +18,21 @@
   $disabled-border: $border,
   $disabled-color: color-contrast($disabled-background)
 ) {
+  $threshold: 50%; 
+
   --#{$prefix}btn-color: #{$color};
   --#{$prefix}btn-bg: #{$background};
-  --#{$prefix}btn-border-color: #{$border};
+  $border-clr: if(lightness($border) > $threshold, darken($border, 20%), lighten($border, 20%));
+  --#{$prefix}btn-border-color: #{$border-clr};
   --#{$prefix}btn-hover-color: #{$hover-color};
   --#{$prefix}btn-hover-bg: #{$hover-background};
-  --#{$prefix}btn-hover-border-color: #{$hover-border};
+  $border-hover-clr: if(lightness($border) < $threshold, darken($border, 5%), lighten($border, 5%));
+  --#{$prefix}btn-hover-border-color: #{$border-hover-clr};
   --#{$prefix}btn-focus-shadow-rgb: #{to-rgb(mix($color, $border, 15%))};
   --#{$prefix}btn-active-color: #{$active-color};
   --#{$prefix}btn-active-bg: #{$active-background};
-  --#{$prefix}btn-active-border-color: #{$active-border};
+  $border-active-clr: if(lightness($border) > $threshold, darken($border, 25%), lighten($border, 25%));
+  --#{$prefix}btn-active-border-color: #{$border-active-clr};
   --#{$prefix}btn-active-shadow: #{$btn-active-box-shadow};
   --#{$prefix}btn-disabled-color: #{$disabled-color};
   --#{$prefix}btn-disabled-bg: #{$disabled-background};
