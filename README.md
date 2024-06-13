@@ -1,4 +1,4 @@
-# chat-app
+# testblox-v3
 
 To install dependencies:
 
