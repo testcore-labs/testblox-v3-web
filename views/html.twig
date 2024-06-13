@@ -1,25 +1,81 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" href="/assets/css/core.css">
-    <title>{{ pagename }} | {{ env.app_name }}</title>
+<!doctype html>
+<html data-bs-theme="dark" lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ env.app_name }} | {{ title }}</title>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+		<link href="/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 	</head>
-	<body class="d-flex flex-column jc-center">
-		<nav class="nav-primary w-100"><div class="d-flex flex-row ai-center container">
-			<img class="me-4" src="/assets/img/logo.svg" height=28>
-			<div class="d-flex flex-row fc-white">
-				<div class="me-4 fs-n1">home</div>
-				<div class="me-4 fs-n1">games</div>
-				<div class="me-4 fs-n1">catalog</div>
-				<div class="me-4 fs-n1">library</div>
-				<div class="pos-relative"><div class="d-flex flex-row ai-center fs-n1" onclick="dropdownify(this, $('#dropdownmore'))">more<i class="bi bi-caret-down-fill ms-3 mt-2 fs-n3"></i></div>
-					<div id="dropdownmore" class="dropdown pos-absolute top-100">s</div>
+  <body>
+		<div class="navbar navbar-group navbar-expand-lg d-flex flex-column m-0 p-0 w-100 sticky-top" data-bs-theme="dark">
+		<nav class="navbar navbar-dark {#bg-primary#}bg-body-secondary w-100" style="padding: 0.125em 0;">
+			<div class="px-2 container-xl">
+				<a class="navbar-brand fs-6 p-0 me-2" href="/"><img src="/assets/img/logo.svg" height=30></a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
+					<ul class="navbar-nav w-100 mb-2 mb-lg-0">
+						<li class="nav-item">
+							<a class="nav-link active" aria-current="page" href="#">home</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link active" aria-current="page" href="#">games</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link active" aria-current="page" href="#">catalog</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link active" aria-current="page" href="#">library</a>
+						</li>
+
+
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle active" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								more
+							</a>
+							<ul class="dropdown-menu">
+								<li><a class="dropdown-item" href="#">users</a></li>
+								<li><a class="dropdown-item" href="#">forum</a></li>
+								<li><a class="dropdown-item" href="#">discord</a></li>
+							</ul>
+						</li>
+					{# <form class="d-flex flex-row position-relative" role="search">
+						<input class="form-control pe-5" type="search" placeholder="Search" aria-label="Search">
+						<button class="btn position-absolute end-0 rounded-start-0" type="submit"><i class="bi bi-search"></i></button>
+					</form> #}
+					<li class="nav-item d-flex flex-row dropdown align-items-center ms-auto">
+						<div class="ms-auto vr mx-2 my-2"></div>
+						<small class="col-4 text-truncate me-2">OklookslikethETHINGISRETARDED yes</small>
+						<a class="nav-link dropdown-toggle active p-0" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							<img src="/assets/img/placeholder_avatar-closeup.png" height=32 class="rounded-2 my-1">
+						</a>
+						<ul class="dropdown-menu dropdown-menu-end">
+							<li><a class="dropdown-item" href="#">users</a></li>
+							<li><a class="dropdown-item" href="#">forum</a></li>
+						</ul>
+					</li>
+				</ul>
 				</div>
 			</div>
-		</div></nav>	
-		<main class="container">{% block content %}{% endblock %}</main>
+		</nav>
+
+		<nav class="navbar bg-dark-subtle p-0 m-0 w-100">
+			<div class="px-2 container-xl">
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+					<li class="nav-item">
+						<a class="nav-link p-1 active" aria-current="page" href="#">avatar</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+		</div>
+		<main class="container-xl p-2">
+    <p>Hello, world!</p><button type="button" class="btn btn-primary">Base class</button>
+		</main>
+		<script nomodule>window.MSInputMethodContext && document.documentMode && document.write('<link rel="stylesheet" href="/css/bootstrap-ie11.min.css"><script src="https://cdn.jsdelivr.net/combine/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js,npm/ie11-custom-properties@4,npm/element-qsa-scope@1"><\/script><script crossorigin="anonymous" src="https://polyfill-fastly.io/v3/polyfill.min.js?features=default%2CNumber.parseInt%2CNumber.parseFloat%2CArray.prototype.find%2CArray.prototype.includes"><\/script>');</script>
+		<script src="/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 		<script src="/assets/js/core.js"></script>
-	</body>
+  </body>
 </html>

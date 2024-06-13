@@ -1,7 +1,8 @@
 import express, { type Express, type Request, type Response } from "express";
 import env from "./utils/env";
 import twig from "./utils/twig";
-import * as path from "path";
+import root_path from "./utils/root_path";
+import * as path from "path";import fs from "fs/promises";
 import cookie_parser from "cookie-parser";
 // import users from "./utils/db";
 
@@ -40,12 +41,14 @@ app.use(async (req, res, next) => {
 });
 
 app.use("/assets", express.static(path.join(__dirname, "../public/assets"))) 
+app.use("/dist", express.static(path.join(__dirname, "../bootstrap-5.3.3/dist"))) 
 app.use(front_routes);
 app.use("/api/v1", api_v1_routes);
 
 app.get("*", (req, res) => {
   res.status(404).render("404.twig");
 });
+
 
 app.listen(env.port, () => {
   console.log(`[server]: server is running at :${env.port}`);

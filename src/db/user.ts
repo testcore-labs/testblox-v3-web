@@ -3,6 +3,8 @@ import xss from "xss";
 import argon2 from "argon2";
 import { type user_table } from "./tables/users";
 import { type message_type } from "../utils/message";
+import { membership_types } from "../types/membership";
+import { gender_types } from "../types/gender";
 import env from "../utils/env";
 
 class user {
@@ -18,27 +20,30 @@ class user {
   }
 
   by_id(id: number) {
-    const result = db.data.users.find((p) => p.id === id)
+    const result = this.table.find((p: user_table) => p.id === id)
     if(result !== undefined) {
     this.id = result.id;
     this.data = result;
     }
+    return this;
   }
 
   by_username(username: string) {
-    const result = db.data.users.find((p) => p.username === username)
+    const result = this.table.find((p: user_table) => p.username === username)
     if(result !== undefined) {
     this.id = result.id;
     this.data = result;
     }
+    return this;
   }
 
   by_token(token: string) {
-    const result = db.data.users.find((p) => p.token === token)
+    const result = this.table.find((p: user_table) => p.token === token)
     if(result !== undefined) {
     this.id = result.id;
     this.data = result;
     }
+    return this;
   }
 
   get exists() {
@@ -137,8 +142,8 @@ class user {
       locale: "en-us",
       language: env.language,
       state: 0,
-      gender: 0,
-      membership: 0,
+      gender: gender_types.NONE,
+      membership: membership_types.NONE,
       loginhistory: {},
       moderationhistory: {},
 
@@ -180,7 +185,7 @@ class user {
       post.token = token.toString();
     }
     
-    post.id = db.data.users.length + 1;
+    post.id = this.table.length + 1;
     this.table.push(post);
 
     await db.write();

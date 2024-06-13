@@ -10,8 +10,8 @@ currency:
   starter: 80
 
 # server default 
-locale: en-US
-language: en-US
+locale: en-us
+language: en-us
 
 # http config
 port: 80

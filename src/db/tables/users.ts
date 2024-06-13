@@ -1,3 +1,6 @@
+import { type membership_types } from "../../types/membership";
+import { type gender_types } from "../../types/gender";
+
 type user_table = { 
   id: number
   username: string
@@ -12,8 +15,8 @@ type user_table = {
   locale: string // user decides
   language: string // user decides
   state: number // either 0: offline, 1: online, 2: playing, or 3: developing
-  gender: number // 0: none, 1: male, 2: female
-  membership: number // 0: None, 1: BuildersClub, 2: TurboBuildersClub, 3: OutrageousBuildersClub
+  gender: gender_types | string // let them decide their gender aswell why not i dont see the problem...
+  membership: membership_types
   loginhistory: object // holds ips, useragents. optional
   moderationhistory: object // holds the time the account was banned and more
 

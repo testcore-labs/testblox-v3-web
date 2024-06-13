@@ -7,14 +7,20 @@ import fs from "fs";
 import env from "../utils/env";
 
 import { type user_table } from "../db/tables/users";
+import { type assets_table } from "../db/tables/assets";
 import { sleep } from 'bun';
 
+// yes
 type db_struct = {
   users: user_table[]
+  assets: assets_table[]
 }
+const db_tables: db_struct = { 
+  users: [],
+  assets: [] 
+};
 
 const path_to_json_db = path.join(root_path, "database", "db.json");
-const db_tables: db_struct = { users: [] };
 console.log("[db]: loading...");
 const db = await JSONFilePreset(path.join(root_path, "database", "db.json"), db_tables);
 fs.readFile(path_to_json_db, "utf8", async function(err, data) {

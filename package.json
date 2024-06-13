@@ -5,9 +5,10 @@
   "scripts": {
     "dev:watch": "bun nodemon \"--watch views/**/*.twig --watch src -x \"bun run dev\" -e ts,twig\"",
     "dev": "bun src/index.ts",
-    "build-css:watch": "bun nodemon \"--watch scss/**/*.scss -x \"bun run build-css\" -e scss\"",
-    "build-css": "sass scss/core.scss scss/core.pcss && postcss scss/core.pcss --use autoprefixer -o public/assets/css/core.css",
-    "js-process": "babel-node public/assets/js/core.es6.js -p > public/assets/js/core.js"
+    "build-css:watch": "bun nodemon \"--watch bootstrap/sass/**/*.scss -x \"npm run build-css\" -e scss\"",
+    "build-css": "cd bootstrap-* && npm run css", 
+    "build-js:watch": "bun nodemon \"--watch bootstrap/js/**/*.scss -x \"npm run build-css\" -e js\"",
+    "build-js": "cd bootstrap-* && npm run js"
   },
   "devDependencies": {
     "@types/bun": "latest"
@@ -24,7 +25,8 @@
     "@types/yaml": "^1.9.7",
     "argon2": "^0.40.3",
     "autoprefixer": "^10.4.19",
-    "cloudflare-express": "^1.0.1",
+    "bootstrap": "^5.3.3",
+    "cloudflare-express": "^0.0.1",
     "cookie-parser": "^1.4.6",
     "express": "^4.19.2",
     "express-rate-limit": "^7.3.0",
