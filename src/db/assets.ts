@@ -62,7 +62,7 @@ class assets {
     // if(this.table.find((p: assets_table) => p.hash === hash)) {
     //   const msg: message_type = {success: false, message: "username taken."};
     //   return msg;
-    // }
+    // } 
 
 
     post.createdat = Date.now();
