@@ -42,18 +42,16 @@ class assets {
     return typeof(this.data) != undefined;
   }
 
-  async create(username: any, password: any): Promise<message_type> {
+  async create(title: any, description: any, type: any): Promise<message_type> {
     let post: assets_table = {
       id: 0,
       title: "",
       description: "",
       type: asset_types.Image,
+      version: 0,
       privacy: privacy_types.PRIVATE,
       creator: 0,
       moderation: moderation_status_types.REVIEWING,
-      thumbnail: "",
-      limited: false,
-      vipcost: 0,
       updatedat: 0,
       createdat: 0
     }
@@ -72,7 +70,7 @@ class assets {
     this.table.push(post);
 
     await db.write();
-    const msg: message_type =  {success: true, message: "created account.", info: { id: post.id, token: post.token }}; 
+    const msg: message_type =  {success: true, message: "created asset.", info: { id: post.id }}; 
     return msg;
   }
 }
