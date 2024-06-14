@@ -4,7 +4,7 @@ import twig from "./utils/twig";
 import root_path from "./utils/root_path";
 import * as path from "path";import fs from "fs/promises";
 import cookie_parser from "cookie-parser";
-// import users from "./utils/db";
+import { queryParser as qp} from "express-query-parser";
 
 import front_routes from "./routes/front";
 import api_v1_routes from "./routes/api_v1";
@@ -18,6 +18,15 @@ app.set("twig options", {
   allowAsync: true,
   strict_variables: false,
 });
+
+app.use( // query parsing
+  qp({
+    parseNull: true,
+    parseUndefined: true,
+    parseBoolean: true,
+    parseNumber: true
+  })
+)
 
 app.set('trust proxy', env.behind_proxy)
 app.use(express.urlencoded({

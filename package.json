@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev:watch": "bun nodemon \"--watch views/**/*.twig --watch views/*.twig --watch src -x \"bun run dev\" -e ts,twig\"",
-    "dev": "bun src/index.ts",
+    "dev": "bun src/main.ts",
     "build-css:watch": "bun nodemon \"--watch bootstrap/sass/**/*.scss -x \"bun run build-css\" -e scss\"",
     "build-css": "sass scss/core.scss scss/core.pcss && postcss scss/core.pcss --use autoprefixer -o public/assets/css/core.css"
   },
@@ -33,6 +33,7 @@
     "lowdb": "^7.0.1",
     "nodemon": "^3.1.0",
     "postcss-cli-simple": "^4.0.1",
+    "sanitizer": "^0.1.3",
     "sass": "^1.77.4",
     "twig": "^1.17.1",
     "xss": "^1.0.15",
