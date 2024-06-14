@@ -76,4 +76,8 @@ routes.get("/user/logout", async (req: Request, res: Response) => {
   }
 });
 
+routes.get("*", (req, res) => {
+  res.json({success: false, message: "not a valid api endpoint."});
+});
+
 export default routes;

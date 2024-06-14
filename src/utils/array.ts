@@ -1,6 +1,6 @@
-export function shuffle(array: any) {
-  if(typeof array === 'undefined') return;
-  let new_array = JSON.parse(JSON.stringify(array));
+export function shuffle(array: any): Object | undefined {
+  if(typeof array === 'undefined' || array === null) return;
+  let new_array = JSON.parse(JSON.stringify(array)); //hack
 
   let current_index = new_array.length;
   while (current_index != 0) {

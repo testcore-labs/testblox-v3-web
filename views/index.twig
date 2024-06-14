@@ -1,6 +1,78 @@
 {% extends "html.twig" %}
-{% set title = "index" %}
 
 {% block content %}
+{% if cuser.loggedin() %}
+{{ redirect("/home") }}
+{% endif %}
+<div class="d-flex flex-row flex-wrap gap-4">
+<div class="d-flex round-4" style="flex-grow: 5; flex-basis: 25em; background: #000; backdrop-filter: blur(0.15em);">
+<div class="d-flex flex-column pos-relative border-box p-3 gap-2" style="flex: 3; justify-content: center; text-align: center; flex-basis: 25em; aspect-ratio: 16/9;">
+<video id="bg" playsinline autoplay muted loop class="round-4 pos-absolute top-0 left-0 right-0 bottom-0" style="object-fit: contain; width: 100%; height: 100%; filter: blur(0.15em);">
+<source src="/assets/vid/limbogp.mp4" type="video/mp4">
+</video>
+<script>document.addEventListener("click", function() {var video = document.getElementById("bg");video.play();});</script>
+<div style="z-index: 3;">
+<img class="img-fluid as-baseline" style="margin: 0.5em auto; width: 20em;" src="/assets/img/logo.svg">
+<h3 class="stroke-2-black">"{{ env.quotes|shuffle[0] }}"</h3>
+<div class="d-flex flex-row pos-absolute" style="bottom: 0.5em; gap: 0.5em; width: 100%;">
+<a class="btn-primary" href="/dsc"><h3 class="bi bi-discord"></h3></a>
+<small class="text-muted stroke-1-black" style="margin-left: auto; margin-top: auto; margin-right: 1.5em; margin-bottom: 0.25em;">this is temporary Limbo trailer footage</small>
+</div>
+</div>
+{# <div class="d-flex flex-row pos-absolute" style="bottom: 0.25em; gap: 0.5em; width: 100%; justify-content: center;">
+<button><h4><</h4></button>
+<button><h4>></h4></button>
+</div> #}
+{# was gonna be used as a gallery for images and shit #}
+</div>
+</div>
+<div class="d-flex flex-column gap-5 as-baseline flex-1" style="flex-grow: 1; flex-basis: 17.5em;">
+{% if req.query.type == "login" or req.query.type == "" or not req.query.type %}
+<form class="card d-flex flex-column gap-2 as-baseline w-100" hx-target="#result" hx-swap="innerHTML" hx-post="/api/v1/user/login?plaintext&redirect=/">
+  <div class="d-flex flex-row card card-dark-primary hide-if-no-text" id="result"></div>
+  <input type="text" name="un" placeholder="username">
+  <input type="password" name="pw" placeholder="PaSsWoRd123#">
+  
+  <button type="submit" class="btn-secondary mt-2 text-center py-2 flex-1" style="font-size: 1.125em;">login</button>
+  <small class="text-muted">if you don't have an account, <a class="link" href="?type=register">register</a></small>
+</form>
+{% elseif req.query.type == "register" %}
+<form class="card d-flex flex-column gap-2 as-baseline w-100" hx-target="#result" hx-swap="innerHTML" hx-post="/api/v1/user/register?plaintext&redirect=/">
+  <div class="d-flex flex-row card card-dark-primary hide-if-no-text" id="result"></div>
+  <input type="text" name="un" placeholder="username">
+  <input type="password" name="pw" placeholder="PaSsWoRd123#">
+  <input type="text" name="invkey" placeholder="{{ env["invitekeyname"] }}-{{ repeat("x", global("controllers\\invitekeys", [con, 0]).invitekeylength - env["invitekeyname"]|length) }}">
+  
+  <button type="submit" class="btn-secondary mt-2 text-center py-2 flex-1" style="font-size: 1.125em;">login</button>
+  <small class="text-muted">if you do have an account, <a class="link" href="?type=login">login</a></small>
+  <small class="text-muted">by registering, you agree to the <a class="link" href="/tos">terms of service</a></small>
+</form>
+{% endif %}
 
+<div class="d-flex flex-column gap-4 px-3 py-2">
+  <div class="d-flex flex-row ai-center gap-5">
+    <h2 class="bi bi-columns text-muted p-1"></h2>
+    <div class="d-flex flex-column">
+      <h4 class="text-muted">good ui (imo)</h4>
+      <div class="text-extramuted">imo its good cuz i made it :))</div>
+    </div>
+  </div>
+  <div class="d-flex flex-row ai-center gap-5">
+    <h2 class="bi bi-bug text-muted p-1"></h2>
+    <div class="d-flex flex-column">
+      <h4 class="text-muted">currently in alpha</h4>
+      <div class="text-extramuted">so don't expect much</div>
+    </div>
+  </div>
+  <div class="d-flex flex-row ai-center gap-5">
+    <h2 class="bi bi-people text-muted p-1"></h2>
+    <div class="d-flex flex-column">
+      <h4 class="text-muted">friendly community</h4>
+      <div class="text-extramuted">make friends, hangout or just chat!</div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
 {% endblock %}

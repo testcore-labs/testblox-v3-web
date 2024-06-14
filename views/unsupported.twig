@@ -1,0 +1,22 @@
+{% extends "html.twig" %}
+{% block content %}
+<div class="d-flex flex-column mt-4" style="gap: 0.5em; justify-content: center; align-items: center;">
+<h3>your browser is not supported</h3>
+<span>consider updating/switching it, this is a warning.</span>
+<div class="d-flex flex-row hover-buttons" style="gap: 0.5em; margin-top: 0.6em;">
+<a class="d-flex flex-column" style="gap: 0.25em; text-align: center;" href="//librewolf.net/"><img src="/assets/img/browsers/librewolf.svg" height=56>
+<small class="l">low</small></a>
+<a class="d-flex flex-column" style="gap: 0.25em; text-align: center;" href="//chrome.com/"><img src="/assets/img/browsers/chrome.svg" height=56>
+<small class="l">extremely<br>high</small></a>
+<a class="d-flex flex-column" style="gap: 0.25em; text-align: center;" href="//firefox.com/"><img src="/assets/img/browsers/firefox.svg" height=56>
+<small class="l">high</small></a>
+<a class="d-flex flex-column" style="gap: 0.25em; text-align: center;" href="//brave.com/"><img src="/assets/img/browsers/brave.svg" height=56>
+<small class="l">high</small></a>
+<a class="d-flex flex-column" style="gap: 0.25em; text-align: center;" href="//microsoft.com/edge"><img src="/assets/img/browsers/edge.svg" height=56>
+<small class="l">extremely<br>high</small></a>
+<a class="d-flex flex-column" style="gap: 0.25em; text-align: center;" href="//opera.com/"><img src="/assets/img/browsers/opera.svg" height=56>
+<small class="l">extremely<br>high</small></a>
+</div>
+<small class="text-extramuted" style="margin-top: 0.5em; margin-right: auto;">note this info comes from <a class="link" target="_blank" rel="noopener noreferrer" href="https://spyware.neocities.org/articles/">spyware watchdog</a><br>ratings like "low", "high", etc are based on the spyware level<br>+ this is a really strict list, example: auto-updating, sending unsolicited requets, etc</small>
+</div>
+{% endblock %}

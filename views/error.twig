@@ -1,0 +1,15 @@
+{% extends "html.twig" %}
+
+{% set randomerrs = [
+"does it exist?",
+"maybe you typed it wrong",
+"have you tried turning it off and on",
+] %}
+{% set randomerr = randomerrs|shuffle[0] %}
+{% block content %}
+<div class="d-flex flex-column gap-3 ai-center jc-center m-5">
+<h2>{{ http_response_code() ~ " " ~ http_response_codename(http_response_code()) }}</h2>
+<div>{{ randomerr }}</div>
+<button class="mt-2" onclick="window.history.back();">go back</button>
+</div>
+{% endblock %}

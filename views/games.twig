@@ -1,0 +1,56 @@
+{% extends "html.twig" %}
+
+{% block content %}
+<div class="d-flex flex-row gap-2">
+  <h2>popular</h2>
+</div>
+<hr class="mt-3 mb-2">
+<section id="splide" class="popular-splide splide p-0">
+  <div class="splide__track">
+		<ul class="splide__list d-flex flex-row">
+  {% for game in games %}
+  {% set game = global("controllers\\universes", [con, game.id]) %}
+  <li class="splide__slide" style="max-width: 150px;">
+  <a href="/game/{{ game.get_id() }}/{{ game.get_name() }}" class="d-flex flex-column game-card pos-relative games-row-1" style="overflow: hidden; padding: 0; margin-top: 0.3em;">
+    <div class="img-fluid pos-relative">
+      <img src="/assets/img/crossroads.png" class="round-4 img-fluid">
+      <div class="ridge-100 p-2 card card-dark-primary pos-absolute left-0 bottom-0 round-0 pe-9 pos-relative-hack">2015E</div>
+      <div class="more-info pos-absolute right-0 bottom-0 m-2">
+        <button class="pos-relative-hack btn-play d-flex ai-center jc-center round-3" style="padding: 0.05em 0.1em 0.05em 0.15em; font-size: 1.55em;"><i class="bi bi-play-fill"></i></button>
+      </div>
+    </div>
+    <div class="d-flex flex-column border-box m-1 my-0"><h4 class="text-muted breakword">{{ game.get_name()|truncate(28, "…") }}</h4>
+      <div class="d-flex flex-column gap-1">
+        <span class="d-flex flex-row gap-3 ai-center text-extramuted mt-1"><i class="bi bi-star-half"></i> <b class="breakword">1%</b></span>
+        <span class="d-flex flex-row gap-3 ai-center text-extramuted mt-1"><i class="bi bi-people"></i> <b class="breakword">1 playing</b></span>
+      </div>
+    </div>
+  </a>
+  </li>
+  {% endfor %}
+	</ul>
+</div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+var splide = new Splide('.splide', {
+  perMove: 3,
+  gap: '0.8em',
+  rewind : false,
+  pagination: false,
+  breakpoints: {
+    900: {
+      perMove: 2,
+    },
+    500: {
+      perMove: 1,
+    },
+  }
+});
+splide.mount();
+});
+
+</script>
+<link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
+{% endblock %}

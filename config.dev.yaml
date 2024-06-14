@@ -1,6 +1,10 @@
 app_name: testblox
 desc: oops..
 domain: tstblx.win
+quotes: 
+  - hi
+  - byte
+  - If buying is not owning, then piracy isn't stealing
 
 backup: false
 behind_proxy: false # CloudFlare Mode ACtivated

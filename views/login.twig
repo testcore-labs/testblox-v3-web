@@ -1,0 +1,22 @@
+{% extends "html.twig" %}
+{#  config  html.twig  #}
+{% set enablefooter = true %}
+{% set enablenavbar = false %}
+{% set enablecontainerbg = false %}
+{% set paddingforcontent = false %}
+{% set container_styles = "width: 100%; max-width: 25em;" %}
+
+{% block content %}
+<form class="d-flex flex-column gap-2 mt-4 px-4 pt-4 mb-3 round-4 round-bx-0" style="background: #0c0c0c;" hx-target="#result" hx-on:htmx:validation:validate="document.getElementById('resultdiv').classList.remove('d-none')" hx-post="/api/json/login?redirect=/">
+  <h4 class="text-extramuted">log into </h4>
+  <a href="/"><img class="my-2" alt="{{ conf.get()["project"]["name"] }}" src="/assets/img/logo.svg" height=32></a>
+
+  <div class="card card-dark-secondary p-3 round-4 d-flex flex-row d-none" id="resultdiv"><div id="result"></div></div>
+
+  <input type="text" name="un" placeholder="username">
+  <input type="password" name="pw" placeholder="PaSsWoRd123#">
+  
+  <button type="submit" class="btn-secondary mt-2 text-center py-2" style="font-size: 1.125em;">login</button>
+
+</form>
+{% endblock %}

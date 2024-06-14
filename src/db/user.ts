@@ -196,6 +196,10 @@ class user {
   async validate(username: any, password: any): Promise<message_type> {
     username = username?.trim();
     username = username?.toString();
+    const err_un = this.username_validate(username);
+    if(err_un && !err_un.success) {
+      return err_un;
+    }
     const user_find = this.table.find((p: user_table) => p.username !== username);
     if(!user_find || this.empty_table) {
       return {success: false, message: "username or password is incorrect."};
@@ -203,6 +207,10 @@ class user {
 
     password = password?.trim();
     password = password?.toString();
+    const err_pw = this.username_validate(password);
+    if(err_pw && !err_pw.success) {
+      return err_pw;
+    }
     if(!(await argon2.verify(user_find.password, password))) {
       return {success: false, message: "username or password is incorrect."};
     }

@@ -1,13 +1,11 @@
 import express, { type Express, type Request, type Response } from "express";
-import env from "./utils/env";
-import twig from "./utils/twig";
-import root_path from "./utils/root_path";
-import * as path from "path";import fs from "fs/promises";
+import env from "../utils/env";
+import twig from "../utils/twig";
+import * as path from "path";
 import cookie_parser from "cookie-parser";
-// import users from "./utils/db";
 
-import front_routes from "./routes/front";
-import api_v1_routes from "./routes/api_v1";
+import front_routes from "../routes/front";
+import api_v1_routes from "../routes/api_v1";
 
 console.log(`[server]: starting...`);
 const app: Express = express();
@@ -49,7 +47,4 @@ app.get("*", (req, res) => {
   res.status(404).render("404.twig");
 });
 
-
-app.listen(env.port, () => {
-  console.log(`[server]: server is running at :${env.port}`);
-});
+export default app;
