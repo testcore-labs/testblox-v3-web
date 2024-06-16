@@ -5,6 +5,8 @@ type settings_obj = {
   locale: string // user decides
   language: string // user decides
   css: string // this has to secured (also make this scoped so u cant fuck wit the whole page)
+
+  log_logins: boolean
 }
 
 type user_table = { 
@@ -32,4 +34,4 @@ type user_table = {
 };
 
 
-export type { user_table };
+export type { user_table, settings_obj };

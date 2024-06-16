@@ -1,7 +1,7 @@
 import db from "../utils/db";
 import xss from "xss";
 import argon2 from "argon2";
-import { type user_table } from "./tables/users";
+import { type user_table, type settings_obj } from "./tables/users";
 import { type message_type } from "../utils/message";
 import { membership_types } from "../types/membership";
 import { gender_types } from "../types/gender";
@@ -147,7 +147,9 @@ class user {
       settings: {
         locale: "en-us", // for privacy reasons i wont detect the users locale
         language: env.language,
-        css: ""
+        css: "",
+
+        log_logins: false // why log them if you don't need them to be
       },
 
       online: 0,
