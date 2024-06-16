@@ -139,17 +139,20 @@ class user {
       currency: env.currency.starter,
 
       setup: false,
-      locale: "en-us",
-      language: env.language,
       state: 0,
       gender: gender_types.NONE,
       membership: membership_types.NONE,
-      loginhistory: {},
-      moderationhistory: {},
+      logins: {},
+      moderation: {},
+      settings: {
+        locale: "en-us", // for privacy reasons i wont detect the users locale
+        language: env.language,
+        css: ""
+      },
 
       online: 0,
       updatedat: 0,
-      createdat: 0,
+      createdat: 0
     }
 
     username = username?.trim();
