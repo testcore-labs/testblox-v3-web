@@ -42,25 +42,29 @@ class assets {
     return typeof(this.data) != undefined;
   }
 
-  async create(title: any, description: any, type: any): Promise<message_type> {
+  async create_decal(title: any, description: any, userid: number): Promise<message_type> {
     let post: assets_table = {
       id: 0,
       title: "",
       description: "",
-      type: asset_types.Image,
-      version: 0,
+      type: asset_types.Decal,
+      version: 1,
       privacy: privacy_types.PRIVATE,
-      creator: 0,
+      creator: userid, // this should be from trusted input. PLEASE be else im gonna rip your head off >:(, security comes FIRST.
       moderation: moderation_status_types.REVIEWING,
       updatedat: 0,
       createdat: 0
     }
 
-    // so the problem here is that i have to get it from assetversion which is not added yet.
+    // [!]: so the problem here is that i have to get it from assetversion which is not added yet.
     // if(this.table.find((p: assets_table) => p.hash === hash)) {
     //   const msg: message_type = {success: false, message: "username taken."};
     //   return msg;
     // }
+
+    // since images are the parents for alot of assets we gotta upload that
+    // im too lazy for making library work rn so LATER it goes 
+    // ^ realized this is TOO much work to make each asset get created THEN be able to be edited oh my gooood :(
 
 
     post.createdat = Date.now();
@@ -70,7 +74,7 @@ class assets {
     this.table.push(post);
 
     await db.write();
-    const msg: message_type =  {success: true, message: "created asset.", info: { id: post.id }}; 
+    const msg: message_type =  {success: true, status: 200, message: "created asset.", info: { id: post.id }}; 
     return msg;
   }
 }

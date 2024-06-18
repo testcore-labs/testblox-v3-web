@@ -1,6 +1,6 @@
 type message_type = {
   success: boolean
-  status?: number
+  status?: number // use http err codes just cuz they easier
   message: string
   info?: {
     [key: string]: any;

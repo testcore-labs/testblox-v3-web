@@ -30,9 +30,11 @@ routes.get("/user/create", creation_and_login_limiter, async (req: Request, res:
       }
     }
 
+    res.status(resp.status ?? 400); // 400 for generic err
     res.json(resp);
   } catch(e) {
     console.log(e);
+    res.status(500); // serverside error therefore we return serverside error status code 
     res.json({success: false, message: "error occured."});
   }
 });
@@ -51,9 +53,11 @@ routes.get("/user/login", creation_and_login_limiter, async (req: Request, res: 
         });
       }
     }
+    res.status(resp.status ?? 400); // 400 for generic err
     res.json(resp);
   } catch(e) {
     console.log(e);
+    res.status(500); // serverside error therefore we return serverside error status code 
     res.json({success: false, message: "error occured."});
   }
 });
@@ -66,17 +70,21 @@ routes.get("/user/logout", async (req: Request, res: Response) => {
       secure: (process.env.NODE_ENV == "production") ? true : false, 
       sameSite: (process.env.NODE_ENV == "production") ? 'strict' : 'none' 
     });
+    res.status(200);
     res.json({success: true, message: "logged out."})
     } else {
+      res.status(401);
       res.json({success: false, message: "you are not logged in."})
     }
   } catch(e) {
     console.log(e);
+    res.status(500);
     res.json({success: false, message: "error occured."});
   }
 });
 
 routes.get("*", (req, res) => {
+  res.status(404);
   res.json({success: false, message: "not a valid api endpoint."});
 });
 
