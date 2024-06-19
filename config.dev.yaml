@@ -2,9 +2,18 @@ app_name: testblox
 desc: oops..
 domain: tstblx.win
 quotes: 
-  - hi
-  - byte
+  - is $_SERVER["REMOTE_ADDR"] your IP?
   - If buying is not owning, then piracy isn't stealing
+  - happy men's mental health month
+  - NO GOONING.
+  - Never goon.
+  - this revival needs invite keys bozo
+  - :3
+  - also known as sigmablox
+
+invitekeys:
+  name: tstblx
+  randlength: 32
 
 backup: false
 behind_proxy: false # CloudFlare Mode ACtivated

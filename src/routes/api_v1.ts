@@ -5,7 +5,7 @@ import { type message_type } from "../utils/message";
 import { rateLimit } from 'express-rate-limit';
 
 // limiters
-const msg_too_many_reqs: message_type = {success: false, message: "too many requests, try again later."};
+const msg_too_many_reqs: message_type = {success: false, status: 429, message: "too many requests, try again later."};
 
 const creation_and_login_limiter = rateLimit({
 	windowMs: 5 * 60 * 1000, // 5 minutes
@@ -13,12 +13,15 @@ const creation_and_login_limiter = rateLimit({
 	standardHeaders: 'draft-7',
   message: msg_too_many_reqs,
 	legacyHeaders: true,
+  keyGenerator: function (req: any) {
+    return req.headers["x-forwarded-for"] || req.connection.remoteAddress; 
+  }
 });
 
-routes.get("/user/create", creation_and_login_limiter, async (req: Request, res: Response) => {
+routes.post("/user/create", creation_and_login_limiter, async (req: Request, res: Response) => {
   try {
     const usr = new user();
-    const resp = await usr.create(req.query.username?.toString(), req.query.password?.toString());
+    const resp = await usr.create(req.body.username?.toString(), req.body.password?.toString());
   
     if(resp.success) {
       if(resp.info !== undefined) {
@@ -30,8 +33,16 @@ routes.get("/user/create", creation_and_login_limiter, async (req: Request, res:
       }
     }
 
-    res.status(resp.status ?? 400); // 400 for generic err
-    res.json(resp);
+    if(req.query.redirect && resp.success) {
+      res.redirect("/redirect?url="+encodeURI(req.query?.redirect?.toString()));
+    } else {
+    if(!req.query.plaintext) {
+      res.send(resp.message);
+    } else {
+      res.status(resp.status ?? 400); // 400 for generic err
+      res.json(resp);
+    }
+    }
   } catch(e) {
     console.log(e);
     res.status(500); // serverside error therefore we return serverside error status code 
@@ -39,10 +50,10 @@ routes.get("/user/create", creation_and_login_limiter, async (req: Request, res:
   }
 });
 
-routes.get("/user/login", creation_and_login_limiter, async (req: Request, res: Response) => {
+routes.post("/user/login", creation_and_login_limiter, async (req: Request, res: Response) => {
   try {
     const usr = new user();
-    const resp = await usr.validate(req.query.username?.toString(), req.query.password?.toString());
+    const resp = await usr.validate(req.body.username?.toString(), req.body.password?.toString());
     
     if(resp.success) {
       if(resp.info !== undefined) {
@@ -53,8 +64,16 @@ routes.get("/user/login", creation_and_login_limiter, async (req: Request, res: 
         });
       }
     }
-    res.status(resp.status ?? 400); // 400 for generic err
-    res.json(resp);
+    if(req.query.redirect && resp.success) {
+      res.redirect("/redirect?url="+encodeURI(req.query?.redirect?.toString()));
+    } else {
+    if(!req.query.plaintext) {
+      res.send(resp.message);
+    } else {
+      res.status(resp.status ?? 400); // 400 for generic err
+      res.json(resp);
+    }
+    }
   } catch(e) {
     console.log(e);
     res.status(500); // serverside error therefore we return serverside error status code 

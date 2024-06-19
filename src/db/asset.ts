@@ -8,7 +8,7 @@ import { privacy_types } from "../types/privacy";
 import { moderation_status_types } from "../types/moderation";
 import env from "../utils/env";
 
-class assets {
+class asset {
   id: number;
   data: assets_table | undefined;
   table: any;
@@ -79,4 +79,4 @@ class assets {
   }
 }
 
-export default assets;
+export default asset;

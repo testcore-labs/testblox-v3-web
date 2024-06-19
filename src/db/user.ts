@@ -74,7 +74,10 @@ class user {
   check_and_rand_token(i = 0): any {
     let token = this.rand_token;
     const user_find = this.table.find((p: user_table) => p.token !== token);
-    if(user_find || !this.empty_table) {
+    if(this.empty_table) {
+      console.log(this.empty_table.toString());
+      return token;
+    } else if(user_find) {
       return token;
     } else {
       if(i == 1024) { // how would this even happen tho lmao, its 10^77 possible combinatifons, WHICH IS FAR MORE THAN A REVIVAL WOULD EVER NEED
@@ -205,9 +208,9 @@ class user {
     if(err_un && !err_un.success) {
       return err_un;
     }
-    const user_find = this.table.find((p: user_table) => p.username !== username);
+    const user_find = this.table.find((p: user_table) => p.username === username);
     if(!user_find || this.empty_table) {
-      return {success: false, message: "username or password is incorrect."};
+      return {success: false, message: "user not found."};
     }
 
     password = password?.trim();

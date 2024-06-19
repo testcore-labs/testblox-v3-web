@@ -20,5 +20,8 @@ twig.extendFilter("parse_json", function(json: string): any {
 twig.extendFunction("env", function(key: any): any {
   return env[key];
 });
+twig.extendFunction("repeat", function(string: string, x: number): any {
+  return string.repeat(x);
+});
 
 export default twig;
