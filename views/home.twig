@@ -1,9 +1,6 @@
 {% extends "html.twig" %}
 
 {% block content %}
-{% if not cuser.loggedin() %}
-{{ redirect("/") }}
-{% endif %}
 {% set randomhis = [
 "hello", "hola", "bonjour", "hallo", "ciao", "olá", "hallo", "здравствуйте", "你好", "こんにちは", "안녕하세요", "مرحباً", "नमस्ते", "jambo", "merhaba", "γειά σας", "שלום", "hej", "hei", "hei", "hej", "cześć", "helló", "xin chào", "สวัสดี", "سلام", "salut", "ahoj", "নমস্কার", "привіт", "kumusta", "hai", "dia dhuit", "halò", "halló", "labas", "tere", "bok", "здравейте", "здраво", "hello", "ahoj", "sveiki", "გამარჯობა", "नमस्ते", "բարև", "ہیلو", "bawo ni", "sawubona", "helo",
 ] %}

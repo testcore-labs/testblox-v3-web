@@ -34,10 +34,10 @@
         </div>
 
         <div class="d-flex flex-row ai-center gap-6 ms-2 flex-1">
-        {% if cuser.loggedin() %}
+        {% if isloggedin %}
         <div class="d-flex flex-row ai-center ms-auto gap-1">
           <img src="/assets/img/currency.svg" width=21>
-          <b title="32">{{ cuser.money|int_shorten(0) }}</b>
+          <b title="32">{{ cuser.money }}</b>
         </div>
         <div class="pos-relative">
           <div class="d-flex flex-row ai-center gap-3 c-pointer" onclick="dropdownify(this, $('#userdropdown'));">
@@ -59,7 +59,7 @@
           </div>{% endif %}
         </div>
       </nav>{% endif %}
-      {% if (enablenavbar ?? true) and cuser.loggedin() %}<nav class="second-navbar-hover d-flex flex-row flex-row-to-col flex-wrap gap-5 ai-center card round-0 py-2 p-3">
+      {% if (enablenavbar ?? true) and isloggedin %}<nav class="second-navbar-hover d-flex flex-row flex-row-to-col flex-wrap gap-5 ai-center card round-0 py-2 p-3">
         <a href="/avatar/"><i class="bi bi-person-fill-gear"></i> <b>avatar</b></a>
         <a href="/messages/"><i class="bi bi-envelope"></i> <b>messages</b></a>
         <a href="/trade/"><i class="bi bi-arrow-left-right"></i> <b>trade</b></a>

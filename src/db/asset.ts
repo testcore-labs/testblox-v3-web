@@ -20,8 +20,8 @@ class asset {
     this.empty_table = (this.table.at(0) === undefined);
   }
 
-  by_id(id: number) {
-    const result = this.table.find((p: assets_table) => p.id === id)
+  async by_id(id: number) {
+    const result = await this.table.findOne((p: assets_table) => p.id === id)
     if(result !== undefined) {
     this.id = result.id;
     this.data = result;
@@ -29,8 +29,8 @@ class asset {
     return this;
   }
 
-  by_title(title: string) {
-    const result = this.table.find((p: assets_table) => p.title === title)
+  async by_title(title: string) {
+    const result = await this.table.findOne((p: assets_table) => p.title === title)
     if(result !== undefined) {
     this.id = result.id;
     this.data = result;

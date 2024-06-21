@@ -2,6 +2,7 @@ import express, { type Express, type Request, type Response } from "express";
 import user from "../db//user";
 const routes = express.Router();
 import { type message_type } from "../utils/message";
+import async_handler from 'express-async-handler';
 import { rateLimit } from 'express-rate-limit';
 
 // limiters
@@ -18,7 +19,7 @@ const creation_and_login_limiter = rateLimit({
   }
 });
 
-routes.post("/user/create", creation_and_login_limiter, async (req: Request, res: Response) => {
+routes.post("/user/create", creation_and_login_limiter, async_handler(async (req: Request, res: Response) => {
   try {
     const usr = new user();
     const resp = await usr.create(req.body.username?.toString(), req.body.password?.toString());
@@ -48,9 +49,9 @@ routes.post("/user/create", creation_and_login_limiter, async (req: Request, res
     res.status(500); // serverside error therefore we return serverside error status code 
     res.json({success: false, message: "error occured."});
   }
-});
+}),);
 
-routes.post("/user/login", creation_and_login_limiter, async (req: Request, res: Response) => {
+routes.post("/user/login", creation_and_login_limiter, async_handler(async (req: Request, res: Response) => {
   try {
     const usr = new user();
     const resp = await usr.validate(req.body.username?.toString(), req.body.password?.toString());
@@ -79,9 +80,9 @@ routes.post("/user/login", creation_and_login_limiter, async (req: Request, res:
     res.status(500); // serverside error therefore we return serverside error status code 
     res.json({success: false, message: "error occured."});
   }
-});
+}),);
 
-routes.get("/user/logout", async (req: Request, res: Response) => {
+routes.get("/user/logout", async_handler(async (req: Request, res: Response) => {
   try {
     if(req.cookies.token !== undefined) {
     res.clearCookie('token', { 
@@ -100,11 +101,11 @@ routes.get("/user/logout", async (req: Request, res: Response) => {
     res.status(500);
     res.json({success: false, message: "error occured."});
   }
-});
+}),);
 
-routes.get("*", (req, res) => {
+routes.get("*", async_handler(async (req, res) => {
   res.status(404);
   res.json({success: false, message: "not a valid api endpoint."});
-});
+}),);
 
 export default routes;

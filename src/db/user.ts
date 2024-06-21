@@ -19,8 +19,8 @@ class user {
     this.empty_table = (this.table.at(0) === undefined);
   }
 
-  by_id(id: number) {
-    const result = this.table.find((p: user_table) => p.id === id)
+  async by_id(id: number) {
+    const result = await this.table.find((p: user_table) => p.id === id)
     if(result !== undefined) {
     this.id = result.id;
     this.data = result;
@@ -28,8 +28,8 @@ class user {
     return this;
   }
 
-  by_username(username: string) {
-    const result = this.table.find((p: user_table) => p.username === username)
+  async by_username(username: string) {
+    const result = await this.table.find((p: user_table) => p.username === username)
     if(result !== undefined) {
     this.id = result.id;
     this.data = result;
@@ -37,8 +37,8 @@ class user {
     return this;
   }
 
-  by_token(token: string) {
-    const result = this.table.find((p: user_table) => p.token === token)
+  async by_token(token: string) {
+    const result = await this.table.find((p: user_table) => p.token === token)
     if(result !== undefined) {
     this.id = result.id;
     this.data = result;
@@ -56,10 +56,27 @@ class user {
   // future me, dont directly use "set" funcs from classes:
   // 1. you might wanna lock the username change behind a currency paywall (not irl money lol)
   get username() { // this.data? is for not giving a fuck if its null 
-    return xss(this.data?.username ?? "");
+    return this.data?.username ?? "";
   }
   set username(set) {
     console.log(set);
+  }  
+
+  get password() { // this.data? is for not giving a fuck if its null 
+    return xss(this.data?.username ?? "");
+  }
+  set password(set) {
+    console.log(set);
+  }
+
+  get money(): number {
+    return Number(this.data?.currency);
+  }
+
+  set money(amount: number) {
+    if (this.data) {
+      this.data.currency = amount;
+    }
   }
 
   get rand_token(): string {

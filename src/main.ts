@@ -3,8 +3,10 @@ import env from "./utils/env";
 import twig from "./utils/twig";
 import root_path from "./utils/root_path";
 import * as path from "path";import fs from "fs/promises";
+import async_handler from 'express-async-handler';
 import cookie_parser from "cookie-parser";
 import { queryParser as qp} from "express-query-parser";
+import user from "./db/user";
 
 import front_routes from "./routes/front";
 import api_v1_routes from "./routes/api_v1";
@@ -42,9 +44,9 @@ app.use(async (req, res, next) => {
   res.locals.res = res;
   res.locals.env = env;
 
-  //const cuser = await user.findOne({ token: req.cookies.token }); // cuser = current user
-  //res.locals.cuser = cuser;
-  //res.locals.isloggedin = ((cuser == null) ? false : true);
+  const cuser = new user().by_token(req.cookies?.token); // cuser = current user
+  res.locals.cuser = cuser;
+  res.locals.isloggedin = (await cuser).exists;
   
   next();
 });
@@ -54,9 +56,10 @@ app.use("/dist", express.static(path.join(__dirname, "../bootstrap-5.3.3/dist"))
 app.use(front_routes);
 app.use("/api/v1", api_v1_routes);
 
-app.get("*", (req, res) => {
+app.get("*", async_handler(async (req, res) => {
   res.status(404).render("404.twig");
-});
+}),
+);
 
 
 app.listen(env.port, () => {
