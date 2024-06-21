@@ -44,9 +44,10 @@ app.use(async (req, res, next) => {
   res.locals.res = res;
   res.locals.env = env;
 
-  const cuser = new user().by_token(req.cookies?.token); // cuser = current user
+  const cuser = new user(); // cuser = current user
+  cuser.by_token(req.cookies?.token);
   res.locals.cuser = cuser;
-  res.locals.isloggedin = (await cuser).exists;
+  res.locals.isloggedin = req.cookies?.token && (await cuser).exists; // await DOES change everything >:(
   
   next();
 });

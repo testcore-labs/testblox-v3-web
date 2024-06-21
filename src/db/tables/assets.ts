@@ -22,11 +22,16 @@ type assets_table = {
   limited?: boolean
   vipcost?: number
 
-  // place-specific
+  // universe-specific
   server_size?: number
   bc_only?: boolean
   gears_allowed?: boolean
   vip_price?: number
+  desktop_enabled?: boolean
+  mobile_enabled?: boolean
+  tablet_enabled?: boolean
+  console_enabled?: boolean
+  vr_enabled?: boolean
 
   updatedat: EpochTimeStamp
   createdat: EpochTimeStamp

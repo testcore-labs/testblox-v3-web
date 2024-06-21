@@ -4132,6 +4132,10 @@ a[hx-get] {
   display: none;
 }
 
+img {
+  vertical-align: bottom;
+}
+
 .splide__arrow {
   all: unset;
   display: inline-block;

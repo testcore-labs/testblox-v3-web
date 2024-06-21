@@ -47,7 +47,7 @@ class user {
   }
 
   get exists() {
-    return typeof(this.data) != undefined;
+    return this.data != undefined;
   }
 
   // if you're returning db values, please make sure you dont xss yourself,
@@ -65,8 +65,11 @@ class user {
   get password() { // this.data? is for not giving a fuck if its null 
     return xss(this.data?.username ?? "");
   }
-  set password(set) {
-    console.log(set);
+  set password(pw: string) {
+    if(this.data) {
+      this.data.password = pw;
+      db.write();
+    }
   }
 
   get money(): number {
@@ -74,8 +77,9 @@ class user {
   }
 
   set money(amount: number) {
-    if (this.data) {
+    if(this.data) {
       this.data.currency = amount;
+      db.write();
     }
   }
 

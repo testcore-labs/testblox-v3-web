@@ -12,14 +12,24 @@ routes.get("/redirect", async_handler((req: Request, res: Response) => {
 }),);
 
 routes.get("/", async_handler((req: Request, res: Response) => {
-  res.render("index.twig", {
-    reqtype: req.query.type ?? "",
-  });
+  if(res.locals.isloggedin) {
+    res.htmx.redirect("/home");
+  } else {
+    res.render("index.twig");
+  }
 }),);
 
 routes.get("/home", async_handler(async (req: Request, res: Response) => {
   if(res.locals.isloggedin) {
     res.render("home.twig");
+  } else {
+    res.htmx.redirect("/");
+  }
+}),);
+
+routes.get("/games/", async_handler(async (req: Request, res: Response) => {
+  if(res.locals.isloggedin) {
+    res.render("games.twig");
   } else {
     res.htmx.redirect("/");
   }

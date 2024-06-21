@@ -1,9 +1,6 @@
 {% extends "html.twig" %}
 
 {% block content %}
-{% if cuser.loggedin() %}
-{{ redirect("/home") }}
-{% endif %}
 <div class="d-flex flex-row flex-wrap gap-4">
 <div class="d-flex round-4" style="flex-grow: 5; flex-basis: 25em; background: #000; backdrop-filter: blur(0.15em);">
 <div class="d-flex flex-column pos-relative border-box p-3 gap-2" style="flex: 3; justify-content: center; text-align: center; flex-basis: 25em; aspect-ratio: 16/9;">
