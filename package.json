@@ -1,5 +1,5 @@
 {
-  "name": "chat-app",
+  "name": "testblox-v3",
   "module": "src/main.ts",
   "type": "module",
   "scripts": {
