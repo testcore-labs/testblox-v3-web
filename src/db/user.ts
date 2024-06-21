@@ -135,8 +135,8 @@ class user {
       case !password || typeof(password) == "string" && password.length == 0: 
         errs += "password is empty. ";
         break;
-      case password && password.length <= 8:
-        errs += `password ${ Math.abs(password.length - 8) } character${ Math.abs(password.length - 8) !== 1 ? "s" : "" } character too short. `;
+      case password && password.length < 4:
+        errs += `password ${ Math.abs(4 - password.length) } character${ Math.abs(4 - password.length) !== 1 ? "s" : "" } too short. `;
         break;
       case password && !(new RegExp(`^[A-Za-z0-9_#-]+$`)).test(password):
         errs += "password must be ASCII. ";
