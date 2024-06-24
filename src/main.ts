@@ -10,6 +10,7 @@ import user from "./db/user";
 
 import front_routes from "./routes/front";
 import api_v1_routes from "./routes/api_v1";
+import roblox_routes from "./routes/api_roblox";
 
 console.log(`[server]: starting...`);
 const app: Express = express();
@@ -56,6 +57,7 @@ app.use("/assets", express.static(path.join(__dirname, "../public/assets")))
 app.use("/dist", express.static(path.join(__dirname, "../bootstrap-5.3.3/dist"))) 
 app.use(front_routes);
 app.use("/api/v1", api_v1_routes);
+app.use(roblox_routes);
 
 app.get("*", async_handler(async (req, res) => {
   res.status(404).render("404.twig");
