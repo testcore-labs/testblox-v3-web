@@ -25,6 +25,9 @@ type user_table = {
   membership: membership_types
   logins: object // holds ips, useragents. optional
   moderation: object // holds the time the account was banned and more
+  played: {
+    [key: number]: EpochTimeStamp
+  }
 
   settings: settings_obj 
 

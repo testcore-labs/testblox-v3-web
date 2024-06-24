@@ -30,7 +30,8 @@ type assets_table = {
   desktop_enabled?: boolean
   mobile_enabled?: boolean
   tablet_enabled?: boolean
-  console_enabled?: boolean
+  // dont think we will ever have xbox support
+  //console_enabled?: boolean
   vr_enabled?: boolean
 
   updatedat: EpochTimeStamp

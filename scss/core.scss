@@ -159,8 +159,8 @@ $space-values-noauto: (
 
     @for $r from 1 through $w {
       @for $c from 1 through $w {
-        $x: $c - ceil($w / 2);
-        $y: $r - ceil($w / 2);
+        $x: $c - ceil(calc($w / 2));
+        $y: $r - ceil(calc($w / 2));
 
         $shadow:
           #{$shadow},

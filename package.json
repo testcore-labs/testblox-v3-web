@@ -5,7 +5,7 @@
   "scripts": {
     "dev:watch": "bun nodemon \"--watch views/**/*.twig --watch views/*.twig --watch src -x \"bun run dev\" -e ts,twig\"",
     "dev": "NODE_ENV=development bun src/main.ts",
-    "build-css:watch": "bun nodemon \"--watch bootstrap/sass/**/*.scss -x \"bun run build-css\" -e scss\"",
+    "build-css:watch": "bun nodemon \"--watch scss/*.scss -x \"bun run build-css\" -e scss\"",
     "build-css": "sass scss/core.scss scss/core.pcss && postcss scss/core.pcss --use autoprefixer -o public/assets/css/core.css"
   },
   "devDependencies": {
@@ -21,6 +21,7 @@
     "@types/lowdb": "^1.0.15",
     "@types/twig": "^1.12.16",
     "@types/yaml": "^1.9.7",
+    "timeago.js": "^4.0.0-beta.3",
     "argon2": "^0.40.3",
     "autoprefixer": "^10.4.19",
     "bootstrap": "^5.3.3",

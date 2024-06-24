@@ -175,6 +175,7 @@ class user {
 
         log_logins: false // why log them if you don't need them to be
       },
+      played: {}, // i dont think anyone with a new account instantly has something played lol
 
       online: 0,
       updatedat: 0,
