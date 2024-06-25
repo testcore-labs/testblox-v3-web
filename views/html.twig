@@ -51,14 +51,15 @@
           <a class="px-4 py-1" href="/settings/"><i class="bi bi-sliders"></i> settings</a>
           <a class="px-4 py-1" href="/admin/"><i class="bi bi-wrench-adjustable-circle-fill"></i> admin</a>
           <hr nomargin>
-          <a class="px-4 py-1" hx-post="/logout?redirect=/"><i class="bi bi-box-arrow-left"></i> logout</a>
+          <a class="px-4 py-1" hx-post="/api/v1/user/logout?redirect=/"><i class="bi bi-box-arrow-left"></i> logout</a>
           </div></div>
         </div>{% else %}<div class="navbar-hover d-flex flex-row ai-center ms-auto gap-5">
           <a href="/?type=register">register</a>
           <a href="/?type=login">login</a>
           </div>{% endif %}
         </div>
-      </nav>{% endif %}
+      </nav>
+    {% endif %}
       {% if (enablenavbar ?? true) and isloggedin %}<nav class="second-navbar-hover d-flex flex-row flex-row-to-col flex-wrap gap-5 ai-center card round-0 py-2 p-3">
         <a href="/avatar/"><i class="bi bi-person-fill-gear"></i> <b>avatar</b></a>
         <a href="/messages/"><i class="bi bi-envelope"></i> <b>messages</b></a>
@@ -67,7 +68,14 @@
         <a href="/users/"><i class="bi bi-people"></i> <b>users</b></a>
         <a href="/dsc"><i class="bi bi-discord"></i> <b>discord</b></a>
         {% if cuser.is_mod() or cuser.is_admin() or cuser.is_owner() %}<a href="/admin/moderation/"><i class="bi bi-database"></i> <b class="red-bg d-inline-flex ai-center jc-center px-2 round-3" style="color: #fff;">1</b> <b>moderation</b></a>{% endif %}
-      </nav>{% endif %}
+      </nav>
+      <marquee class="stroke-2-black" style="margin-bottom: 0.3em; background-image: repeating-linear-gradient(
+    -55deg,
+    #000,
+    #000 20px,
+    #ffb101 20px,
+    #ffb101 40px
+    );">site under construction!!!</marquee>{% endif %}
       <div class="{% if paddingforcontent ?? true %}m-3{% endif %}"{% if content_styles %} style="{{ content_styles }}"{% endif %}>{% block content %}{% endblock %}</div>
       {% if enablefooter ?? true %}<footer class="d-flex flex-row flex-wrap gap-3 card border-dark-t-1 round-tx-0 shadowless py-3 px-4 mt-2 text-exextramuted">
         <div class="pos-relative">

@@ -46,9 +46,9 @@ app.use(async (req, res, next) => {
   res.locals.env = env;
 
   const cuser = new user(); // cuser = current user
-  cuser.by_token(req.cookies?.token);
+  cuser.by_token(req.cookies[env.session.name]);
   res.locals.cuser = cuser;
-  res.locals.isloggedin = req.cookies?.token && (await cuser).exists; // await DOES change everything >:(
+  res.locals.isloggedin = req.cookies[env.session.name] && (await cuser).exists; // await DOES change everything >:(
   
   next();
 });

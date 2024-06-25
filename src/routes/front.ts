@@ -19,6 +19,13 @@ routes.get("/", async_handler((req: Request, res: Response) => {
   }
 }),);
 
+routes.get("/setup", async_handler((req: Request, res: Response) => {
+  if(!res.locals.isloggedin) {
+    res.htmx.redirect("/");
+  } else {
+    res.render("setup.twig");
+  }
+}),);
 routes.get("/home", async_handler(async (req: Request, res: Response) => {
   if(res.locals.isloggedin) {
     res.render("home.twig");

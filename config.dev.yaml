@@ -4,12 +4,19 @@ domain: tstblx.win
 quotes: 
   - is $_SERVER["REMOTE_ADDR"] your IP?
   - If buying is not owning, then piracy isn't stealing
-  - happy men's mental health month
+  - custom client src ftw
+  - happy men's mental health month (if you are reading this in june)
   - NO GOONING.
   - Never goon.
   - this revival needs invite keys bozo
   - :3
   - also known as sigmablox
+  - there is now 3 versions of testblox
+  - SPREAD. BUBONIC. PLAGUE!!!
+  - ❓
+  - ❓🤫🍔🍟™🧼🧽😊💕😘👌😒😍🤣😂✌🤷‍♂️🤷‍♀️🤦‍♂️🤦‍♀️🙌👍😁👏😜💖😢🎶😎😉🤞
+  #- more secure than actual roblox #neva ill think about it
+  - privacy-focused
 
 invitekeys:
   name: tstblx
@@ -18,9 +25,19 @@ invitekeys:
 backup: false
 behind_proxy: false # CloudFlare Mode ACtivated
 
+session:
+  name: TESTBLO_SECURITY # if you change this, it will log people out
+  expires: 31536000000 # this is in ms which is a year
+
 currency:
   name: pizza
   starter: 80
+
+# what else do i call these
+rules:
+  tos: 
+    - no hacking.
+    - no putting out doxxes or doxxing.
 
 # server default 
 locale: en-us

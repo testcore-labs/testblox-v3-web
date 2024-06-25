@@ -83,6 +83,11 @@ class user {
     }
   }
 
+  // get headshot(): File {
+  //   return; // TODO: use assets to return the Image of the rendered character
+  // }
+
+
   get rand_token(): string {
     let characters = "0123456789abcdef"
     let str = ""
