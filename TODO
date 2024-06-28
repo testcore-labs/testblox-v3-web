@@ -4,3 +4,12 @@ create login {cm:2024-06-03}
 create logout {cm:2024-06-04}
 create token option for user construct {cm:2024-06-04}
 create assets table & assets class
+make universes and places work
+finish games page and make it work
+make catalog page, add items
+admin page should have a debug page for making items to test it
+add friend system
+item page
+game page
+membership page
+terms of service page
