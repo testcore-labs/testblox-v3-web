@@ -9,6 +9,13 @@ type settings_obj = {
   log_logins: boolean
 }
 
+const priveleges_obj = {
+  member: 1,
+  mod: 2,
+  admin: 3,
+  owner: 4
+}
+
 type user_table = { 
   id: number
   username: string
@@ -19,7 +26,7 @@ type user_table = {
 
   currency: number // unnamed lols
 
-  setup: boolean // shows options to set up your account once you register.
+  privelege: number
   state: number // either 0: offline, 1: online, 2: playing, or 3: developing
   gender: gender_types | string // let them decide their gender aswell why not i dont see the problem...
   membership: membership_types
@@ -38,3 +45,4 @@ type user_table = {
 
 
 export type { user_table, settings_obj };
+export { priveleges_obj };

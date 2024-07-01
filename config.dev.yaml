@@ -1,6 +1,8 @@
 app_name: testblox
 desc: oops..
 domain: tstblx.win
+dsc_invite: 5H6u2zR8qn
+debug: false
 quotes: 
   - is $_SERVER["REMOTE_ADDR"] your IP?
   - If buying is not owning, then piracy isn't stealing

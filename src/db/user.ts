@@ -1,7 +1,7 @@
 import db from "../utils/db";
 import xss from "xss";
 import argon2 from "argon2";
-import { type user_table, type settings_obj } from "./tables/users";
+import { type user_table, type settings_obj, priveleges_obj } from "./tables/users";
 import { type message_type } from "../utils/message";
 import { membership_types } from "../types/membership";
 import { gender_types } from "../types/gender";
@@ -83,6 +83,18 @@ class user {
     }
   }
 
+  get is_mod(): boolean {
+    return this.data?.privelege === priveleges_obj.mod;
+  }
+
+  get is_admin(): boolean {
+    return this.data?.privelege === priveleges_obj.admin;
+  }
+
+  get is_owner(): boolean {
+    return this.data?.privelege === priveleges_obj.owner;
+  }
+
   // get headshot(): File {
   //   return; // TODO: use assets to return the Image of the rendered character
   // }
@@ -125,6 +137,7 @@ class user {
         errs += "username 1 character too short. ";
         break;
       case username && !(new RegExp(`^[A-Za-z0-9_]+$`)).test(username):
+        //console.log(username);
         errs += "username must be ASCII. ";
         break;
       case username && username.length > 20:
@@ -167,7 +180,6 @@ class user {
 
       currency: env.currency.starter,
 
-      setup: false,
       state: 0,
       gender: gender_types.NONE,
       membership: membership_types.NONE,
@@ -184,7 +196,8 @@ class user {
 
       online: 0,
       updatedat: 0,
-      createdat: 0
+      createdat: 0,
+      privelege: 0
     }
 
     username = username?.trim();
@@ -242,7 +255,7 @@ class user {
 
     password = password?.trim();
     password = password?.toString();
-    const err_pw = this.username_validate(password);
+    const err_pw = this.password_validate(password);
     if(err_pw && !err_pw.success) {
       return err_pw;
     }

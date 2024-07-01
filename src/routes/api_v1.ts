@@ -30,7 +30,7 @@ routes.post("/user/create", creation_and_login_limiter, async_handler(async (req
         res.cookie(env.session.name, resp.info["token"].toString(), { 
           expires: new Date(Date.now() + Number(env.session.expires)), 
           secure: (process.env.NODE_ENV == "production") ? true : false, 
-          sameSite: (process.env.NODE_ENV == "production") ? 'strict' : 'none' 
+          sameSite: (process.env.NODE_ENV == "production") ? 'strict' : 'lax' 
         });
       }
     }
@@ -62,7 +62,7 @@ routes.post("/user/login", creation_and_login_limiter, async_handler(async (req:
         res.cookie(env.session.name, resp.info["token"].toString(), { 
           expires: new Date(Date.now() + Number(env.session.expires)), 
           secure: (process.env.NODE_ENV == "production") ? true : false, 
-          sameSite: (process.env.NODE_ENV == "production") ? 'strict' : 'none' 
+          sameSite: (process.env.NODE_ENV == "production") ? 'strict' : 'lax' 
         });
       }
     }
@@ -85,12 +85,8 @@ routes.post("/user/login", creation_and_login_limiter, async_handler(async (req:
 
 routes.post("/user/logout", async_handler(async (req: Request, res: Response) => {
   try {
-    if(req.cookies.token !== undefined) {
-    res.clearCookie(env.session.name, { 
-      expires: new Date(Date.now() - (3600 * 24 * 365)), 
-      secure: (process.env.NODE_ENV == "production") ? true : false, 
-      sameSite: (process.env.NODE_ENV == "production") ? 'strict' : 'none' 
-    });
+    if(req.cookies[env.session.name] !== undefined) {
+    res.clearCookie(env.session.name);
     if(req.query.redirect) {
       res.redirect("/redirect?url="+encodeURI(req.query?.redirect?.toString()));
     } else {
@@ -107,6 +103,10 @@ routes.post("/user/logout", async_handler(async (req: Request, res: Response) =>
     res.json({success: false, message: "error occured."});
   }
 }),);
+
+routes.get("/searchbar", async_handler(async (req, res) => {
+  res.render("components/search_results_navbar.twig", { query: req.query.qnavbar !== "" ? req.query.qnavbar : "(hey search something)" })
+}));
 
 routes.get("*", async_handler(async (req, res) => {
   res.status(404);

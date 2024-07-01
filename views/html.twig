@@ -13,6 +13,7 @@
     <meta name="theme-color" content="#650fde">
     <script src="/assets/js/core.js"></script>
     <script src="/assets/js/htmx.min.js"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
     <title>{{ title ?? pagename }} | {{ env['app_name'] }}</title>
   </head>
   <body class="p-4" style="box-sizing: border-box;">
@@ -27,7 +28,7 @@
 
         <div class="pos-relative flex-autotofill order-nonetoend" style="flex-basis: 20em; flex-shrink: 1;">
           <div class="d-flex flex-row pillify shadow-1 round-4" style="height: 2.4em;">
-            <input type="search" class="shadowless flex-1" style="box-shadow: unset; width: 100%;" id="navbar-search" placeholder="search.." name="qnavbar" hx-get="/api/searchbar" hx-trigger="keyup delay:250ms changed" hx-target="#navbar-search-results" hx-on:htmx:config-request="document.getElementById('navbar-search-results').classList.remove('d-none');">
+            <input type="search" class="shadowless flex-1" style="box-shadow: unset; width: 100%;" id="navbar-search" placeholder="search.." name="qnavbar" hx-get="/api/v1/searchbar" hx-trigger="keyup delay:250ms changed" hx-target="#navbar-search-results" hx-on:htmx:config-request="document.getElementById('navbar-search-results').classList.remove('d-none');">
             <button type="submit" class="shadowless border-light-1 px-4" style="background: #000;"><h5 class="bi bi-search text-muted"></h5></button>
           </div>
           <div id="navbar-search-results" class="d-flex flex-column gap-4 pos-absolute card black-bg mt-1 round-4 d-none" style="top: 100%; width: 100%; z-index: 5;"></div>
@@ -49,7 +50,7 @@
           <a class="px-4 py-1" href="/profile"><i class="bi bi-person"></i> profile</a>
           <a class="px-4 py-1" href="/inventory"><i class="bi bi-person"></i> inventory</a>
           <a class="px-4 py-1" href="/settings/"><i class="bi bi-sliders"></i> settings</a>
-          <a class="px-4 py-1" href="/admin/"><i class="bi bi-wrench-adjustable-circle-fill"></i> admin</a>
+          {% if cuser.is_mod or cuser.is_admin or cuser.is_owner %}<a class="px-4 py-1" href="/admin/"><i class="bi bi-wrench-adjustable-circle-fill"></i> admin</a>{% endif %}
           <hr nomargin>
           <a class="px-4 py-1" hx-post="/api/v1/user/logout?redirect=/"><i class="bi bi-box-arrow-left"></i> logout</a>
           </div></div>
@@ -60,22 +61,22 @@
         </div>
       </nav>
     {% endif %}
-      {% if (enablenavbar ?? true) and isloggedin %}<nav class="second-navbar-hover d-flex flex-row flex-row-to-col flex-wrap gap-5 ai-center card round-0 py-2 p-3">
+      {% if (enablenavbar ?? true) and isloggedin %}<nav class="second-navbar-hover d-flex flex-row flex-row-to-col flex-wrap gap-6 ai-center card round-0" style="padding: 0.45em 0.35em;">
         <a href="/avatar/"><i class="bi bi-person-fill-gear"></i> <b>avatar</b></a>
         <a href="/messages/"><i class="bi bi-envelope"></i> <b>messages</b></a>
         <a href="/trade/"><i class="bi bi-arrow-left-right"></i> <b>trade</b></a>
         <a href="/groups/"><i class="bi bi-collection"></i> <b>groups</b></a>
         <a href="/users/"><i class="bi bi-people"></i> <b>users</b></a>
         <a href="/dsc"><i class="bi bi-discord"></i> <b>discord</b></a>
-        {% if cuser.is_mod() or cuser.is_admin() or cuser.is_owner() %}<a href="/admin/moderation/"><i class="bi bi-database"></i> <b class="red-bg d-inline-flex ai-center jc-center px-2 round-3" style="color: #fff;">1</b> <b>moderation</b></a>{% endif %}
+        {% if cuser.is_mod or cuser.is_admin or cuser.is_owner %}<a href="/admin/moderation/"><i class="bi bi-database"></i> <b>moderation <b class="red-bg d-inline-flex ai-center jc-center round-3" style="color: #fff; padding: 0px 4px;">0</b></b></a>{% endif %}
       </nav>
-      <marquee class="stroke-2-black" style="margin-bottom: 0.3em; background-image: repeating-linear-gradient(
-    -55deg,
+      <center class="stroke-3-black py-1" style="vertical-align: center; background-image: repeating-linear-gradient(
+    -45deg,
     #000,
     #000 20px,
     #ffb101 20px,
     #ffb101 40px
-    );">site under construction!!!</marquee>{% endif %}
+    );">site under construction!!!</center>{% endif %}
       <div class="{% if paddingforcontent ?? true %}m-3{% endif %}"{% if content_styles %} style="{{ content_styles }}"{% endif %}>{% block content %}{% endblock %}</div>
       {% if enablefooter ?? true %}<footer class="d-flex flex-row flex-wrap gap-3 card border-dark-t-1 round-tx-0 shadowless py-3 px-4 mt-2 text-exextramuted">
         <div class="pos-relative">
@@ -94,6 +95,10 @@
           <div class="d-flex flex-row" style="font-size: 0.9em; line-height: 0.5em;"><a href="/tos"><small class="text-extramuted">>terms of service</small></a></div>
         </div>
       </footer>{% endif %}
+    </div>
+
+    <div class="d-none pos-absolute round-4 p-3" style="top: 50; left: 50; transform: translate(-50%, -50%); background: rgba(0,0,0, 0.33); backdrop-filter: blur(1em);" id="cmd_window">
+    BOO
     </div>
   </body>
 </html>

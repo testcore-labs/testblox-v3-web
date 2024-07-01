@@ -1,5 +1,3 @@
-import { type privacy_types } from "../../types/privacy";
-
 // do not know if this is how it should be but its scaffolding
 type universes_table = { 
   id: number

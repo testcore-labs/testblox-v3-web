@@ -76,7 +76,9 @@ small.s {
   font-size: 0.9em;
 }
 
-
+b {
+  font-weight: 600 !important;
+}
 
 [greentext] {
   color: #00cf00;
@@ -279,7 +281,9 @@ h5,
 h6 {
   margin: 0;
   padding: 0;
-  font-weight: 600;
+  &:not([nobold]) {
+    font-weight: 600;
+  }
   color: #ffffff;
 }
 

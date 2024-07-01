@@ -240,6 +240,23 @@ function dropdownify(calledfrom, forelem) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+
+let cmd_ltrs = "";
+let cmd_match = "--cmd";
+let cmd_window = document.querySelector("#cmd_window");
+document.addEventListener('keyup', (event) => {
+cmd_ltrs += event.key;
+//console.log(cmd_ltrs);
+if(cmd_ltrs.length > cmd_match.length * 3) { // 3 tries
+  cmd_ltrs = "";
+}
+if(cmd_ltrs.match(cmd_match)) {
+  //console.log('dd');
+  cmd_ltrs = "";
+  cmd_window.classList.toggle("d-none");
+}
+});
+
 const searchinput = document.getElementById("navbar-search");
 const searchresults = document.getElementById("navbar-search-results");
 
@@ -318,4 +335,3 @@ var dragger = function() {
     },
   };
 }();
-

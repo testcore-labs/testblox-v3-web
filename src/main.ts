@@ -1,14 +1,16 @@
 import express, { type Express, type Request, type Response } from "express";
 import env from "./utils/env";
 import twig from "./utils/twig";
-import root_path from "./utils/root_path";
-import * as path from "path";import fs from "fs/promises";
+import * as path from "path";
 import async_handler from 'express-async-handler';
+import root_path from './utils/root_path';
 import cookie_parser from "cookie-parser";
-import { queryParser as qp} from "express-query-parser";
+import { queryParser as query_parser} from "express-query-parser";
+//import multer from "multer";
 import user from "./db/user";
 
 import front_routes from "./routes/front";
+import front_loggedin_routes from "./routes/front_loggedin";
 import api_v1_routes from "./routes/api_v1";
 import roblox_routes from "./routes/api_roblox";
 
@@ -22,14 +24,17 @@ app.set("twig options", {
   strict_variables: false,
 });
 
-app.use( // query parsing
-  qp({
+app.use(
+  query_parser({
     parseNull: true,
     parseUndefined: true,
     parseBoolean: true,
     parseNumber: true
   })
 )
+
+// PLEASE upload the file somewhere else from tmp, since its TEMPORARY, and we should clean the folder each run aswell
+//app.use(multer({dest:root_path+'/files/tmp/'}).smthing);
 
 app.set('trust proxy', env.behind_proxy)
 app.use(express.urlencoded({
@@ -49,12 +54,13 @@ app.use(async (req, res, next) => {
   cuser.by_token(req.cookies[env.session.name]);
   res.locals.cuser = cuser;
   res.locals.isloggedin = req.cookies[env.session.name] && (await cuser).exists; // await DOES change everything >:(
-  
+
   next();
 });
 
 app.use("/assets", express.static(path.join(__dirname, "../public/assets"))) 
-app.use("/dist", express.static(path.join(__dirname, "../bootstrap-5.3.3/dist"))) 
+app.use("/dist", express.static(path.join(__dirname, "../bootstrap-5.3.3/dist")))
+app.use(front_loggedin_routes); 
 app.use(front_routes);
 app.use("/api/v1", api_v1_routes);
 app.use(roblox_routes);

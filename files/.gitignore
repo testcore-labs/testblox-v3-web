@@ -1,3 +1,8 @@
 *
+!app
+!tmp
+tmp/**
+!app/*
+app/*/**
 !.gitkeep
 !.gitignore
