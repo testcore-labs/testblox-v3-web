@@ -1,6 +1,5 @@
 import low from 'lowdb/node';
-import { JSONFilePreset } from 'lowdb/node';
-import FileSync from 'lowdb/adapters/FileSync';
+import { JSONFileMinifyPreset } from './lowdb/preset';
 import root_path from "./root_path";
 import path from "path";
 import fs from "fs";
@@ -8,30 +7,29 @@ import env from "../utils/env";
 
 import { type user_table } from "../db/tables/users";
 import { type assets_table } from "../db/tables/assets";
+import { type universes_table } from "../db/tables/universes";
 import { sleep } from 'bun';
 
 // yes
 type db_struct = {
   users: user_table[]
   assets: assets_table[]
+  universes: universes_table[]
 }
 const db_tables: db_struct = { 
   users: [],
-  assets: [] 
+  assets: [],
+  universes: [] 
 };
 
 const path_to_json_db = path.join(root_path, "database", "db.json");
 console.log("[db]: loading...");
-const db = await JSONFilePreset(path.join(root_path, "database", "db.json"), db_tables);
-fs.readFile(path_to_json_db, "utf8", async function(err, data) {
-  if(err) {
-    console.log("[db]: writing empty file");
-    //console.log(err);
-    await db.write();
-  }
-});
+const db = await JSONFileMinifyPreset(path.join(root_path, "database", "db.json"), db_tables);
+
+await db.write();
 console.log("[db]: loaded!");
 
+if(env.backup) {
 (async () => {
   while (env.backup) { // wait an hour to backup
     await sleep((3600 / 2) * 100);
@@ -50,5 +48,6 @@ console.log("[db]: loaded!");
     })
   }
 })()
+}
 
 export default db;

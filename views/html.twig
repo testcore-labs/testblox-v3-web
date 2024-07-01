@@ -50,7 +50,7 @@
           <a class="px-4 py-1" href="/profile"><i class="bi bi-person"></i> profile</a>
           <a class="px-4 py-1" href="/inventory"><i class="bi bi-person"></i> inventory</a>
           <a class="px-4 py-1" href="/settings/"><i class="bi bi-sliders"></i> settings</a>
-          {% if cuser.is_mod or cuser.is_admin or cuser.is_owner %}<a class="px-4 py-1" href="/admin/"><i class="bi bi-wrench-adjustable-circle-fill"></i> admin</a>{% endif %}
+          {% if cuser.is_mod or cuser.is_admin or cuser.is_owner %}<a class="px-4 py-1" href="{{ env.admin_panel.path }}/"><i class="bi bi-wrench-adjustable-circle-fill"></i> admin</a>{% endif %}
           <hr nomargin>
           <a class="px-4 py-1" hx-post="/api/v1/user/logout?redirect=/"><i class="bi bi-box-arrow-left"></i> logout</a>
           </div></div>
@@ -68,7 +68,7 @@
         <a href="/groups/"><i class="bi bi-collection"></i> <b>groups</b></a>
         <a href="/users/"><i class="bi bi-people"></i> <b>users</b></a>
         <a href="/dsc"><i class="bi bi-discord"></i> <b>discord</b></a>
-        {% if cuser.is_mod or cuser.is_admin or cuser.is_owner %}<a href="/admin/moderation/"><i class="bi bi-database"></i> <b>moderation <b class="red-bg d-inline-flex ai-center jc-center round-3" style="color: #fff; padding: 0px 4px;">0</b></b></a>{% endif %}
+        {% if cuser.is_mod or cuser.is_admin or cuser.is_owner %}<a href="{{ env.admin_panel.path }}/moderation/"><i class="bi bi-database"></i> <b>moderation <b class="red-bg d-inline-flex ai-center jc-center round-3" style="color: #fff; padding: 0px 4px;">0</b></b></a>{% endif %}
       </nav>
       <center class="stroke-3-black py-1" style="vertical-align: center; background-image: repeating-linear-gradient(
     -45deg,

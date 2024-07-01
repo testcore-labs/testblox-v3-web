@@ -4,7 +4,7 @@ import argon2 from "argon2";
 import { type message_type } from "../utils/message";
 import type { universes_table } from "./tables/universes";
 
-class user {
+class universe {
   id: number;
   data: universes_table | undefined;
   table: any;
@@ -12,7 +12,7 @@ class user {
 
   constructor() {
     this.id = 0;
-    this.table = db.data.users;
+    this.table = db.data.universes;
     this.empty_table = (this.table.at(0) === undefined);
   }
 
@@ -34,6 +34,10 @@ class user {
     return this;
   }
 
+  async get_games(limit: number = 16, query: string) {
+    //return result;
+  }
+
   get exists() {
     return this.data != undefined;
   }
@@ -49,4 +53,4 @@ class user {
   }
 }
 
-export default user;
+export default universe;

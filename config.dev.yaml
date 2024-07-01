@@ -27,6 +27,13 @@ invitekeys:
 backup: false
 behind_proxy: false # CloudFlare Mode ACtivated
 
+admin_panel:
+  path: "/admin" # change for whatever reason idk
+  debug:
+    troll: true
+    #only if troll is true you can make it redirect to whatever page
+    trolL_url: //pornhub.com
+
 session:
   name: TESTBLO_SECURITY # if you change this, it will log people out
   expires: 31536000000 # this is in ms which is a year

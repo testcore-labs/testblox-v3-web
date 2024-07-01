@@ -1,7 +1,7 @@
 import db from "../utils/db";
 import xss from "xss";
 import argon2 from "argon2";
-import { type assets_table } from "./tables/assets";
+import { type assets_table, type thumbnails_type } from "./tables/assets";
 import { type message_type } from "../utils/message";
 import { asset_types } from "../types/assets";
 import { privacy_types } from "../types/privacy";
@@ -47,13 +47,27 @@ class asset {
       id: 0,
       title: "",
       description: "",
-      type: asset_types.Decal,
       version: 1,
       privacy: privacy_types.PRIVATE,
       creator: userid, // this should be from trusted input. PLEASE be else im gonna rip your head off >:(, security comes FIRST.
       moderation: moderation_status_types.REVIEWING,
       updatedat: 0,
-      createdat: 0
+      createdat: 0,
+      type: asset_types.Image,
+      icon: 0,
+      data: {
+        server_size: 0,
+        bc_only: false,
+        gears_allowed: false,
+        vip_price: 0,
+        desktop_enabled: false,
+        mobile_enabled: false,
+        tablet_enabled: false,
+        thumbnails: {
+          0: "default"
+        },
+        vr_enabled: false
+      }
     }
 
     // [!]: so the problem here is that i have to get it from assetversion which is not added yet.

@@ -197,7 +197,7 @@ class user {
       online: 0,
       updatedat: 0,
       createdat: 0,
-      privelege: 0
+      privelege: 1
     }
 
     username = username?.trim();

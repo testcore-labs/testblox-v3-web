@@ -1,0 +1,21 @@
+<a href="/game/{{ game.id }}/{{ game.title }}" class="mb-3 d-flex flex-column game-card" style="padding: 0; margin-top: 0.3em;">
+  <div class="img-fluid pos-relative">
+    <img src="/assets/img/crossroads.png" class="round-4 img-fluid">
+    <div class="more-info d-flex flex-column gap-3 pos-absolute right-0 bottom-0 border-box w-100 h-100">
+      <div class="d-flex flex-column gap-3 p-2 pb-5 break-all round-4" style="background: linear-gradient(180deg, rgba(0,0,0, 0.975) 0%, rgba(0,0,0, 0.35) 100%); height: 100%;">
+        <div class="d-flex flex-row gap-3 ai-center">
+          <img width=24 height=24 class="round-2" src="/assets/img/placeholder_avatar-closeup.png">
+          <b class="text-truncate">ownedby</b>
+        </div>
+        <span class="breakword">{{ (game.description ?? "<i class='breakword'>no description set.</i>")|truncate(96, "…") }}</span>
+      </div>
+      <button class="btn-play d-flex ai-center jc-center round-3 pos-absolute as-baseline" style="right: 0.25em; bottom: 0.25em; padding: 0.1em 0.1em 0.025em 0.125em; font-size: 1.55em;"><i class="bi bi-play-fill"></i></button>
+    </div> 
+  </div>
+  <div class="d-flex flex-column border-box m-1 my-0"><h4 class="text-muted breakword">{{ game.title|truncate(24, "…") }}</h4>
+    <div class="d-flex flex-row gap-6">
+      <span class="d-flex flex-row gap-3 ai-center text-extramuted mt-1"><i class="bi bi-star-half"></i> <b class="breakword">1%</b></span>
+      <span class="d-flex flex-row gap-3 ai-center text-extramuted mt-1"><i class="bi bi-people"></i> <b class="breakword">1</b></span>
+    </div>
+  </div>
+</a>{# in this case, default meaning default **style** #}

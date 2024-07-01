@@ -19,7 +19,11 @@ function notloggedin_handler(req: Request, res: Response, next: NextFunction) {
 
 function debug_handler(req: Request, res: Response, next: NextFunction) {
   if(!env.debug) {
-    res.htmx.redirect("//pornhub.com")
+    if(env.admin_panel.debug.troll) {
+      res.htmx.redirect(env.admin_panel.debug.troll_url)
+    } else {
+      res.status(404).render("404.twig");
+    }
   } else {
     next();
   }
@@ -27,7 +31,7 @@ function debug_handler(req: Request, res: Response, next: NextFunction) {
 
 function admin_handler(req: Request, res: Response, next: NextFunction) {
   if(!(res.locals.cuser.is_admin || res.locals.cuser.is_owner)) {
-    res.htmx.redirect("/");
+    res.status(404).render("404.twig");
   } else {
     next();
   }
@@ -35,7 +39,7 @@ function admin_handler(req: Request, res: Response, next: NextFunction) {
 
 function mod_handler(req: Request, res: Response, next: NextFunction) {
   if(!(res.locals.cuser.is_mod || res.locals.cuser.is_admin || res.locals.cuser.is_owner)) {
-    res.htmx.redirect("/");
+    res.status(404).render("404.twig");
   } else {
     next();
   }
@@ -46,7 +50,8 @@ routes.get("/home", notloggedin_handler, async_handler(async (req: Request, res:
 }));
 
 routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  res.render("games.twig");
+  const games = { hi: "hello" };
+  res.render("games.twig", { games: games });
 }));
 
 routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
@@ -54,7 +59,7 @@ routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Req
 }));
 
 // admin only routes
-const admin_route_path = "/admin"
+const admin_route_path = env.admin_panel.path;
 
 routes.get(`${admin_route_path}/`, notloggedin_handler, admin_handler, async_handler(async (req: Request, res: Response) => {
   const cpus = os.cpus();

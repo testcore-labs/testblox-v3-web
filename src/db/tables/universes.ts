@@ -1,8 +1,7 @@
-// do not know if this is how it should be but its scaffolding
+// universes is just like a container of places lmao
 type universes_table = { 
   id: number
-  title: string
-  placeid: number
+  placeid: number // main place id
   places?: {
     [key: number]: any;
   }
