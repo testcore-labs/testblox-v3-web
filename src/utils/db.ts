@@ -1,5 +1,5 @@
 import low from 'lowdb/node';
-import { JSONFileMinifyPreset } from './lowdb/preset';
+import { qstorepreset } from './lowdb/preset';
 import root_path from "./root_path";
 import path from "path";
 import fs from "fs";
@@ -23,10 +23,10 @@ const db_tables: db_struct = {
   universes: [] 
 };
 
-const db_file = "db.json";
+const db_file = "db.qstore";
 const path_to_db = path.join(root_path, "database", db_file);
 logs.database_log("loading ");
-const db = await JSONFileMinifyPreset(path_to_db, db_tables);
+const db = await qstorepreset(path_to_db, db_tables);
 
 await db.write();
 logs.database_log("loaded!");

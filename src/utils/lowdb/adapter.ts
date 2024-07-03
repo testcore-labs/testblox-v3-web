@@ -1,11 +1,24 @@
-import { type PathLike } from 'fs'
-import { DataFile } from 'lowdb/node'
+import { type PathLike, readFileSync, writeFileSync, renameSync } from 'fs';
+import { DataFile } from './data'
+import cbor from 'cbor'
 
-export class JSONFileMinify<T> extends DataFile<T> {
+// @ts-ignore
+export class qstore<T> extends DataFile<T> {
   constructor(filename: PathLike) {
     super(filename, {
-      parse: JSON.parse,
-      stringify: (data: T) => JSON.stringify(data, null, 0),
+      parse: (buf: Buffer) => {
+        if(buf == null) {
+          return {};
+        }
+        const strobj = cbor.decode(buf);
+        console.log(strobj);
+        return strobj;
+      },
+      stringify: (data: T) => { 
+        let str = cbor.encode(data);
+        console.log(str);
+        return str;
+      }
     })
   }
 }

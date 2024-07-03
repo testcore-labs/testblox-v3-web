@@ -27,6 +27,7 @@
     "autoprefixer": "^10.4.19",
     "body-parser": "^1.20.2",
     "bootstrap": "^5.3.3",
+    "cbor": "^9.0.2",
     "cloudflare-express": "^0.0.1",
     "colors": "^1.4.0",
     "cookie-parser": "^1.4.6",

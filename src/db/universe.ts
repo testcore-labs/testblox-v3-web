@@ -51,6 +51,28 @@ class universe {
       db.write();
     }
   }
+
+  async create(creator: number) {
+    let post: universes_table = {
+      id: 0,
+      placeid: 0,
+      creator: Number(creator),
+      updatedat: 0,
+      createdat: 0
+    }
+
+    // add place making here
+
+    post.createdat = Date.now();
+    post.updatedat = Date.now();
+
+    post.id = this.table.length + 1;
+    this.table.push(post);
+
+    await db.write();
+    const msg: message_type =  {success: true, message: "created place ``.", info: { universe_id: post.id, place_id: post.placeid }}; 
+    return msg;
+  }
 }
 
 export default universe;
