@@ -1,19 +1,34 @@
 {% extends "html.twig" %}
 
+{% set admin_pages = [
+  { 
+    "route": "./asset-creation",
+    "icon": "box-seam",
+    "name": "asset creation",
+    "desc": "create shirts, pants, hats, faces and so on"
+  },
+  { 
+    "route": "./asset-moderation",
+    "icon": "boxes",
+    "name": "asset moderation",
+    "desc": "moderate assets made by users"
+  },
+  { 
+    "route": "./invite-keys",
+    "icon": "key",
+    "name": "invite keys",
+    "desc": "check, make and delete invite keys"
+  }
+] %}
+{% set admin_pages = admin_pages|sort %}
+
 {% block content %}
 <div class="d-flex flex-row ai-center gap-3 mb-3"><h3 class="card card-primary px-3 py-2 flex-1">admin panel</h3> <a href="./debug" class="btn-primary d-flex flex-row gap-4 ai-center ms-auto"><h3 class="bi bi-wrench"></h3><b>DEBUG</b></a></div>
 <div class="d-grid gap-3" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
-  <a class="card d-flex flex-column gap-2 card-primary px-4 pb-4" href="./asset-creation">
-    <div class="d-flex flex-row ai-center gap-3"><h3 class="bi bi-box-seam"></h3><h3 nobold>asset creation</h3></div>
-    <div class="text-muted">create shirts, pants, hats, faces and so on</div>
-  </a>
-  <a class="card d-flex flex-column gap-2 card-primary px-4 pb-4" href="./asset-moderation">
-    <div class="d-flex flex-row ai-center gap-3"><h3 class="bi bi-boxes"></h3><h3 nobold>asset moderation</h3></div>
-    <div class="text-muted">moderate assets made by users</div>
-  </a>
-  <a class="card d-flex flex-column gap-2 card-primary px-4 pb-4" href="./invite-keys">
-    <div class="d-flex flex-row ai-center gap-3"><h3 class="bi bi-key"></h3><h3 nobold>invite keys</h3></div>
-    <div class="text-muted">check, make and delete invite keys</div>
-  </a>
+  {% for a in admin_pages %}
+  <a class="btn-primary card d-flex flex-column gap-2 card-primary p-4" href="{{ a.route }}">
+    <div class="d-flex flex-row ai-center gap-3"><h3 class="bi bi-{{ a.icon }}"></h3><h3 nobold>{{ a.name }}</h3></div>
+    <div class="text-muted">{{ a.desc }}</div>
+  </a>{% endfor %}
 </div>
 {% endblock %}
