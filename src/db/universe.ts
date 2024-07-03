@@ -3,6 +3,10 @@ import xss from "xss";
 import argon2 from "argon2";
 import { type message_type } from "../utils/message";
 import type { universes_table } from "./tables/universes";
+import type { assets_table, place_type } from "./tables/assets";
+import { moderation_status_types } from "../types/moderation";
+import { privacy_types } from "../types/privacy";
+import { asset_types } from "../types/assets";
 
 class universe {
   id: number;
@@ -53,7 +57,7 @@ class universe {
   }
 
   async create(creator: number) {
-    let post: universes_table = {
+    let new_universe: universes_table = {
       id: 0,
       placeid: 0,
       creator: Number(creator),
@@ -62,15 +66,42 @@ class universe {
     }
 
     // add place making here
+    let new_place: assets_table = {
+      id: 0,
+      title: "",
+      description: "",
+      type: asset_types.Place,
+      version: 0,
+      icon: 0,
+      privacy: privacy_types.PRIVATE,
+      creator: 0,
+      moderation: moderation_status_types.REVIEWING,
+      data: {
+        cost: 0,
+        limited: false,
+        vipcost: 0,
+        bc_only: false,
+        tbc_only: false,
+        obc_only: false
+      },
+      updatedat: 0,
+      createdat: 0
+    }
 
-    post.createdat = Date.now();
-    post.updatedat = Date.now();
+    new_place.createdat = Date.now();
+    new_place.updatedat = Date.now();
 
-    post.id = this.table.length + 1;
-    this.table.push(post);
+    new_place.id = this.table.length + 1;
+    this.table.push(new_place);
+    
+    new_universe.createdat = Date.now();
+    new_universe.updatedat = Date.now();
+
+    new_universe.id = this.table.length + 1;
+    this.table.push(new_universe);
 
     await db.write();
-    const msg: message_type =  {success: true, message: "created place ``.", info: { universe_id: post.id, place_id: post.placeid }}; 
+    const msg: message_type =  {success: true, message: "created place ``.", info: { universe_id: new_universe.id, place_id: new_universe.placeid }}; 
     return msg;
   }
 }

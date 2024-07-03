@@ -3,6 +3,7 @@ const routes = express.Router();
 import async_handler from 'express-async-handler';
 import htmx_middleware from "../utils/htmx";
 import { format_bytes } from "../utils/format";
+import filter from "../utils/filter";
 import env from "../utils/env";
 
 import os from "os";
@@ -44,6 +45,11 @@ function mod_handler(req: Request, res: Response, next: NextFunction) {
     next();
   }
 }
+
+
+routes.get("/filter/:this", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  res.send(filter.text_all(req.params.this))
+}));
 
 routes.get("/home", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   res.render("home.twig");

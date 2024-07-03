@@ -5,16 +5,16 @@ import { type privacy_types } from "../../types/privacy";
 // what i hate about roblox is its assets, please fucking make it less confusing >:((((
 
 type thumbnails_type = {  // get from Image
-  0: string
-  1?: string
-  2?: string
-  3?: string
-  4?: string
-  5?: string
-  6?: string
-  7?: string
-  8?: string
-  9?: string
+  0: number
+  1?: number
+  2?: number
+  3?: number
+  4?: number
+  5?: number
+  6?: number
+  7?: number
+  8?: number
+  9?: number
 } // max 10 thumbnails (as roblox implemented it as that)
 
 type place_type = {
@@ -28,7 +28,6 @@ type place_type = {
   thumbnails: thumbnails_type
   // dont think we will ever have xbox support
   //console_enabled: boolean
-  vr_enabled: boolean
 }
 type catalog_type = {
   cost: number
@@ -44,7 +43,6 @@ type assets_table = {
   title: string
   description: string
   type: asset_types
-  version: number // use assetversion
   icon: number // get from Image 
 
   privacy: privacy_types

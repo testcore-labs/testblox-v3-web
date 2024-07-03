@@ -42,21 +42,20 @@ class asset {
     return typeof(this.data) != undefined;
   }
 
-  async create_decal(title: any, description: any, userid: number): Promise<message_type> {
+  async create_place(title: any, description: any, userid: number): Promise<message_type> {
     let post: assets_table = {
       id: 0,
       title: "",
       description: "",
-      version: 1,
       privacy: privacy_types.PRIVATE,
-      creator: userid, // this should be from trusted input. PLEASE be else im gonna rip your head off >:(, security comes FIRST.
+      creator: Number(userid), // this should be from trusted input. PLEASE be else im gonna rip your head off >:(, security comes FIRST.
       moderation: moderation_status_types.REVIEWING,
       updatedat: 0,
       createdat: 0,
-      type: asset_types.Image,
+      type: asset_types.Place,
       icon: 0,
       data: {
-        server_size: 0,
+        server_size: 1, // max 100
         bc_only: false,
         gears_allowed: false,
         vip_price: 0,
@@ -64,11 +63,13 @@ class asset {
         mobile_enabled: false,
         tablet_enabled: false,
         thumbnails: {
-          0: "default"
-        },
-        vr_enabled: false
+          0: 123456789101112 // cozol fav ages
+        }
       }
     }
+
+    post.title = title;
+    post.description = description;
 
     // [!]: so the problem here is that i have to get it from assetversion which is not added yet.
     // if(this.table.find((p: assets_table) => p.hash === hash)) {
