@@ -32,7 +32,7 @@ admin_panel:
   debug:
     troll: true
     #only if troll is true you can make it redirect to whatever page
-    trolL_url: //pornhub.com
+    troll_url: //pornhub.com
 
 session:
   name: TESTBLO_SECURITY # if you change this, it will log people out
