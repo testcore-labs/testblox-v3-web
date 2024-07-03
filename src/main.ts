@@ -5,6 +5,7 @@ import * as path from "path";
 import async_handler from 'express-async-handler';
 import root_path from './utils/root_path';
 import cookie_parser from "cookie-parser";
+import logs from "./utils/log";
 import { queryParser as query_parser} from "express-query-parser";
 //import multer from "multer";
 import user from "./db/user";
@@ -14,7 +15,7 @@ import front_loggedin_routes from "./routes/front_loggedin";
 import api_v1_routes from "./routes/api_v1";
 import roblox_routes from "./routes/api_roblox";
 
-console.log(`[server]: starting...`);
+logs.server_log(`starting...`);
 const app: Express = express();
 
 app.set("views", "views");
@@ -72,5 +73,5 @@ app.get("*", async_handler(async (req, res) => {
 
 
 app.listen(env.port, () => {
-  console.log(`[server]: server is running at :${env.port}`);
+  logs.server_log(`server is running at :${env.port}`);
 });

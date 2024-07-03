@@ -4,6 +4,7 @@ import root_path from "./root_path";
 import path from "path";
 import fs from "fs";
 import env from "../utils/env";
+import logs from "../utils/log";
 
 import { type user_table } from "../db/tables/users";
 import { type assets_table } from "../db/tables/assets";
@@ -22,12 +23,13 @@ const db_tables: db_struct = {
   universes: [] 
 };
 
-const path_to_json_db = path.join(root_path, "database", "db.json");
-console.log("[db]: loading...");
-const db = await JSONFileMinifyPreset(path.join(root_path, "database", "db.json"), db_tables);
+const db_file = "db.json";
+const path_to_db = path.join(root_path, "database", db_file);
+logs.database_log("loading ");
+const db = await JSONFileMinifyPreset(path_to_db, db_tables);
 
 await db.write();
-console.log("[db]: loaded!");
+logs.database_log("loaded!");
 
 if(env.backup) {
 (async () => {
