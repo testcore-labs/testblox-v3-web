@@ -11,12 +11,10 @@ export class qstore<T> extends DataFile<T> {
           return {};
         }
         const strobj = cbor.decode(buf);
-        console.log(strobj);
         return strobj;
       },
       stringify: (data: T) => { 
         let str = cbor.encode(data);
-        console.log(str);
         return str;
       }
     })
