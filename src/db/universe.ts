@@ -2,6 +2,7 @@ import db from "../utils/db";
 import xss from "xss";
 import argon2 from "argon2";
 import { type message_type } from "../utils/message";
+import { orderby_enum, order_enum } from "../types/orderby";
 import type { universes_table } from "./tables/universes";
 import type { assets_table, place_type } from "./tables/assets";
 import { moderation_status_types } from "../types/moderation";
@@ -40,16 +41,32 @@ class universe {
     return this;
   }
 
-  static async all(limit: number = 16, query: string, sort: string = "createdat", sortby: string = "DESC") {
+  static async all(limit: number = 16, query: string, sort: string = "createdat", sortby: string = orderby_enum.DESCENDING) {
     let universe_class = new universe;
     let all_universes = universe_class.table;
     if(query.length !== 0 || query !== null) {
-      const regex = new RegExp(query, "i");
+      const regex = new RegExp(query, "i"); // forgot to say this will make it Case Insensitive
       all_universes = all_universes.filter((obj: any) => 
         (obj.title && regex.test(obj.title)) || 
         (obj.desc && regex.test(obj.desc))
       );
     }
+
+    all_universes.sort((a: any, b: any) => {
+      let key1 = a[sort];
+      let key2 = b[sort];
+      if(key1 === null) key1 = "";
+      if(key2 === null) key2 = "";
+
+      if(typeof key1 === "string" && typeof key2 === "string") {
+        key1 = key1.toLowerCase();
+        key2 = key2.toLowerCase();
+      }
+
+      if(key1 < key2) return sortby === "ASC" ? -1 : 1;
+      if(key1 > key2) return sortby === "ASC" ? 1 : -1;
+      return 0;
+    });
 
     return all_universes;
   }

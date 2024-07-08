@@ -5,6 +5,8 @@ import { rateLimit } from 'express-rate-limit';
 
 const routes = express.Router();
 
+// fix the types on req and res -qzip
+// @ts-expect-error
 routes.get(['/asset', '/Asset', '/asset/', '/Asset/', '/v1/asset/'], async_handler(async(req, res) => {
     // soon to be deprecated
     const asset_id: number = Number(req.query?.id) || -1;
