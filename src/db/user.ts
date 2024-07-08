@@ -11,11 +11,13 @@ class user {
   id: number;
   data: user_table | undefined;
   table: any;
+  schema: any;
   empty_table: boolean;
 
   constructor() {
     this.id = 0;
-    this.table = db.data.users;
+    this.table = db.data.users.data;
+    this.schema = db.data.users;
     this.empty_table = (this.table.at(0) === undefined);
   }
 
@@ -113,7 +115,6 @@ class user {
     let token = this.rand_token;
     const user_find = this.table.find((p: user_table) => p.token !== token);
     if(this.empty_table) {
-      console.log(this.empty_table.toString());
       return token;
     } else if(user_find) {
       return token;
@@ -233,7 +234,7 @@ class user {
       post.token = token.toString();
     }
     
-    post.id = this.table.length + 1;
+    post.id = (this.schema.id += 1);
     this.table.push(post);
 
     await db.write();

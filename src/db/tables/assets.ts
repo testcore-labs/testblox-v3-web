@@ -44,6 +44,7 @@ type assets_table = {
   description: string
   type: asset_types
   icon: number // get from Image 
+  file: string // path to file
 
   privacy: privacy_types
   creator: number

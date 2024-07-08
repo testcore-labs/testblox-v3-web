@@ -11,16 +11,16 @@ import { type assets_table } from "../db/tables/assets";
 import { type universes_table } from "../db/tables/universes";
 import { sleep } from 'bun';
 
-// yes
+// id's are here because we need to count it async and we cant do sync dbs
 type db_struct = {
-  users: user_table[]
-  assets: assets_table[]
-  universes: universes_table[]
+  users: { data: user_table[], id: number }
+  assets: { data: assets_table[], id: number }
+  universes: { data: universes_table[], id: number }
 }
 const db_tables: db_struct = { 
-  users: [],
-  assets: [],
-  universes: [] 
+  users: { data: [], id: 0 },
+  assets: { data: [], id: 0 },
+  universes: { data: [], id: 0 }
 };
 
 const db_file = "db.qstore";

@@ -3,6 +3,7 @@ const routes = express.Router();
 import async_handler from 'express-async-handler';
 import htmx_middleware from "../utils/htmx";
 import { format_bytes } from "../utils/format";
+import universe from "../db/universe"
 import filter from "../utils/filter";
 import env from "../utils/env";
 
@@ -56,7 +57,8 @@ routes.get("/home", notloggedin_handler, async_handler(async (req: Request, res:
 }));
 
 routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  const games = { hi: "hello" };
+  const query = String(req.query?.q).toString();
+  const games = universe.all(20, query);
   res.render("games.twig", { games: games });
 }));
 

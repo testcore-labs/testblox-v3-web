@@ -12,11 +12,13 @@ class universe {
   id: number;
   data: universes_table | undefined;
   table: any;
+  schema: any;
   empty_table: boolean;
 
   constructor() {
     this.id = 0;
-    this.table = db.data.universes;
+    this.table = db.data.universes.data;
+    this.schema = db.data.universes;
     this.empty_table = (this.table.at(0) === undefined);
   }
 
@@ -38,8 +40,18 @@ class universe {
     return this;
   }
 
-  async get_games(limit: number = 16, query: string) {
-    //return result;
+  static async all(limit: number = 16, query: string, sort: string = "createdat", sortby: string = "DESC") {
+    let universe_class = new universe;
+    let all_universes = universe_class.table;
+    if(query.length !== 0 || query !== null) {
+      const regex = new RegExp(query, "i");
+      all_universes = all_universes.filter((obj: any) => 
+        (obj.title && regex.test(obj.title)) || 
+        (obj.desc && regex.test(obj.desc))
+      );
+    }
+
+    return all_universes;
   }
 
   get exists() {
@@ -71,10 +83,10 @@ class universe {
       title: "",
       description: "",
       type: asset_types.Place,
-      version: 0,
       icon: 0,
       privacy: privacy_types.PRIVATE,
       creator: 0,
+      file: "",
       moderation: moderation_status_types.REVIEWING,
       data: {
         cost: 0,
@@ -91,7 +103,7 @@ class universe {
     new_place.createdat = Date.now();
     new_place.updatedat = Date.now();
 
-    new_place.id = this.table.length + 1;
+    new_place.id = (this.schema.id += 1);
     this.table.push(new_place);
     
     new_universe.createdat = Date.now();

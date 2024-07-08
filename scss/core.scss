@@ -896,7 +896,7 @@ background: #000;
   border-bottom-right-radius: 0;
 }
 
-.round-tl-0 {
+.round-ts-0 {
   border-top-left-radius: 0;
 }
 
@@ -1299,11 +1299,21 @@ a {
 .game-card {
   & .more-info {
     opacity: 0;
+    backdrop-filter: blur(0.1em);
     transition: opacity ease 0.3s;
   }
   &:hover .more-info {
     opacity: 1;
     transition: opacity ease 0.2s;
+  }
+
+  .hide-stuff {
+    opacity: 1;
+    transition: opacity ease 0.2s;
+  }
+  &:hover .hide-stuff {
+    opacity: 0;
+    transition: opacity ease 0.3s;
   }
 }
 
