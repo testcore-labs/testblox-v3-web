@@ -1,0 +1,106 @@
+{% extends "html.twig" %}
+{% set enablenavbar = false %}
+{% set enablecontainerbg = false %}
+{% set enablefooter = false %}
+{% set paddingforcontent = false %}
+
+  {% set features = {
+  "home": true
+  } %}
+  {% set count = 0 %}
+  {% for feature, done in features %} 
+    {% if not done %}
+      {% set count = count + 1 %}
+    {% endif %}
+  {% endfor %}
+
+{% block content %}
+ <div class="parallax-city2"></div>
+ <div class="parallax-city"></div>
+ <span class="text-exexextramuted pos-absolute link" style="top: 0; right: 0; padding: 0.5em; z-index: 5; line-height: 0.5em;">inspired by roblosium.net</span>
+ <div class="d-flex flex-row flex-wrap pos-relative" style="gap: 0.5em; z-index: 4; margin: 1em 0 7em 0;">
+ <div class="d-flex flex-column" style="gap: 1em; flex: 1; padding: 2em 0.5em; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(0.5em); border-radius: 0.5em;">
+ <div class="d-flex flex-column" style="gap: 0.5em; text-align: center; justify-content: center; align-items: center;">
+ <img src="/assets/img/logo.svg" class="img-fluid" style="max-width: 25em;">
+ <h4>a multi-corescript version revival</h4>
+ <h1 style="line-height: 0.5em; margin-bottom: 0.5em;">coming soon</h1>
+ </div>
+ <div class="d-flex flex-column flex-wrap" style="gap: 0.25em; width: 30em; max-height: 20em;">
+  {% for feature, done in features %}
+  <div class="d-flex flex-row" style="gap: 0.25em; align-items: center;">
+  <div class="d-flex flex-row checkbox-box" style="height: 1em; width: 1em; justify-content: center; align-items: center;"><img src="/assets/img/pixel.png" alt="{% if done %}☑{% else %}☐{% endif %} ">{% if done %}<i class="bi bi-check-lg" title="checked"></i>{% endif %}</div>
+  <span>{{ feature }}</span>
+  </div>
+  {% endfor %}
+ </div>
+ <div class="d-flex flex-column" style="gap: 0.1em; justify-content: center; align-items: center;">
+ <small class="text-extramuted">made with <i class="bi bi-heart-fill" style="color: #f52f2f;"></i> and <a href="//typescriptlang.com"><b>TypeScript</b></a></small>
+ </div>
+ </div>
+ <div class="d-flex flex-column" style="gap: 0.5em; margin: 0 auto;">
+ <iframe style="margin: 0 0;" src="https://ptb.discord.com/widget?id=1129153144685854800&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+ <small class="text-extramuted card" style="width: auto;"><b>NOTE TO BETA TESTERS:</b><br>until everything is done, you <b>cannot sign up yet</b>. <br>you will receive an <b>invite key</b> once it's done.</small>
+ <div class="d-flex flex-row" style="gap: 0.5em;">
+ <a href="/?method=login" class="btn-primary pos-relative" style="flex: 1; text-align: center;">login <small class="pos-absolute text-extramuted xl" style="top: 0; right: 0; padding: 0.2em 0.3em;">OWNER ONLY</small></a>
+ </div>
+ </div>
+ </div>
+
+{% endblock %}
+
+{% block body %}
+ <div class="bbplayer pos-fixed d-flex flex-row flex-wrap" style="gap: 0.5em; z-index: 5; align-items: center; bottom: 0; left: 0.5em; width: calc(100% - 1em); flex: 1; backdrop-filter: blur(0.25em); padding-bottom: 1em; padding-top: 1em;">
+   <a href="https://github.com/73rhodes/bbplayer" class="pos-absolute link" style="bottom: 0; right: 0; margin-right: 0.2em;  "><small>bbplayer</small></a>
+   <div class="d-flex flex-row" style="flex: 1 0 0; gap: 1em; align-items: center;">
+   <h3 class="bi bi-music-note-beamed" style="margin-left: 0.5em; color: #898989;"></h3>
+   <span class="bb-trackTitle" style="text-align: left; width: 15em;"></span>
+   </div>
+
+   <div class="d-flex flex-row" style="gap: 0.5em; flex: 1 0 1; align-items: center;">
+   <span class="bb-rewind bi bi-rewind"></span>
+   <div class="d-flex flex-row" style="background: #cacaca; border-radius: 100%; width: 2.5em; height: 2.5em; justify-content: center; align-items: center;">
+   <span class="bb-play" style="color: #000;"></span>
+   </div>
+   <span class="bb-forward bi bi-fast-forward"></span>
+   </div>
+
+   <div class="d-flex flex-row" style="gap: 0.5em; flex: 1 0 0;">
+   <div class="d-flex flex-row" style="gap: 0.25em; align-items: center; margin-left: auto;">
+   <span class="bb-trackTime"></span>
+   <span>-</span>
+   <span class="bb-trackLength"></span>
+   </div>
+   <input type="range" class="bb-volume-slider as-baseline" step="0.01" value="0.5">
+   <span class="bb-volume-int" bb-readable></span>
+   </div>
+   <audio autoplay>
+    {% set musics = [
+    "/assets/snd/comingsoon/awakening.mp3",
+    "/assets/snd/comingsoon/boa_glejs.mp3",
+    "/assets/snd/comingsoon/daylight.mp3",
+    "/assets/snd/comingsoon/fjords.mp3",
+    "/assets/snd/comingsoon/gothic.mp3",
+    "/assets/snd/comingsoon/mule_bitblaster.mp3",
+    "/assets/snd/comingsoon/nezerra.mp3",
+    "/assets/snd/comingsoon/nightmare.mp3",
+    "/assets/snd/comingsoon/packetpower.mp3",
+    "/assets/snd/comingsoon/poweringmove.mp3",
+    "/assets/snd/comingsoon/runaway.mp3",
+    "/assets/snd/comingsoon/starmarch.mp3",
+    "/assets/snd/comingsoon/chaoz_fantasy.mp3",
+    "/assets/snd/comingsoon/iron_blades.mp3",
+    "/assets/snd/comingsoon/caramelldansen.mp3",
+    "/assets/snd/comingsoon/town.mp3",
+    "/assets/snd/comingsoon/metal_bricks.mp3",
+    "/assets/snd/comingsoon/crossroad_times.mp3",
+    "/assets/snd/comingsoon/happyday_robloxia.mp3",
+    "/assets/snd/comingsoon/kerncraft_sportschant.mp3",
+    ] %}
+
+    {% for source in musics|shuffle %}
+    <source src="{{ source }}" />
+    {% endfor %}
+   </audio>
+</div>
+ <script src="/assets/js/bbplayer.js"></script>
+{% endblock %}

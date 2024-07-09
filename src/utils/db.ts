@@ -25,11 +25,11 @@ const db_tables: db_struct = {
 
 const db_file = "db.qstore";
 const path_to_db = path.join(root_path, "database", db_file);
-logs.database_log("loading ");
+logs.database("loading ");
 const db = await qstorepreset(path_to_db, db_tables);
 
 await db.write();
-logs.database_log("loaded!");
+logs.database("loaded!");
 
 if(env.backup) {
 (async () => {

@@ -9,13 +9,14 @@ import logs from "./utils/log";
 import { queryParser as query_parser} from "express-query-parser";
 //import multer from "multer";
 import user from "./db/user";
+import './utils/db';
 
 import front_routes from "./routes/front";
 import front_loggedin_routes from "./routes/front_loggedin";
 import api_v1_routes from "./routes/api_v1";
 import roblox_routes from "./routes/api_roblox";
 
-logs.server_log(`starting...`);
+logs.http(`starting...`);
 const app: Express = express();
 
 app.set("views", "views");
@@ -73,5 +74,5 @@ app.get("*", async_handler(async (req, res) => {
 
 
 app.listen(env.port, () => {
-  logs.server_log(`server is running at :${env.port}`);
+  logs.http(`running at :${env.port}`);
 });

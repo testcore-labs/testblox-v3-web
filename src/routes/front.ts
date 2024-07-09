@@ -24,6 +24,11 @@ routes.get("/dsc", async_handler((req: Request, res: Response) => {
   res.htmx.redirect("//discord.gg/"+env.dsc_invite)
 }));
 
+
+routes.get("/comingsoon", async_handler((req: Request, res: Response) => {
+  res.render("comingsoon.twig")
+}));
+
 routes.get("/", loggedin_handler, async_handler((req: Request, res: Response) => {
   res.render("index.twig");
 }));

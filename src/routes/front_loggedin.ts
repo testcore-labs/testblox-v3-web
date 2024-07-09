@@ -8,6 +8,7 @@ import filter from "../utils/filter";
 import env from "../utils/env";
 
 import os from "os";
+import asset from "../db/asset";
 
 routes.use(htmx_middleware);
 
@@ -64,6 +65,11 @@ routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, re
 
 routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   res.render("game.twig");
+}));
+
+
+routes.get("/sex/:title/:description/:userid/:file", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  res.send(await ((new asset()).create_place(req.params.title, req.params.description, Number(req.params.userid), req.params.file)));
 }));
 
 // admin only routes

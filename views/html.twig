@@ -48,7 +48,7 @@
           
           <div class="pos-absolute mt-2 right-0 dropdownify" id="userdropdown" style="width: 9em;"><div class="card px-0 d-flex flex-column gap-3">
           <a class="px-4 py-1" href="/profile"><i class="bi bi-person"></i> profile</a>
-          <a class="px-4 py-1" href="/inventory"><i class="bi bi-person"></i> inventory</a>
+          <a class="px-4 py-1" href="/inventory"><i class="bi bi-backpack"></i> inventory</a>
           <a class="px-4 py-1" href="/settings/"><i class="bi bi-sliders"></i> settings</a>
           {% if cuser.is_mod or cuser.is_admin or cuser.is_owner %}<a class="px-4 py-1" href="{{ env.admin_panel.path }}/"><i class="bi bi-wrench-adjustable-circle-fill"></i> admin</a>{% endif %}
           <hr nomargin>
@@ -78,7 +78,7 @@
     #ffb101 40px
     );">site under construction!!!</center>{% endif %}
       <div class="{% if paddingforcontent ?? true %}m-3{% endif %}"{% if content_styles %} style="{{ content_styles }}"{% endif %}>{% block content %}{% endblock %}</div>
-      {% if enablefooter ?? true %}<footer class="d-flex flex-row flex-wrap gap-3 card border-dark-t-1 round-tx-0 shadowless py-3 px-4 mt-2 text-exextramuted">
+      {% if enablefooter ?? true %}<footer class="d-flex flex-row flex-wrap gap-3 card border-dark-t-1 round-tx-0 shadowless py-3 px-4 mt-2 text-exextramuted" style="border-top: 1px solid #202020;">
         <div class="pos-relative">
           <select class="btn btn-transparent pos-absolute" style="color: #aaaaaa; width: 100%; height: 100%; opacity: 0; z-index: 5; -webkit-border-radius: 55px;" onchange="setlang(this.value);">
           {% for lang in 0..1 %}
@@ -100,5 +100,6 @@
     <div class="d-none pos-absolute round-4 p-3" style="top: 50; left: 50; transform: translate(-50%, -50%); background: rgba(0,0,0, 0.33); backdrop-filter: blur(1em);" id="cmd_window">
     BOO
     </div>
+    {% block body %}{% endblock %}
   </body>
 </html>
