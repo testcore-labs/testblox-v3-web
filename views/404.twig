@@ -4,7 +4,11 @@
 {% block content %}
 <div class="d-flex flex-column ai-center py-2">
   <img pixelate src="/assets/img/tstblx_404.png" class="mb-2" height=80>
-  <h2>err</h2>
-  <div class="text-muted">woops</div>
+  <h2>404 not found</h2>
+  <div class="text-muted">page can't be found</div>
+  <div class="d-flex flex-row gap-3 mt-3">
+    <a onclick="window.history.back();" class="btn-primary">go back</a>
+    <a href="/" class="btn-primary">home</a>
+  </div>
 </div>
 {% endblock %}

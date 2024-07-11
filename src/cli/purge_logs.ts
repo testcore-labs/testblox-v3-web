@@ -10,7 +10,7 @@ const rl = readline.createInterface({
 });
 
 const dir = path.join(root_path, "logs");
-rl.question(`are you sure you want to purge `+ colors.red("ALL") +` logs? Y/N`, answer => {
+rl.question(`are you sure you want to purge `+ colors.red("ALL") +` logs?\n[Y/N]> `, answer => {
   let new_answer = answer.toLowerCase();
   if(["yes", "ye", "y"].some(yes => new_answer == yes)) {
     console.log("purging..");
@@ -19,6 +19,7 @@ rl.question(`are you sure you want to purge `+ colors.red("ALL") +` logs? Y/N`, 
     
       for (const file of files) {
         if(file.includes(".log")) {
+          console.log("purged "+ file.toString());
           fs.unlink(path.join(dir, file), (err) => {
             if (err) throw err;
           });
