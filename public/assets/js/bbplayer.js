@@ -1,3 +1,4 @@
+// Credits to: https://github.com/73rhodes/bbplayer
 /*global $, document, alert*/
 
 (function () {
