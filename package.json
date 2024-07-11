@@ -3,6 +3,7 @@
   "module": "src/main.ts",
   "type": "module",
   "scripts": {
+    "test": "bun src/cli/test.ts",
     "purge-logs": "bun src/cli/purge_logs.ts",
     "dev:watch": "bun nodemon \"--watch views/**/*.twig --watch views/*.twig --watch src -x \"bun run dev\" -e ts,twig\"",
     "dev": "NODE_ENV=development bun src/main.ts",

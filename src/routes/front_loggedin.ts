@@ -3,12 +3,11 @@ const routes = express.Router();
 import async_handler from 'express-async-handler';
 import htmx_middleware from "../utils/htmx";
 import { format_bytes } from "../utils/format";
-import universe from "../db/universe"
+import asset from "../db/asset"
 import filter from "../utils/filter";
 import env from "../utils/env";
 
 import os from "os";
-import asset from "../db/asset";
 
 routes.use(htmx_middleware);
 
@@ -59,12 +58,12 @@ routes.get("/home", notloggedin_handler, async_handler(async (req: Request, res:
 
 routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   const query = String(req.query?.q).toString();
-  const games = universe.all(20, query);
+  const games = await asset.all(20, query);
   res.render("games.twig", { games: games });
 }));
 
 routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  res.render("game.twig");
+  res.render("game.twig", (new asset()).by_id(Number(req.params?.id)));
 }));
 
 

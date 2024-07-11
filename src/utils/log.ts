@@ -18,6 +18,9 @@ class logs {
   }
 
   private static push(txt: string) {
+    if(!env.log_file) {
+      return;
+    } 
     // for removing ansi
     // credits to https://stackoverflow.com/a/29497680
     let new_txt = txt.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, "")

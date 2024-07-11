@@ -10,6 +10,7 @@ import { privacy_types } from "../types/privacy";
 import { moderation_status_types } from "../types/moderation";
 import root_path from "../utils/root_path";
 import env from "../utils/env";
+import { orderby_enum, order_enum } from "../types/orderby";
 
 const asset_folder = path.join(root_path, "files", "assets");
 
@@ -28,7 +29,7 @@ class asset {
   }
 
   async by_id(id: number) {
-    const result = await this.table.findOne((p: assets_table) => p.id === id)
+    const result = await this.table.find((p: assets_table) => p.id === id)
     if(result !== undefined) {
     this.id = result.id;
     this.data = result;
@@ -37,7 +38,7 @@ class asset {
   }
 
   async by_title(title: string) {
-    const result = await this.table.findOne((p: assets_table) => p.title === title)
+    const result = await this.table.find((p: assets_table) => p.title === title)
     if(result !== undefined) {
     this.id = result.id;
     this.data = result;
@@ -47,6 +48,44 @@ class asset {
 
   get exists() {
     return typeof(this.data) != undefined;
+  }
+
+  get title() {
+    return this.data?.title;
+  }
+  get description() {
+    return this.data?.description;
+  }
+
+  static async all(limit: number = 16, query: string, sort: string = "createdat", sortby: string = orderby_enum.DESCENDING) {
+    let new_class = new this;
+    let all_things = new_class.table;
+    if(query.length !== 0 && query !== "undefined") {
+      const regex = new RegExp(query, "i"); // forgot to say this will make it Case Insensitive
+      all_things = all_things.filter((obj: any) => 
+        (obj.title && regex.test(obj.title)) || 
+        (obj.desc && regex.test(obj.desc))
+      );
+    }
+
+    all_things.sort((a: any, b: any) => {
+      let key1 = a[sort];
+      let key2 = b[sort];
+      if(key1 === null) key1 = "";
+      if(key2 === null) key2 = "";
+
+      if(typeof key1 === "string" && typeof key2 === "string") {
+        key1 = key1.toLowerCase();
+        key2 = key2.toLowerCase();
+      }
+
+      if(key1 < key2) return sortby === "ASC" ? -1 : 1;
+      if(key1 > key2) return sortby === "ASC" ? 1 : -1;
+      return 0;
+    });
+
+    console.log(all_things);
+    return all_things;
   }
 
   //s 

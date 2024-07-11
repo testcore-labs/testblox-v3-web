@@ -2,7 +2,7 @@ import db from "../utils/db";
 import xss from "xss";
 import argon2 from "argon2";
 import { type message_type } from "../utils/message";
-import { orderby_enum, order_enum } from "../types/orderby";
+import asset from "../db/asset";
 import type { universes_table } from "./tables/universes";
 import type { assets_table, place_type } from "./tables/assets";
 import { moderation_status_types } from "../types/moderation";
@@ -41,36 +41,6 @@ class universe {
     return this;
   }
 
-  static async all(limit: number = 16, query: string, sort: string = "createdat", sortby: string = orderby_enum.DESCENDING) {
-    let universe_class = new universe;
-    let all_universes = universe_class.table;
-    if(query.length !== 0 || query !== null) {
-      const regex = new RegExp(query, "i"); // forgot to say this will make it Case Insensitive
-      all_universes = all_universes.filter((obj: any) => 
-        (obj.title && regex.test(obj.title)) || 
-        (obj.desc && regex.test(obj.desc))
-      );
-    }
-
-    all_universes.sort((a: any, b: any) => {
-      let key1 = a[sort];
-      let key2 = b[sort];
-      if(key1 === null) key1 = "";
-      if(key2 === null) key2 = "";
-
-      if(typeof key1 === "string" && typeof key2 === "string") {
-        key1 = key1.toLowerCase();
-        key2 = key2.toLowerCase();
-      }
-
-      if(key1 < key2) return sortby === "ASC" ? -1 : 1;
-      if(key1 > key2) return sortby === "ASC" ? 1 : -1;
-      return 0;
-    });
-
-    return all_universes;
-  }
-
   get exists() {
     return this.data != undefined;
   }
@@ -85,52 +55,33 @@ class universe {
     }
   }
 
-  async create(creator: number) {
+  async create(title: any, creator: number): Promise<message_type> {
+    // default file
+    const file = "";
     let new_universe: universes_table = {
       id: 0,
       placeid: 0,
-      creator: Number(creator),
+      creator: Number(creator), // it is trusted but its just to make sure
       updatedat: 0,
       createdat: 0
     }
 
-    // add place making here
-    let new_place: assets_table = {
-      id: 0,
-      title: "",
-      description: "",
-      type: asset_types.Place,
-      icon: 0,
-      privacy: privacy_types.PRIVATE,
-      creator: 0,
-      file: "",
-      moderation: moderation_status_types.REVIEWING,
-      data: {
-        cost: 0,
-        limited: false,
-        vipcost: 0,
-        bc_only: false,
-        tbc_only: false,
-        obc_only: false
-      },
-      updatedat: 0,
-      createdat: 0
+    let new_place = await (new asset).create_place(title, "placeholder text", creator, file);
+
+    if(new_place.success) {
+      new_universe.placeid = typeof new_place.info?.id == "number" ? new_place.info?.id : -1; // this will never happen and if it does we will know
+    } else {
+      return new_place;
     }
-
-    new_place.createdat = Date.now();
-    new_place.updatedat = Date.now();
-
-    new_place.id = (this.schema.id += 1);
-    this.table.push(new_place);
-    
+  
     new_universe.createdat = Date.now();
     new_universe.updatedat = Date.now();
 
-    new_universe.id = this.table.length + 1;
+    new_universe.id = (this.schema.id += 1);
     this.table.push(new_universe);
 
     await db.write();
-    const msg: message_type =  {success: true, message: "created place ``.", info: { universe_id: new_universe.id, place_id: new_universe.placeid }}; 
+    const msg: message_type =  {success: true, message: `created universe \`${title}\`.`, info: { universe_id: new_universe.id, place_id: new_universe.placeid }}; 
     return msg;
   }
 }
