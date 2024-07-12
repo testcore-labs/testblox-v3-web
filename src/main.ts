@@ -62,7 +62,6 @@ app.use(async (req, res, next) => {
 });
 
 app.use("/assets", express.static(path.join(__dirname, "../public/assets"))) 
-app.use("/dist", express.static(path.join(__dirname, "../bootstrap-5.3.3/dist")))
 app.use(front_loggedin_routes); 
 app.use(front_routes);
 app.use("/api/v1", api_v1_routes);
