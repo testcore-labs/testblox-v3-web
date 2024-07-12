@@ -83,8 +83,7 @@ class asset {
       if(key1 > key2) return sortby === "ASC" ? 1 : -1;
       return 0;
     });
-
-    console.log(all_things);
+    
     return all_things;
   }
 

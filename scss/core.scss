@@ -817,6 +817,23 @@ a.link:active {
   color: lighten($accent, 25%);
 }
 
+
+a.link-light:link {
+  transition: color ease 1s;
+  color: lighten($accent, 20%);
+}
+a.link-light:visited {
+  transition: color ease 1s;
+  color: lighten($accent, 14%);
+}
+a.link-light:hover {
+  transition: color ease 0.5s;
+  color: lighten($accent, 25%);
+}
+a.link-light:active {
+  color: lighten($accent, 35%);
+}
+
 .blue-bg {
   background: $blue;
 }
@@ -1925,7 +1942,7 @@ animation: loadingbaranim 2.5s ease infinite alternate;
   overflow: visible;
   background: url('/assets/img/parallaxcity2.png');
   background-repeat: repeat-x;
-  animation: parallaxmove calc(40s * (100vw / 1920)) linear infinite reverse;
+  animation: parallaxmove calc(40s) linear infinite reverse;
   bottom: 10em; 
   left: 0; 
   z-index: 1; 
@@ -1940,7 +1957,7 @@ animation: loadingbaranim 2.5s ease infinite alternate;
   background-size: 200% 100%;
   background: url('/assets/img/parallaxcity1.png');
   background-repeat: repeat-x;
-  animation: parallaxmove calc(40s * (100vw / 1920)) linear infinite;
+  animation: parallaxmove calc(40s) linear infinite;
   bottom: 0; 
   left: 0; 
   z-index: 3; 

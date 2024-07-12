@@ -60,6 +60,22 @@ class logs {
     } // else no output cuz debug ONLY...
   }
 
+  
+
+  static request(method: string, path: string, ip: string, ua: string) {
+    if(env.debug) {
+      const message = printf(logs.format, 
+        colors.white(logs.time()), 
+        colors.cyan("request") + `, ${colors.gray(method)}`,
+        colors.white(colors.white(path.toString()) + `, ${colors.magenta(ip.toString())}, ${colors.red(ua.toString())}`)
+      );
+      // use nginx :3
+      //logs.push(message);
+      // this is for debugging when ur not using nginx
+      logs.print(message);
+    } // requests are gonna be annoying on non debug so..
+  }
+
   static http(txt: string | number) {
     const message = printf(logs.format, 
       colors.white(logs.time()), 

@@ -2,7 +2,8 @@ app_name: testblox
 desc: oops..
 domain: tstblx.win
 dsc_invite: 5H6u2zR8qn
-debug: false
+debug: true
+production: false # else development
 log_file: false
 quotes: 
   - is $_SERVER["REMOTE_ADDR"] your IP?

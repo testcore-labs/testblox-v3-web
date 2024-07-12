@@ -6,6 +6,7 @@ import { format_bytes } from "../utils/format";
 import asset from "../db/asset"
 import filter from "../utils/filter";
 import env from "../utils/env";
+import { filterXSS as xss } from "xss";
 
 import os from "os";
 
@@ -63,7 +64,16 @@ routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, re
 }));
 
 routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  res.render("game.twig", (new asset()).by_id(Number(req.params?.id)));
+  let game = await (new asset()).by_id(Number(req.params?.id));
+  if(req.params?.name && req.params?.name == "about") {
+    res.send("<h3 class=\"mb-2\">description</h3>" + xss(game.description ?? ""));
+  } else if(req.params?.name && req.params?.name == "store") {
+    res.send("<h3 class=\"mb-2\">store</h3>" + xss(game.description ?? ""));
+  } else if(req.params?.name && req.params?.name == "servers") {
+    res.send("<h3 class=\"mb-2\">servers</h3>" + xss(game.description ?? ""));
+  } else {
+    res.render("game.twig", { game: game });
+  }
 }));
 
 

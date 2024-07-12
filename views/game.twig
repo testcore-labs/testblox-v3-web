@@ -5,7 +5,7 @@
   <div class="flex-1" style="flex-basis: 12.5em;"><img src="/assets/img/crossroads16x9.png" class="img-fluid" style="height: 100%; width: 100%; object-fit: contain; aspect-ratio: 16/9;"></div>
   <div class="flex-1 d-flex flex-column gap-1">
     <h1>{{ game.title }}</h1>
-    <span>by <a class="link" href="/users/0/profile">qzip</a></span>
+    <span>by <a class="link-light" href="/users/0/profile">qzip</a></span>
     <button class="d-flex jc-center ai-center btn-play p-1 mt-auto"><i class="bi bi-play-fill m-auto" style="font-size: 2.5em; line-height: 0.65em;"></i></button>
   </div>
 </div>
@@ -19,11 +19,11 @@
     }
     event.target.setAttribute('disabled', 'true');
     }">
-    <button class="flex-1 text-center" role="tab" aria-controls="tab-contents" hx-get="/game/{{ game.get_id() }}/about" disabled>about</button>
-    <button class="flex-1 text-center" role="tab" aria-controls="tab-contents" hx-get="/game/{{ game.get_id() }}/store">store</button>
-    <button class="flex-1 text-center" role="tab" aria-controls="tab-contents" hx-get="/game/{{ game.get_id() }}/servers">servers</button>
+    <button class="flex-1 text-center" disabled role="tab" aria-controls="tab-contents" hx-get="/game/{{ game.id }}/about" disabled>about</button>
+    <button class="flex-1 text-center" role="tab" aria-controls="tab-contents" hx-get="/game/{{ game.id }}/store">store</button>
+    <button class="flex-1 text-center" role="tab" aria-controls="tab-contents" hx-get="/game/{{ game.id }}/servers">servers</button>
   </div>
   <hr nomargin>
-  <div id="tab-content" role="tabpanel" hx-get="/game/{{ game.get_id() }}/about" hx-trigger="revealed"></div>
+  <div id="tab-content" role="tabpanel" hx-get="/game/{{ game.id }}/about" hx-trigger="revealed"></div>
 </div>
 {% endblock %}

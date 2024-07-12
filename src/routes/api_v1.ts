@@ -10,13 +10,13 @@ import { rateLimit } from 'express-rate-limit';
 const msg_too_many_reqs: message_type = {success: false, status: 429, message: "too many requests, try again later."};
 
 const creation_and_login_limiter = rateLimit({
-	windowMs: 5 * 60 * 1000, // 5 minutes
-	limit: 25,
+	windowMs: 2.5 * 60 * 1000, // 2 minutes and 30 secs
+	limit: 50,
 	standardHeaders: 'draft-7',
   message: msg_too_many_reqs,
 	legacyHeaders: true,
   keyGenerator: function (req: any) {
-    return req.headers["x-forwarded-for"] || req.connection.remoteAddress; 
+    return req.ip; 
   }
 });
 
@@ -29,8 +29,8 @@ routes.post("/user/create", creation_and_login_limiter, async_handler(async (req
       if(resp.info !== undefined) {
         res.cookie(env.session.name, resp.info["token"].toString(), { 
           expires: new Date(Date.now() + Number(env.session.expires)), 
-          secure: (process.env.NODE_ENV == "production") ? true : false, 
-          sameSite: (process.env.NODE_ENV == "production") ? 'strict' : 'lax' 
+          secure: env.production ? true : false, 
+          sameSite: env.production ? 'strict' : 'lax' 
         });
       }
     }
@@ -61,8 +61,8 @@ routes.post("/user/login", creation_and_login_limiter, async_handler(async (req:
       if(resp.info !== undefined) {
         res.cookie(env.session.name, resp.info["token"].toString(), { 
           expires: new Date(Date.now() + Number(env.session.expires)), 
-          secure: (process.env.NODE_ENV == "production") ? true : false, 
-          sameSite: (process.env.NODE_ENV == "production") ? 'strict' : 'lax' 
+          secure: env.production ? true : false, 
+          sameSite: env.production ? 'strict' : 'lax' 
         });
       }
     }

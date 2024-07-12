@@ -57,6 +57,7 @@ app.use(async (req, res, next) => {
   res.locals.cuser = cuser;
   res.locals.isloggedin = req.cookies[env.session.name] && (await cuser).exists; // await DOES change everything >:(
 
+  logs.request(req.method.toString(), req.originalUrl.toString(), req.ip?.toString() ?? "127.0.0.1", req.get('user-agent')?.toString() ?? "")
   next();
 });
 
