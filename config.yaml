@@ -52,7 +52,7 @@ rules:
 
 # server default 
 locale: en-us
-language: en-us
+lang: english
 
 # http config
 port: 80

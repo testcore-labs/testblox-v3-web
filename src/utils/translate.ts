@@ -9,7 +9,7 @@ import fs from 'fs'
 class translator {
   static log_name = colors.yellow("translator");
   static log_dir = path.join(root_path, "translation");
-  static default_locale: string = "en-us";
+  static default_locale: string = env.locale;
   static selected_locale: string;
   static initialized: boolean = false;
   static translations: { [key: string]: any } = {};
@@ -33,6 +33,7 @@ class translator {
       }
       this.translations[locale] = parsed;
     }
+    logs.custom("started", this.log_name);
     this.initialized = true;
   }
 
@@ -45,9 +46,13 @@ class translator {
       if(this.translations[locale]["_completion"]) {
         return this.translations[locale]["_completion"];
       }
-      const default_keys = Object.keys(this.translations[this.default_locale]);
+      const default_keys = (Object.keys(this.translations[this.default_locale])).filter((key: any) =>
+        !key.startsWith("_")
+      );
       const locale_keys = Object.keys(this.translations[locale]);
-      const locale_keys_filtered = locale_keys.filter((key: any) => default_keys.includes(key));
+      const locale_keys_filtered = locale_keys.filter((key: any) => 
+        !key.startsWith("_") && default_keys.includes(key)
+      );
 
       const completion = (locale_keys_filtered.length / default_keys.length) * 100;
       this.translations[locale]["_completion"] = completion;

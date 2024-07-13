@@ -10,12 +10,14 @@ import { queryParser as query_parser} from "express-query-parser";
 //import multer from "multer";
 import user from "./db/user";
 import './utils/db';
+import translate from "./utils/translate";
 
 import front_routes from "./routes/front";
 import front_loggedin_routes from "./routes/front_loggedin";
 import api_v1_routes from "./routes/api_v1";
 import roblox_routes from "./routes/api_roblox";
 
+translate.init();
 logs.http(`starting...`);
 const app: Express = express();
 
@@ -51,6 +53,8 @@ app.use(async (req, res, next) => {
   res.locals.req = req;
   res.locals.res = res;
   res.locals.env = env;
+  res.locals.translations = translate.translations;
+  res.locals.t = translate.translations[req.cookies?.locale ? req.cookies?.locale.toString() : env.locale];
 
   const cuser = new user(); // cuser = current user
   cuser.by_token(req.cookies[env.session.name]);
