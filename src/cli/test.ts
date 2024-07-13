@@ -1,4 +1,6 @@
 // for testing things in cli obv
-import universe from "../db/universe";
+import translate from "../utils/translate";
 
-console.log(await (new universe).create("No!", 23))
+translate.init();
+console.log(translate.text("hello_world", "lt-lt"));
+console.log(translate.completion("lt-lt"));

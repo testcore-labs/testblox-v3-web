@@ -68,10 +68,12 @@ app.use("/api/v1", api_v1_routes);
 app.use(roblox_routes);
 
 app.get("*", async_handler(async (req, res) => {
-  res.status(404).render("404.twig");
-}),
-);
-
+  if(req.path.startsWith("/assets")) {
+    res.status(403).render("error.twig");
+  } else {
+    res.status(404).render("error.twig");
+  }
+}));
 
 app.listen(env.port, () => {
   logs.http(`running at :${env.port}`);

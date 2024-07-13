@@ -52,7 +52,7 @@ class logs {
     if(env.debug) {
       const message = printf(logs.format, 
         colors.white(logs.time()), 
-        colors.green("debug"),
+        colors.green(`debug`),
         colors.white(txt.toString())
       );
       logs.push(message);

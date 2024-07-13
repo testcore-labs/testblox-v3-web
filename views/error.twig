@@ -1,15 +1,32 @@
 {% extends "html.twig" %}
 
-{% set randomerrs = [
-"does it exist?",
-"maybe you typed it wrong",
-"have you tried turning it off and on",
-] %}
-{% set randomerr = randomerrs|shuffle[0] %}
+{% set errors = {
+"403": { 
+  "title": "forbidden",
+  "errors": [
+    "did you know you don't have rights, this page says you don't.",
+    "folder privelege taken away",
+  ],
+},
+"404": { 
+  "title": "not found",
+  "errors": [
+    "does it exist?",
+    "maybe you typed it wrong",
+    "have you tried turning it off and on",
+  ],
+},
+} %}
+{% set error = errors[res.statusCode] %}
+{% set randomerr = error.errors|shuffle[0] %}
 {% block content %}
 <div class="d-flex flex-column gap-3 ai-center jc-center m-5">
-<h2>{{ http_response_code() ~ " " ~ http_response_codename(http_response_code()) }}</h2>
-<div>{{ randomerr }}</div>
-<button class="mt-2" onclick="window.history.back();">go back</button>
+  <img pixelate src="/assets/img/tstblx_404.png" class="mb-2" height=80>
+  <h2>{{ res.statusCode ~ " " ~ error.title }}</h2>
+  <div class="text-muted">{{ randomerr }}</div>
+  <div class="d-flex flex-row gap-3 mt-3">
+    <a onclick="window.history.back();" class="btn-primary">go back</a>
+    <a href="/" class="btn-primary">home</a>
+  </div>
 </div>
 {% endblock %}
