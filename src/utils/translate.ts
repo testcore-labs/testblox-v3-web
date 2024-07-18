@@ -4,6 +4,7 @@ import colors from "colors";
 import root_path from "./root_path";
 import env from "./env";
 import path from "path";
+import { flatten } from "./array";
 import fs from 'fs'
 
 class translator {
@@ -46,15 +47,16 @@ class translator {
       if(this.translations[locale]["_completion"]) {
         return this.translations[locale]["_completion"];
       }
-      const default_keys = (Object.keys(this.translations[this.default_locale])).filter((key: any) =>
+      const default_keys = (Object.keys(flatten(this.translations[this.default_locale]) ?? {})).filter((key: any) =>
         !key.startsWith("_")
       );
-      const locale_keys = Object.keys(this.translations[locale]);
+      const locale_keys = Object.keys(flatten(this.translations[locale]) ?? {});
       const locale_keys_filtered = locale_keys.filter((key: any) => 
         !key.startsWith("_") && default_keys.includes(key)
       );
 
-      const completion = (locale_keys_filtered.length / default_keys.length) * 100;
+      let completion = (locale_keys_filtered.length / default_keys.length) * 100;
+      completion = Math.floor(completion * 10) / 10;
       this.translations[locale]["_completion"] = completion;
 
       return completion;

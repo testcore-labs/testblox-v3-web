@@ -17,13 +17,13 @@
 {% block content %}
  <div class="parallax-city2"></div>
  <div class="parallax-city"></div>
- <span class="text-exexextramuted pos-absolute link" style="top: 0; right: 0; padding: 0.5em; z-index: 5; line-height: 0.5em;">inspired by roblosium.net</span>
+ <span class="text-exexextramuted pos-absolute link" style="top: 0; right: 0; padding: 0.5em; z-index: 5; line-height: 0.5em;">{{ t.coming_soon.inspiredby }}</span>
  <div class="d-flex flex-row flex-wrap pos-relative" style="gap: 0.5em; z-index: 4; margin: 1em 0 7em 0;">
  <div class="d-flex flex-column" style="gap: 1em; flex: 1; padding: 2em 0.5em; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(0.5em); border-radius: 0.5em;">
  <div class="d-flex flex-column" style="gap: 0.5em; text-align: center; justify-content: center; align-items: center;">
  <img src="/assets/img/logo.svg" class="img-fluid" style="max-width: 25em;">
- <h4>a multi-corescript version revival</h4>
- <h1 style="line-height: 0.5em; margin-bottom: 0.5em;">{{ t.coming_soon }}</h1>
+ <h4>{{ t.coming_soon.about }}</h4>
+ <h1 style="line-height: 0.5em; margin-bottom: 0.5em;">{{ t.coming_soon.comingsoon }}</h1>
  </div>
  <div class="d-flex flex-column flex-wrap" style="gap: 0.25em; width: 30em; max-height: 20em;">
   {% for feature, done in features %}

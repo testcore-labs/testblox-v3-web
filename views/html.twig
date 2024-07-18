@@ -21,12 +21,12 @@
       {% if enablenavbar ?? true %}<nav class="d-flex flex-row flex-row-to-col flex-wrap gap-3 ai-center card card-dark-primary round-bx-0 py-2 p-3">
         <div class="navbar-hover d-flex flex-row flex-wrap ai-center gap-5 flex-grow-1 flex-shrink-1 me-2" style="flex-basis: 10em;">
         <a class="nav-logo" href="/"></a>
-        <a href="/games/"><b style="font-size: 1.025em;">games</b></a>
-        <a href="/catalog/"><b style="font-size: 1.025em;">catalog</b></a>
-        <a href="/library/"><b style="font-size: 1.025em;">library</b></a>
+        <a href="/games/"><b style="font-size: 1.025em;">{{ t.navbar.games }}</b></a>
+        <a href="/catalog/"><b style="font-size: 1.025em;">{{ t.navbar.catalog }}</b></a>
+        <a href="/library/"><b style="font-size: 1.025em;">{{ t.navbar.develop }}</b></a>
         </div>
 
-        <div class="pos-relative flex-autotofill order-nonetoend" style="flex-basis: 20em; flex-shrink: 1;">
+        <div class="pos-relative flex-autotofill order-nonetoend" style="flex-basis: 18em; flex-shrink: 5;">
           <div class="d-flex flex-row pillify shadow-1 round-4" style="height: 2.4em;">
             <input type="search" class="shadowless flex-1" style="box-shadow: unset; width: 100%;" id="navbar-search" placeholder="search.." name="qnavbar" hx-get="/api/v1/searchbar" hx-trigger="keyup delay:250ms changed" hx-target="#navbar-search-results" hx-on:htmx:config-request="document.getElementById('navbar-search-results').classList.remove('d-none');">
             <button type="submit" class="shadowless border-light-1 px-4" style="background: #000;"><h5 class="bi bi-search text-muted"></h5></button>
@@ -46,27 +46,27 @@
           <small class="bi bi-caret-down-fill"></small>
           </div>
           
-          <div class="pos-absolute mt-2 right-0 dropdownify" id="userdropdown" style="width: 9em;"><div class="card px-0 d-flex flex-column gap-3">
-          <a class="px-4 py-1" href="/profile"><i class="bi bi-person"></i> profile</a>
-          <a class="px-4 py-1" href="/inventory"><i class="bi bi-backpack"></i> inventory</a>
-          <a class="px-4 py-1" href="/settings/"><i class="bi bi-sliders"></i> settings</a>
-          {% if cuser.is_mod or cuser.is_admin or cuser.is_owner %}<a class="px-4 py-1" href="{{ env.admin_panel.path }}/"><i class="bi bi-wrench-adjustable-circle-fill"></i> admin</a>{% endif %}
+          <div class="pos-absolute mt-2 right-0 dropdownify" id="userdropdown" style="width: 10em;"><div class="card px-0 d-flex flex-column gap-3">
+          <a class="px-4 py-1" href="/profile"><i class="bi bi-person"></i> {{ t.navbar.profile }}</a>
+          <a class="px-4 py-1" href="/inventory"><i class="bi bi-backpack"></i> {{ t.navbar.inventory }}</a>
+          <a class="px-4 py-1" href="/settings/"><i class="bi bi-sliders"></i> {{ t.navbar.settings }}</a>
+          {% if cuser.is_mod or cuser.is_admin or cuser.is_owner %}<a class="px-4 py-1" href="{{ env.admin_panel.path }}/"><i class="bi bi-wrench-adjustable-circle-fill"></i> {{ t.navbar.admin }}</a>{% endif %}
           <hr nomargin>
-          <a class="px-4 py-1" hx-post="/api/v1/user/logout?redirect=/"><i class="bi bi-box-arrow-left"></i> logout</a>
+          <a class="px-4 py-1" hx-post="/api/v1/user/logout?redirect=/"><i class="bi bi-box-arrow-left"></i> {{ t.navbar.logout }}</a>
           </div></div>
         </div>{% else %}<div class="navbar-hover d-flex flex-row ai-center ms-auto gap-5">
-          <a href="/?type=register">register</a>
-          <a href="/?type=login">login</a>
+          <a href="/?type=register">{{ t.navbar.register }}</a>
+          <a href="/?type=login">{{ t.navbar.login }}</a>
           </div>{% endif %}
         </div>
       </nav>
     {% endif %}
       {% if (enablenavbar ?? true) and isloggedin %}<nav class="second-navbar-hover d-flex flex-row flex-row-to-col flex-wrap gap-6 ai-center card round-0" style="padding: 0.45em 0.35em;">
-        <a href="/avatar/"><i class="bi bi-person-fill-gear"></i> <b>avatar</b></a>
-        <a href="/messages/"><i class="bi bi-envelope"></i> <b>messages</b></a>
-        <a href="/trade/"><i class="bi bi-arrow-left-right"></i> <b>trade</b></a>
-        <a href="/groups/"><i class="bi bi-collection"></i> <b>groups</b></a>
-        <a href="/users/"><i class="bi bi-people"></i> <b>users</b></a>
+        <a href="/avatar/"><i class="bi bi-person-fill-gear"></i> <b>{{ t.navbar.avatar }}</b></a>
+        <a href="/messages/"><i class="bi bi-envelope"></i> <b>{{ t.navbar.messages }}</b></a>
+        <a href="/trade/"><i class="bi bi-arrow-left-right"></i> <b>{{ t.navbar.trade }}</b></a>
+        <a href="/groups/"><i class="bi bi-collection"></i> <b>{{ t.navbar.groups }}</b></a>
+        <a href="/users/"><i class="bi bi-people"></i> <b>{{ t.navbar.users }}</b></a>
         <a href="/dsc"><i class="bi bi-discord"></i> <b>discord</b></a>
         {% if cuser.is_mod or cuser.is_admin or cuser.is_owner %}<a href="{{ env.admin_panel.path }}/moderation/"><i class="bi bi-database"></i> <b>moderation <b class="red-bg d-inline-flex ai-center jc-center round-3" style="color: #fff; padding: 0px 4px;">0</b></b></a>{% endif %}
       </nav>
