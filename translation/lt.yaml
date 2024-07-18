@@ -2,14 +2,6 @@ _locale: lt-lt
 _lang: lithuanian
 _author: qzip
 # aaaaa TRANSLATION
-coming_soon:
-  comingsoon: netrukus atvyks
-  inspiredby: paremtas roblosium.net
-  about: daugia-versiju atgaivinimas
-home: 
-  friends: draugai
-  recently_played: neseniai žaisti
-  see_all: matyti visus
 navbar:
   games: žaidimai
   catalog: parduotuvė
@@ -26,5 +18,15 @@ navbar:
   logout: atsijungti
   register: susikurti
   login: prisijungti
+footer:
+  terms_of_service: naudojimo sąlygos
+coming_soon:
+  comingsoon: netrukus atvyks
+  inspiredby: paremtas roblosium.net
+  about: daugia-versiju atgaivinimas
+home: 
+  friends: draugai
+  recently_played: neseniai žaisti
+  see_all: matyti visus
 games:
   games: žaidimai

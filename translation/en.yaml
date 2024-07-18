@@ -2,14 +2,6 @@ _locale: en-us
 _lang: english
 _author: qzip
 # aaaaa TRANSLATION
-coming_soon:
-  comingsoon: coming soon
-  inspiredby: inspired by roblosium.net
-  about: a multi-corescript version revival
-home: 
-  friends: friends
-  recently_played: recently played
-  see_all: see all
 navbar:
   games: games
   catalog: catalog
@@ -26,5 +18,15 @@ navbar:
   logout: logout
   register: register
   login: login
+footer:
+  terms_of_service: terms of service
+coming_soon:
+  comingsoon: coming soon
+  inspiredby: inspired by roblosium.net
+  about: a multi-corescript version revival
+home: 
+  friends: friends
+  recently_played: recently played
+  see_all: see all
 games:
   games: games
