@@ -26,7 +26,7 @@
         <a href="/library/"><b style="font-size: 1.025em;">{{ t.navbar.develop }}</b></a>
         </div>
 
-        <div class="pos-relative flex-autotofill order-nonetoend" style="flex-basis: 18em; flex-shrink: 5;">
+        <div class="pos-relative flex-autotofill order-nonetoend" style="flex-basis: 20em; flex-shrink: 5;">
           <div class="d-flex flex-row pillify shadow-1 round-4" style="height: 2.4em;">
             <input type="search" class="shadowless flex-1" style="box-shadow: unset; width: 100%;" id="navbar-search" placeholder="search.." name="qnavbar" hx-get="/api/v1/searchbar" hx-trigger="keyup delay:250ms changed" hx-target="#navbar-search-results" hx-on:htmx:config-request="document.getElementById('navbar-search-results').classList.remove('d-none');">
             <button type="submit" class="shadowless border-light-1 px-4" style="background: #000;"><h5 class="bi bi-search text-muted"></h5></button>
@@ -37,8 +37,8 @@
         <div class="d-flex flex-row ai-center gap-6 ms-2 flex-1">
         {% if isloggedin %}
         <div class="d-flex flex-row ai-center ms-auto gap-1">
-          <img src="/assets/img/currency.svg" width=21>
-          <b title="32">{{ cuser.money }}</b>
+          <img style="filter: grayscale(1);" src="/assets/img/currency.svg" title="{{ cuser.money }}" width=20>
+          <b title="{{ cuser.money }}">{{ cuser.money }}</b>
         </div>
         <div class="pos-relative">
           <div class="d-flex flex-row ai-center gap-3 c-pointer" onclick="dropdownify(this, $('#userdropdown'));">

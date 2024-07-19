@@ -1,0 +1,25 @@
+{% if queries|length != 0 %}
+{% import "../_macros.twig" as utils %}
+{% set urlparams = utils.param_end_ampersand(utils.param_ignore(params, "p")) ?? "" %}
+{% set dotset = false %}
+<div class="d-flex flex-row {{ style_classes ?? "pillify shadow-1 round-4" }} {{classes}}">
+  <a class="btn-primary shadowless" 
+  {% if page == 1 %}disabled
+  {% else %}href="?{{ urlparams }}p={{ (1 <= page - 1) and (page - 1 <= totalpages) ? page - 1 : 1 }}"{% endif %}><</a>
+  {% for _page in (1 .. (totalpages)) %}
+    {% if _page > 2 and _page <= totalpages - 2 and _page != page %}
+      {% if not dotset %} {% set dotset = true %}
+        <a class="btn-primary shadowless" disabled>…</a>
+      {% endif %} 
+    {% else %}
+      <a class="btn-primary shadowless" 
+        {% if page == _page %}disabled
+        {% else %}href="?{{ urlparams }}p={{ _page }}"{% endif %}>{{ _page }}</a>
+    {% endif %}
+  {% endfor %}
+  <a class="btn-primary shadowless" 
+    {% if page == totalpages %}disabled
+    {% else %}href="?{{ urlparams }}p={{ (1 <= page + 1) and (page + 1 <= totalpages) ? page + 1 : totalpages }}"{% endif %} 
+    {% if page == totalpages %}disabled{% endif %}>></a>
+</div>
+{% endif %}

@@ -4,6 +4,8 @@ import fs from "fs";
 import path from "path";
 import argon2 from "argon2";
 import { type assets_table, type thumbnails_type } from "./tables/assets";
+import { type user_table } from "./tables/users";
+import user from "./user";
 import { type message_type } from "../utils/message";
 import { asset_types } from "../types/assets";
 import { privacy_types } from "../types/privacy";
@@ -18,6 +20,7 @@ class asset {
   id: number;
   data: assets_table | undefined;
   table: any;
+  user: user_table | any| undefined;
   schema: any;
   empty_table: boolean;
 
@@ -32,6 +35,10 @@ class asset {
     const result = await this.table.find((p: assets_table) => p.id === id)
     if(result !== undefined) {
     this.id = result.id;
+    const new_user = await (new user).by_id(result.creator);
+    if(new_user.exists) {
+      this.user = new_user; 
+    }
     this.data = result;
     }
     return this;
@@ -41,6 +48,10 @@ class asset {
     const result = await this.table.find((p: assets_table) => p.title === title)
     if(result !== undefined) {
     this.id = result.id;
+    const new_user = await (new user).by_id(result.creator);
+    if(new_user.exists) {
+      this.user = new_user; 
+    }
     this.data = result;
     }
     return this;
@@ -56,10 +67,14 @@ class asset {
   get description() {
     return this.data?.description;
   }
+  get username() {
+    return this.data?.creator;
+  }
 
-  static async all(limit: number = 16, query: string, sort: string = "createdat", sortby: string = orderby_enum.DESCENDING) {
+  static async all(limit: number = 16, page: number = 1, query: string, sort: string = "createdat", sortby: string = orderby_enum.DESCENDING): Promise<message_type> {
     let new_class = new this;
     let all_things = new_class.table;
+
     if(query.length !== 0 && query !== "undefined") {
       const regex = new RegExp(query, "i"); // forgot to say this will make it Case Insensitive
       all_things = all_things.filter((obj: any) => 
@@ -67,6 +82,11 @@ class asset {
         (obj.desc && regex.test(obj.desc))
       );
     }
+
+    const total_items = all_things.length;
+    const total_pages = Math.ceil(total_items / limit);
+
+    sortby = order_enum(sortby.toString().toUpperCase());
 
     all_things.sort((a: any, b: any) => {
       let key1 = a[sort];
@@ -84,7 +104,16 @@ class asset {
       return 0;
     });
     
-    return all_things;
+    const start = (page - 1) * limit;
+    const end = start + limit;
+    const paginated_items = all_things.slice(start, end);
+
+    return { success: true, message: "", info: { 
+      queries: paginated_items, 
+      total_pages: total_pages, 
+      page: page,
+      total_items: total_items
+  }  };
   }
 
   //s 

@@ -12,6 +12,8 @@ import user from "./db/user";
 import './utils/db';
 import translate from "./utils/translate";
 
+import colors from "colors";
+
 import front_routes from "./routes/front";
 import front_loggedin_routes from "./routes/front_loggedin";
 import api_v1_routes from "./routes/api_v1";
@@ -78,6 +80,14 @@ app.get("*", async_handler(async (req, res) => {
     res.status(404).render("error.twig");
   }
 }));
+
+app.use((err: any, req: any, res: any, next: any) => {
+  logs.custom(err.stack.replace(err.name + ": ", ""), colors.red("error: " +err.name));
+  if(env.debug) {
+    let error = err.stack;
+    res.set("content-type", "text/plain").status(500).send(error);
+  }
+});
 
 app.listen(env.port, () => {
   logs.http(`running at :${env.port}`);

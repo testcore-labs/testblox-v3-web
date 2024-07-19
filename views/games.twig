@@ -1,13 +1,28 @@
 {% extends "html.twig" %}
 
 {% block content %}
-<div class="d-flex flex-row gap-2">
+{% import "./_macros.twig" as utils %}
+<div class="d-flex flex-column gap-1">
+<div class="d-flex flex-row flex-wrap ai-center gap-3">
   <h2>{{ t.games.games }}</h2>
+  <div class="d-flex flex-row flex-wrap gap-2 ms-auto">
+  {% include '/components/pagination.twig' with {params: req.query, page: page, queries: queries, totalpages: total_pages, classes: "jc-center"} %}
+  <input name="q" placeholder="search for a game.." type="text">
+  <div class="pos-relative">
+    <button onclick="dropdownify(this, $('#filterresults'));"><h4 class="bi bi-filter"></h4></button>
+    <div class="pos-absolute dropdownify mt-1 card d-flex flex-column gap-3" style="width: 12em; z-index: 2;" id="filterresults">
+      <a href="?{{ utils.param_end_ampersand(utils.param_ignore(req.query, "sort")) }}sort=ASC">sort by <b>ascending</b></a>
+      <a href="?{{ utils.param_end_ampersand(utils.param_ignore(req.query, "sort")) }}sort=DESC">sort by <b>descending</b></a>
+      <hr class="mt-1 mb-1">
+    </div>
+  </div>
+  </div>
 </div>
 <hr class="mt-3 mb-2">
 <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));">
-  {% for game in games %}
+  {% for game in queries %}
   {% include '/components/game_default.twig' with {game: game} %}
   {% endfor %}
+</div>
 </div>
 {% endblock %}

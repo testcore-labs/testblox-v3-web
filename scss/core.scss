@@ -337,7 +337,7 @@ h6 {
 
 .pillify {
   // this motha fucka
-  & > *:not(:first-child):not(:last-child) {
+  & *:not(:first-child):not(:last-child) {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     border-top-right-radius: 0;
@@ -346,15 +346,36 @@ h6 {
     border-left: none;
     border-right: none;
   }
-  & > *:first-child {
+  & *:first-child {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     border-right: none;
   }
-  & > *:last-child {
+  & *:last-child {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     border-left: none;
+  }
+}
+.pillify-box {
+  // this motha fucka
+  & *:not(:first-child):not(:last-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  & *:first-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  & *:last-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
   }
 }
 .retype {
@@ -1416,6 +1437,9 @@ a {
     background-size: 100% 100%;
     background-image: url(/assets/img/logo-t.svg);
   }
+  .d-none-lg {
+    display: none;
+  }
 }
   
 @media (min-width: 550px) {
@@ -1470,6 +1494,9 @@ a {
     width: 120px;
     background-size: 100% 100%;
     background-image: url(/assets/img/logo.svg);
+  }
+  .d-none-lg {
+    display: default;
   }
 }
 @media (min-width: 400px) {

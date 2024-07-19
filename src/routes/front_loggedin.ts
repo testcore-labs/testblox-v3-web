@@ -59,8 +59,15 @@ routes.get("/home", notloggedin_handler, async_handler(async (req: Request, res:
 
 routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   const query = String(req.query?.q).toString();
-  const games = await asset.all(20, query);
-  res.render("games.twig", { games: games });
+  let page = Number(req.query.p);
+  if(String(page) == "NaN" || Number(page) <= 0) {
+    page = 1;
+  }
+
+  console.log(req.query)
+  const sortby = String(req.query?.sort).toString();
+  const games = await asset.all(6, page, query, "createdat", sortby);
+  res.render("games.twig", { ...games.info, page: page});
 }));
 
 routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
