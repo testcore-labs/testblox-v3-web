@@ -11,8 +11,8 @@
   <div class="pos-relative">
     <button onclick="dropdownify(this, $('#filterresults'));"><h4 class="bi bi-filter"></h4></button>
     <div class="pos-absolute dropdownify mt-1 card d-flex flex-column gap-3" style="width: 12em; z-index: 2;" id="filterresults">
-      <a href="?{{ utils.param_end_ampersand(utils.param_ignore(req.query, "sort")) }}sort=ASC">sort by <b>ascending</b></a>
-      <a href="?{{ utils.param_end_ampersand(utils.param_ignore(req.query, "sort")) }}sort=DESC">sort by <b>descending</b></a>
+      <a href="?{{ query_remove_key(req.query, "sort") }}sort=ASC">sort by <b>ascending</b></a>
+      <a href="?{{ query_remove_key(req.query, "sort") }}sort=DESC">sort by <b>descending</b></a>
       <hr class="mt-1 mb-1">
     </div>
   </div>

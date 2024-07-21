@@ -1,6 +1,5 @@
 {% if queries|length != 0 %}
-{% import "../_macros.twig" as utils %}
-{% set urlparams = utils.param_end_ampersand(utils.param_ignore(params, "p")) ?? "" %}
+{% set urlparams = query_remove_key(params, "p") ?? "" %}
 {% set dotset = false %}
 <div class="d-flex flex-row {{ style_classes ?? "pillify shadow-1 round-4" }} {{classes}}">
   <a class="btn-primary shadowless" 

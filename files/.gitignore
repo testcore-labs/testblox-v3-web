@@ -1,8 +1,12 @@
 *
 !app
 !tmp
+!keys
+!assets
+assets/**
 tmp/**
 !app/*
 app/*/**
+keys/*
 !.gitkeep
 !.gitignore
