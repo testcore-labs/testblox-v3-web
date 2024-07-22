@@ -1,20 +1,17 @@
 # testblox-v3
 
-# setup 
-you first have to run
-```bun i``` to install all the dependencies
+## setup 
+run `bun i` to install every dependency, then\
+run `bun build-css` to build the css, then finally\
+run `bun dev` to start the webserver\
+OR\
+run `bun dev:watch` to start web server with reload on change\
 
-to run the src in production env, idk
-
-to run the src in development env:
-```bun run dev```
-and to watch updates:
-```bun run dev:watch```
-
-to build scss, run:
-```bun run build-css```
-and to watch updates:
-```bun run build-css:watch```
+## scripts 
+run `bun dev` to start web server (will change script name)\
+run `bun dev:watch` to start web server with reload on change\
+run `bun build-css` to build\
+run `bun build-css:watch` to build with reload on change
 
 ## naming scheme & general rules
 * do not name classes, variables, functions or anything that you define in any case other than snake_case
