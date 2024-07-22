@@ -5,7 +5,7 @@ run `bun i` to install every dependency, then\
 run `bun build-css` to build the css, then finally\
 run `bun dev` to start the webserver\
 OR\
-run `bun dev:watch` to start web server with reload on change\
+run `bun dev:watch` to start web server with reload on change
 
 ## scripts 
 run `bun dev` to start web server (will change script name)\
