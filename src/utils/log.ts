@@ -94,6 +94,16 @@ class logs {
     logs.push(message);
     logs.print(message);
   }
+  
+  static arbiter(txt: string | number) {
+    const message = printf(logs.format, 
+      colors.white(logs.time()), 
+      colors.magenta("arbiter"),
+      colors.white(txt.toString())
+    );
+    logs.push(message);
+    logs.print(message);
+  }
 }
 
 export default logs;

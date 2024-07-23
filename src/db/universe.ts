@@ -1,4 +1,4 @@
-import db from "../utils/db";
+import db from "../utils/sql";
 import xss from "xss";
 import argon2 from "argon2";
 import { type message_type } from "../utils/message";

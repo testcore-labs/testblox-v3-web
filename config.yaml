@@ -56,6 +56,18 @@ rules:
 locale: en-us
 lang: english
 
+database: 
+  host: 127.0.0.1
+  port: 5432
+  database: "testblox-v3"
+  username: "postgres"
+  password: "qqqq"
+
+rcc:
+  # recommend you make this very long
+  api_key: RCC_KEY_GOES_HERE
+  user_agent: "testblox/rcc; testblox/cURL; Roblox/WinInet"
+
 # http config
 port: 80
 

@@ -18,8 +18,8 @@ import colors from "colors";
 import front_routes from "./routes/front";
 import front_loggedin_routes from "./routes/front_loggedin";
 import api_v1_routes from "./routes/api_v1";
-import api_roblox_routes from "./routes/rbx/api";
-import api_rcc_roblox_routes from "./routes/rbx/rcc";
+import api_player_roblox_routes from "./routes/api_player_roblox";
+import api_rcc_roblox_routes from "./routes/api_rcc_roblox";
 
 arbiter.init();
 translate.init();
@@ -61,9 +61,8 @@ app.use(async (req, res, next) => {
   res.locals.translations = translate.translations;
   res.locals.t = translate.translations[req.cookies?.locale ? req.cookies?.locale.toString() : env.locale];
 
-   // cuser = current user
-  let cuser = new user();
-  await cuser.by_token(req.cookies[env.session.name]);
+  const cuser = new user(); // cuser = current user
+  cuser.by_token(req.cookies[env.session.name]);
   res.locals.cuser = cuser;
   res.locals.isloggedin = req.cookies[env.session.name] && (await cuser).exists; // await DOES change everything >:(
 
@@ -75,7 +74,7 @@ app.use("/assets", express.static(path.join(__dirname, "../public/assets")))
 app.use(front_loggedin_routes); 
 app.use(front_routes);
 app.use("/api/v1", api_v1_routes);
-app.use(api_roblox_routes);
+app.use(api_player_roblox_routes);
 app.use(api_rcc_roblox_routes);
 
 app.get("*", async_handler(async (req, res) => {

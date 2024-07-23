@@ -19,7 +19,7 @@ class translator {
     if(this.initialized) {
       return;
     }
-    logs.custom("starting", this.log_name);
+    logs.custom("starting...", this.log_name);
     const files = fs.readdirSync(this.log_dir)
     for(const file of files) {
       let data = fs.readFileSync(path.join(this.log_dir, file), 'utf8');

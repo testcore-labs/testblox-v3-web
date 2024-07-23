@@ -23,7 +23,7 @@ const creation_and_login_limiter = rateLimit({
 routes.post("/user/create", creation_and_login_limiter, async_handler(async (req: Request, res: Response) => {
   try {
     const usr = new user();
-    const resp = await usr.create(req.body.username?.toString(), req.body.password?.toString());
+    const resp = await usr.register(req.body.username?.toString(), req.body.password?.toString());
   
     if(resp.success) {
       if(resp.info !== undefined) {
@@ -55,7 +55,7 @@ routes.post("/user/create", creation_and_login_limiter, async_handler(async (req
 routes.post("/user/login", creation_and_login_limiter, async_handler(async (req: Request, res: Response) => {
   try {
     const usr = new user();
-    const resp = await usr.validate(req.body.username?.toString(), req.body.password?.toString());
+    const resp = await usr.login(req.body.username?.toString(), req.body.password?.toString());
     
     if(resp.success) {
       if(resp.info !== undefined) {

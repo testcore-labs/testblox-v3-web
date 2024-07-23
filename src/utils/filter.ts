@@ -2,6 +2,8 @@ class filter {
   static invisible_chars: string[];
   static bad_words: string[];
   static replacement_char: string;
+  static whitelist_words: string[];
+  static replacement_chars: { [key: string]: string };
   
   static {
     this.invisible_chars = [
@@ -62,11 +64,24 @@ class filter {
     "E0020"
     ];
 
+    this.replacement_chars = {
+      "0": "o",
+      "3": "e",
+      "5": "a",
+    };
+
     this.replacement_char = "#";
     this.bad_words = [
       "n+gg+r",
-      "c++n",
-    ]
+      "n+gga",
+      "coon",
+    ];
+    this.whitelist_words = [
+      "cain",
+      "coin",
+      "corn",
+      "conn"
+    ];
   }
 
   private static filter(text: string) {
@@ -90,6 +105,7 @@ class filter {
         return (this.replacement_char).repeat(match.length);
       });
     });
+
     return {filtered: filtered, amount_filtered: amount_filtered, txt: filtered_text};
   }
 
