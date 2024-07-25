@@ -335,3 +335,18 @@ var dragger = function() {
     },
   };
 }();
+
+function search_onkeyup(_searchinput, clicked = false) {
+  const rgx = /q=([^&]*)/;
+  const loc = window.location.href.replace(rgx, "q=" + _searchinput.value);
+  const newloc = window.location.href ? loc : "?q=" + _searchinput.value;
+  if(clicked) {
+    window.location.href = newloc;
+  }
+  _searchinput.addEventListener("keyup", function(event) {
+    event.preventDefault();
+    if(event.keyCode === 13) {
+      window.location.href = newloc;
+    }
+  });
+}

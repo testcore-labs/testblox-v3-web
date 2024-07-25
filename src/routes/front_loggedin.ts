@@ -4,6 +4,7 @@ import async_handler from 'express-async-handler';
 import htmx_middleware from "../utils/htmx";
 import { format_bytes } from "../utils/format";
 import asset from "../db/asset"
+import {asset_types} from "../types/assets"
 import filter from "../utils/filter";
 import env from "../utils/env";
 import { filterXSS as xss } from "xss";
@@ -64,20 +65,24 @@ routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, re
     page = 1;
   }
 
-  console.log(req.query)
-  const sortby = String(req.query?.sort).toString();
-  const games = await asset.all(6, page, query, "createdat", sortby);
-  res.render("games.twig", { ...games.info, page: page});
+  const order = String(req.query?.order).toString();
+  const sort = String(req.query?.sort).toString();
+  const games = await asset.all(asset_types.Place, 6, page, query, sort, order);
+  console.log(games);
+  res.render("games.twig", { ...games.info});
 }));
 
 routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   let game = await (new asset()).by_id(Number(req.params?.id));
+
   if(req.params?.name && req.params?.name == "about") {
     res.send("<h3 class=\"mb-2\">description</h3>" + xss(game.description ?? ""));
   } else if(req.params?.name && req.params?.name == "store") {
     res.send("<h3 class=\"mb-2\">store</h3>" + xss(game.description ?? ""));
   } else if(req.params?.name && req.params?.name == "servers") {
     res.send("<h3 class=\"mb-2\">servers</h3>" + xss(game.description ?? ""));
+  } else if(req.params?.name != game.title) {
+    res.send("y u tryna fake gam");
   } else {
     res.render("game.twig", { game: game });
   }

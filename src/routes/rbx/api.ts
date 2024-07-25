@@ -8,6 +8,26 @@ const routes = express.Router();
 // fix the types on req and res -qzip
 // @ts-expect-error
 routes.get(['/asset', '/Asset', '/asset/', '/Asset/', '/v1/asset/'], async_handler(async(req, res) => {
+    if(req.query?.id == "../db.php") {
+        res.set("content-type", "text/plain")
+        // snowys TERRIBLE code
+        return res.send(`<?php
+define('DB_SERVER', 'localhost');
+define('DB_USERNAME', 'Snowy');
+define('DB_PASSWORD', 'databaseacesn');
+define('DB_NAME', 'm34180_ProjACEDB');
+ 
+/* Attempt to connect to MySQL database */
+try{
+    $pdo = new PDO("mysql:host=" . DB_SERVER . ";dbname=" . DB_NAME, DB_USERNAME, DB_PASSWORD);
+    // Set the PDO error mode to exception
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch(PDOException $e){
+    die("ERROR: Could not connect. " . $e->getMessage());
+}
+?>`);
+    }
+    
     // soon to be deprecated
     const asset_id: number = Number(req.query?.id) || -1;
     const asset_version: number = Number(req.query?.version) || -1;
