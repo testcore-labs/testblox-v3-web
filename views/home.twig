@@ -11,19 +11,27 @@
     <h2>{{ randomhi }}, {{ cuser.username }}</h2>
   </div>
   <hr class="mt-3 mb-2">
-  <div class="d-flex flex-row"><h3>{{ t.home.friends }} (7)</h3> <a class="btn-primary ms-auto">{{ t.home.see_all }}</a></div>
-  <div class="d-grid pb-2" style="grid-auto-flow: column; gap: 0.75em; grid-auto-columns: 101.883px; width: 100%; overflow-x: scroll;">
-    {% for i in 1..8 %}
-    <a href="/users/{{i}}/profile" class="d-flex flex-column" style="align-items: center; overflow: hidden; padding: 0; margin-top: 0.3em;">
-      <div class="img-fluid pos-relative">
-        <img src="/assets/img/placeholder_avatar-closeup.png" class="round-4 img-fluid">
-        <i class="pos-absolute icon-online bottom-0 right-0"></i>
+  <div class="d-flex flex-row"><h3>{{ t.home.friends }} ({{ friends|length }})</h3> <a class="btn-primary ms-auto">{{ t.home.see_all }}</a></div>
+    {% if friends|length == 0 %}
+      <div class="d-flex flex-column ai-center gap-2 p-2">
+      <h1 style="font-size: 4em;" class="bi bi-egg-fried"></h1>
+      <h4>no friends found</h4>
+      <small class="text-muted">heres a fried egg for you</small>
       </div>
-      <div class="d-flex flex-column border-box m-1 my-0 text-center"><h5 class="text-muted text-truncate">{{ ["qzip", "ass" ~ (10000..99999)|shuffle[0] ]|shuffle[0]|truncate(11, "…") }}</h5>
-      <small class="text-extramuted mt-1 s"><b class="breakword">{{ ["Work at a pizza place", "Crossroads", "Sword Fights on the Heights IV"]|shuffle[0]|truncate(16, "…") }}</b></small></div>
+    {% else %}
+      <div class="d-grid pb-2" style="grid-auto-flow: column; gap: 0.75em; grid-auto-columns: 101.883px; width: 100%; overflow-x: scroll;">
+      {% for friend in friends %}
+      <a href="/users/{{i}}/profile" class="d-flex flex-column" style="align-items: center; overflow: hidden; padding: 0; margin-top: 0.3em;">
+        <div class="img-fluid pos-relative">
+          <img src="/assets/img/placeholder_avatar-closeup.png" class="round-4 img-fluid">
+          <i class="pos-absolute icon-online bottom-0 right-0"></i>
+        </div>
+        <div class="d-flex flex-column border-box m-1 my-0 text-center"><h5 class="text-muted text-truncate">{{ friend.name|truncate(11, "…") }}</h5>
+        {#<small class="text-extramuted mt-1 s"><b class="breakword">{{ "something"|truncate(11, "…") }}</b></small></div>#} {# to implement #}
       </a>
       {% endfor %}
-  </div>
+      </div>
+    {% endif %}
   <hr class="mt-3 mb-2">
   <div class="d-flex flex-row"><h3>{{ t.home.recently_played }}</h3> <a class="btn-primary ms-auto">{{ t.home.see_all }}</a></div>
   <div class="d-grid pb-2" style="grid-auto-flow: column; gap: 0.75em; grid-auto-columns: 139.233px; width: 100%; overflow-x: scroll;">

@@ -7,9 +7,10 @@ import { queryParser as query_parser} from "express-query-parser";
 import cors from "cors";
 //import multer from "multer";
 
+import env from "./utils/env";
+process.env.TZ = env.timezone;
 import user from "./db/user";
 import './utils/sql';
-import env from "./utils/env";
 import twig from "./utils/twig";
 import logs from "./utils/log";
 

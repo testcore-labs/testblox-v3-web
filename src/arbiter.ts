@@ -1,6 +1,5 @@
 import logs from "./utils/log";
-/*                 
-             ,,,,,,                  
+            /*,,,,,                  
          ,<***    "**>,      
       :{"    ,,,,,    .@@@.      _            _   _     _                        _     _ _            
      <?      $   $    *$@@*     | |          | | | |   | |                      | |   (_) |           
@@ -11,14 +10,15 @@ import logs from "./utils/log";
     <L,      $      *$    <?    
       \,     *@&gggggM  ,<`     
        *\~,          ,~<*`      
-          "**\;;;;<***          
-*/                              
+          "**\;;;;<**/      
+                              
 
-class arbiter {
+class arbiter {  
   constructor() {
-    logs.arbiter("EMPTY SERVICE");
     logs.arbiter("starting...");
   }
+
+
 }
 
 export default arbiter;

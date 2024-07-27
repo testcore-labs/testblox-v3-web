@@ -1,7 +1,7 @@
 app_name: testblox
 desc: oops..
 domain: tstblx.win
-dsc_invite: 5H6u2zR8qn
+dsc_invite: pHPBy8FvAY
 debug: true
 production: false # else development
 log_file: false
@@ -55,6 +55,7 @@ rules:
 # server default 
 locale: en-us
 lang: english
+timezone: Europe/Vilnius
 
 database: 
   host: 127.0.0.1

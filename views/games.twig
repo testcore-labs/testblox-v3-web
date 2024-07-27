@@ -5,11 +5,11 @@
 <div class="d-flex flex-column gap-1">
 <div class="d-flex flex-row flex-wrap ai-center gap-3">
   <h2>{{ t.games.games }}</h2>
-  <div class="d-flex flex-row flex-wrap gap-2 ms-auto">
+  <div class="d-flex flex-row flex-wrap gap-2 ms-auto w-autoto100-sm">
   {% include '/components/pagination.twig' with {params: req.query, page: page, queries: queries, totalpages: total_pages, classes: "jc-center"} %}
-  <div class="d-flex flex-row pillify">
-  <input name="q" placeholder="search for a game.." value="{{ req.query.q }}" onkeydown="search_onkeyup(this)" id="game-search" type="search">
-  <button onclick="search_onkeyup($('#game-search'), true)"><h5 class="bi bi-search"></h5></button>
+  <div class="d-flex flex-row pillify flex-grow-1">
+  <input name="q" class="w-100" placeholder="search for a game.." value="{{ req.query.q }}" onkeydown="search_onkeyup(this)" id="game-search" type="search">
+  <button class="mx-1" onclick="search_onkeyup($('#game-search'), true)"><h5 class="bi bi-search"></h5></button>
   </div>
   <div class="pos-relative">
     <button onclick="dropdownify(this, $('#filterresults'));"><h4 class="bi bi-filter"></h4></button>
@@ -26,14 +26,18 @@
   </div>
 </div>
 <hr class="mt-3 mb-2">
-<div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));">
-  {% if queries|length == 0 %}
-    no games found
-  {% else %}
+{% if queries|length == 0 %}
+  <div class="d-flex flex-column ai-center gap-2 p-3">
+  <h1 style="font-size: 4em;" class="bi bi-egg-fried"></h1>
+  <h4>no games found</h4>
+  <small class="text-muted">heres a fried egg for you</small>
+  </div>
+{% else %}
+  <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));">
     {% for game in queries %}
       {% include '/components/game_default.twig' with {game: game} %}
     {% endfor %}
-  {% endif %}
-</div>
+  </div>
+{% endif %}
 </div>
 {% endblock %}

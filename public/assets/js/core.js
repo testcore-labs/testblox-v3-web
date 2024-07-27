@@ -339,8 +339,9 @@ var dragger = function() {
 function search_onkeyup(_searchinput, clicked = false) {
   const rgx = /q=([^&]*)/;
   const loc = window.location.href.replace(rgx, "q=" + _searchinput.value);
-  const newloc = window.location.href ? loc : "?q=" + _searchinput.value;
+  const newloc = window.location.href.match(rgx) ? loc : "?q=" + _searchinput.value;
   if(clicked) {
+    console.log("fdsd");
     window.location.href = newloc;
   }
   _searchinput.addEventListener("keyup", function(event) {

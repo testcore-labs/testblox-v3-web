@@ -64,7 +64,7 @@ class user {
   }
 
   async _updateat() {
-    return await sql`UPDATE "users" SET "updatedat" = ${new Date} WHERE "id" = ${this.data?.id}`;
+    return await sql`UPDATE "users" SET "updatedat" = ${Date.now()} WHERE "id" = ${this.data?.id}`;
   }
 
   get exists() {
@@ -100,10 +100,27 @@ class user {
     return Number(this.data?.currency);
   }
 
-  set money(amount: number) {
-    sql`UPDATE "users" SET currency = ${amount} WHERE "id" = ${this.data?.id}`;
+  get short_money(): string {
+    let money = Intl.NumberFormat('en-US', {
+      notation: "compact",
+      maximumFractionDigits: 1
+    }).format(this.data?.currency);
+  
+    return String(money);
+  }
+
+
+  async set_money(amount: number) {
+    await sql`UPDATE "users" SET currency = ${amount} WHERE "id" = ${this.data?.id}`;
     if(this.data) this.data.currency = amount;
-    this._updateat();
+    await this._updateat();
+  }
+
+  async add_money(amount: number) {
+    await sql`UPDATE "users" SET currency = currency + ${ Number(amount) } WHERE "id" = ${this.data?.id}`;
+    if(this.data) this.data.currency = Number(this.data.currency) + Number(amount);
+    console.log(this.data?.currency);
+    await this._updateat();
   }
 
   get is_mod(): boolean {
@@ -154,12 +171,13 @@ class user {
     let rules = {
       "username.empty": (!username || username == "" || username.length == 0),
       "username.is_more_than_20": username.length > 20,
+      "username.is_0": username.length == 0,
       "username.is_not_ascii": !(new RegExp(`^[A-Za-z0-9_]+$`)).test(username),
     }
 
-    Object.entries(rules).forEach((rule, valid) => {
+    for(const [rule, valid] of Object.entries(rules)) {
       if(valid) return rule;
-    })
+    }
     return false;
   }
 
@@ -168,12 +186,12 @@ class user {
       "password.empty": (!password || password == "" || password.length == 0),
       "password.is_more_than_32": password.length > 32,
       "password.is_less_than_4": password.length < 4,
-      "password.is_not_ascii": !(new RegExp(`^[A-Za-z0-9_]+$`)).test(password),
+      "password.is_not_ascii": !(new RegExp(`^[A-Za-z0-9_#\$]+$`)).test(password),
     }
 
-    Object.entries(rules).forEach((rule, valid) => {
+    for(const [rule, valid] of Object.entries(rules)) {
       if(valid) return rule;
-    })
+    }
     return false;
   }
 
@@ -190,12 +208,13 @@ class user {
     password = password.toString();
 
     const un_err = this.username_validate(username);
-    if(typeof(un_err) == "string") {
-      return un_err;
+    if(un_err !== false) {
+      // this isnt a bool typescript just assumes
+      return { success: false, message: String(un_err) };
     }
     const pw_err = this.password_validate(password);
-    if(typeof(pw_err) == "string") {
-      return pw_err;
+    if(pw_err !== false) {
+      return { success: false, message: String(pw_err) };
     }
 
     const hash = await argon2.hash(password ?? "");
@@ -236,12 +255,12 @@ class user {
     password = password.toString();
 
     const un_err = this.username_validate(username);
-    if(typeof(un_err) == "string") {
-      return un_err;
+    if(un_err !== false) {
+      return { success: false, message: String(un_err) };
     }
     const pw_err = this.password_validate(password);
-    if(typeof(pw_err) == "string") {
-      return pw_err;
+    if(pw_err !== false) {
+      return { success: false, message: String(pw_err) };
     }
 
     let st = await sql`

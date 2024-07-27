@@ -15,6 +15,50 @@ import { orderby_enum, order_enum } from "../types/orderby";
 const asset_folder = path.join(root_path, "files", "assets");
 
 class asset {
+  catalog_types = [
+    asset_types.Hat,
+    asset_types.TShirt,
+    asset_types.Shirt,
+    asset_types.Pants,
+    asset_types.Face,
+    asset_types.Gear,
+    asset_types.Head,
+    asset_types.Torso,
+    asset_types.LeftArm,
+    asset_types.RightArm,
+    asset_types.LeftLeg,
+    asset_types.RightLeg,
+    asset_types.Package,
+    asset_types.RunAnimation,
+    asset_types.FallAnimation,
+    asset_types.IdleAnimation,
+    asset_types.JumpAnimation,
+    asset_types.PoseAnimation,
+    asset_types.SwimAnimation,
+    asset_types.WalkAnimation,
+    asset_types.ClimbAnimation,
+    asset_types.DeathAnimation,
+    asset_types.HairAccessory,
+    asset_types.FaceAccessory,
+    asset_types.NeckAccessory,
+    asset_types.ShoulderAccessory,
+    asset_types.FrontAccessory,
+    asset_types.BackAccessory,
+    asset_types.WaistAccessory,
+    asset_types.DeathAnimation,
+  ];
+  library_types = [
+    asset_types.Audio,
+    asset_types.Mesh,
+    asset_types.Lua,
+    asset_types.Model,
+    asset_types.Decal,
+    asset_types.Badge,
+    asset_types.Animation,
+    asset_types.GamePass,
+    asset_types.Plugin,
+    asset_types.MeshPart,
+  ];
   data: { [key: string]: any } | undefined;
 
   constructor() {
@@ -98,6 +142,31 @@ class asset {
       page: page,
       total_items: total_items
     }};
+  }
+
+  get is_place() {
+    if(this.data?.type == asset_types.Place) {
+      return true;
+    }
+  }
+
+  
+  get for_games() {
+    if(this.data?.type == asset_types.Place) {
+      return true;
+    }
+  }
+
+  get for_catalog() {
+    if(this.catalog_types[this.data?.type]) {
+      return true;
+    }
+  }
+
+  get for_library() {
+    if(this.library_types[this.data?.type]) {
+      return true;
+    }
   }
 
   //s 

@@ -8,8 +8,9 @@ import {asset_types} from "../types/assets"
 import filter from "../utils/filter";
 import env from "../utils/env";
 import { filterXSS as xss } from "xss";
-
+import promokey from "../db/promokey";
 import os from "os";
+import type { message_type } from "../utils/message";
 
 routes.use(htmx_middleware);
 
@@ -49,6 +50,18 @@ function mod_handler(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+routes.all("/redeem", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  const code = req.body?.code;
+  
+  let resp: message_type = { success: false, message: "" };
+  if(code !== undefined) {
+  let promkey = new promokey();
+  await promkey.by_code(code);
+  resp = await promkey.redeem(res.locals.cuser.id);
+  }
+
+  res.render("redeem.twig", { response: resp })
+}));
 
 routes.get("/filter/:this", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   res.send(filter.text_all(req.params.this))

@@ -25,7 +25,7 @@
 </div>
 <div class="d-flex flex-column gap-5 as-baseline flex-1" style="flex-grow: 1; flex-basis: 17.5em;">
 {% if req.query.type == "login" or req.query.type == "" or not req.query.type %}
-<form class="card d-flex flex-column gap-2 as-baseline w-100" hx-target="#result" hx-swap="innerHTML" hx-post="/api/v1/user/login?plaintext&redirect=/">
+<form class="d-flex flex-column gap-2 as-baseline w-100" hx-target="#result" hx-swap="innerHTML" hx-post="/api/v1/user/login?plaintext&redirect=/">
   <div class="d-flex flex-row card card-dark-primary hide-if-no-text" id="result"></div>
   <input type="text" name="username" placeholder="username">
   <input type="password" name="password" placeholder="PaSsWoRd123#">
@@ -34,7 +34,7 @@
   <small class="text-muted">if you don't have an account, <a class="link" href="?type=register">register</a></small>
 </form>
 {% elseif req.query.type == "register" %}
-<form class="card d-flex flex-column gap-2 as-baseline w-100" hx-target="#result" hx-swap="innerHTML" hx-post="/api/v1/user/create?plaintext&redirect=/">
+<form class="d-flex flex-column gap-2 as-baseline w-100" hx-target="#result" hx-swap="innerHTML" hx-post="/api/v1/user/create?plaintext&redirect=/">
   <div class="d-flex flex-row card card-dark-primary hide-if-no-text" id="result"></div>
   <input type="text" name="username" placeholder="username">
   <input type="password" name="password" placeholder="PaSsWoRd123#">

@@ -1,0 +1,10 @@
+{% extends "html.twig" %}
+
+{% block content %}
+  <h2>redeem a code</h2>
+  <div>{{ response.message }}</div>
+  <form method="post" class="d-flex flex-row gap-2">
+    <input type="text" name="code" style="width: 100%; max-width: 24em; text-align: center;" placeholder="theee-theee-theee-theee-theee">
+    <button class="btn-secondary" type="submit">redeem</button>
+  </form>
+{% endblock %}

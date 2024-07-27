@@ -18,7 +18,7 @@
   </head>
   <body class="p-4" style="box-sizing: border-box;">
     <div class="container round-4" style="padding: 0;{% if enablecontainerbg ?? true %} background: #0c0c0c;{% endif %} {{ container_styles }}">
-      {% if enablenavbar ?? true %}<nav class="d-flex flex-row flex-row-to-col flex-wrap gap-3 ai-center card card-dark-primary round-bx-0 py-2 p-3">
+      {% if enablenavbar ?? true %}<nav class="d-flex flex-row flex-wrap gap-3 ai-center card card-dark-primary round-bx-0 py-2 p-3">
         <div class="navbar-hover d-flex flex-row flex-wrap ai-center gap-5 flex-grow-1 flex-shrink-1 me-2" style="flex-basis: 10em;">
         <a class="nav-logo" href="/"></a>
         <a href="/games/"><b style="font-size: 1.025em;">{{ t.navbar.games }}</b></a>
@@ -26,7 +26,7 @@
         <a href="/library/"><b style="font-size: 1.025em;">{{ t.navbar.develop }}</b></a>
         </div>
 
-        <div class="pos-relative flex-autotofill order-nonetoend" style="flex-basis: 20em; flex-shrink: 5;">
+        <div class="pos-relative flex-autotofill searchbar-nav">
           <div class="d-flex flex-row pillify shadow-1 round-4" style="height: 2.4em;">
             <input type="search" class="shadowless flex-1" style="box-shadow: unset; width: 100%;" id="navbar-search" placeholder="search.." name="qnavbar" hx-get="/api/v1/searchbar" hx-trigger="keyup delay:250ms changed" hx-target="#navbar-search-results" hx-on:htmx:config-request="document.getElementById('navbar-search-results').classList.remove('d-none');">
             <button type="submit" class="shadowless border-light-1 px-4" style="background: #000;"><h5 class="bi bi-search text-muted"></h5></button>
@@ -38,7 +38,7 @@
         {% if isloggedin %}
         <div class="d-flex flex-row ai-center ms-auto gap-1">
           <img style="filter: grayscale(1);" src="/assets/img/currency.svg" title="{{ cuser.money }}" width=20>
-          <b title="{{ cuser.money }}">{{ cuser.money }}</b>
+          <b title="{{ cuser.money }}">{{ cuser.short_money }}</b>
         </div>
         <div class="pos-relative">
           <div class="d-flex flex-row ai-center gap-3 c-pointer" onclick="dropdownify(this, $('#userdropdown'));">
@@ -55,13 +55,13 @@
           <a class="px-4 py-1" hx-post="/api/v1/user/logout?redirect=/"><i class="bi bi-box-arrow-left"></i> {{ t.navbar.logout }}</a>
           </div></div>
         </div>{% else %}<div class="navbar-hover d-flex flex-row ai-center ms-auto gap-5">
-          <a href="/?type=register">{{ t.navbar.register }}</a>
+          <a class="mobile-hide" href="/?type=register">{{ t.navbar.register }}</a>
           <a href="/?type=login">{{ t.navbar.login }}</a>
           </div>{% endif %}
         </div>
       </nav>
     {% endif %}
-      {% if (enablenavbar ?? true) and isloggedin %}<nav class="second-navbar-hover d-flex flex-row flex-row-to-col flex-wrap gap-6 ai-center card round-0" style="padding: 0.45em 0.35em;">
+      {% if (enablenavbar ?? true) and isloggedin %}<nav class="second-navbar-hover d-flex flex-row flex-wrap gap-6 ai-center card round-0" style="padding: 0.45em 0.35em;">
         <a href="/avatar/"><i class="bi bi-person-fill-gear"></i> <b>{{ t.navbar.avatar }}</b></a>
         <a href="/messages/"><i class="bi bi-envelope"></i> <b>{{ t.navbar.messages }}</b></a>
         <a href="/trade/"><i class="bi bi-arrow-left-right"></i> <b>{{ t.navbar.trade }}</b></a>
