@@ -14,7 +14,7 @@
     <script src="/assets/js/core.js"></script>
     <script src="/assets/js/htmx.min.js"></script>
     <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
-    <title>{{ title ?? pagename }} | {{ env['app_name'] }}</title>
+    <title>{{ title ?? req.path }} | {{ env['app_name'] }}</title>
   </head>
   <body class="p-4" style="box-sizing: border-box;">
     <div class="container round-4" style="padding: 0;{% if enablecontainerbg ?? true %} background: #0c0c0c;{% endif %} {{ container_styles }}">
@@ -47,8 +47,8 @@
           </div>
           
           <div class="pos-absolute mt-2 right-0 dropdownify" id="userdropdown" style="width: 10em;"><div class="card px-0 d-flex flex-column gap-3">
-          <a class="px-4 py-1" href="/profile"><i class="bi bi-person"></i> {{ t.navbar.profile }}</a>
-          <a class="px-4 py-1" href="/inventory"><i class="bi bi-backpack"></i> {{ t.navbar.inventory }}</a>
+          <a class="px-4 py-1" href="/users/{{ cuser.id }}/profile"><i class="bi bi-person"></i> {{ t.navbar.profile }}</a>
+          <a class="px-4 py-1" href="/users/{{ cuser.id }}/inventory"><i class="bi bi-backpack"></i> {{ t.navbar.inventory }}</a>
           <a class="px-4 py-1" href="/settings/"><i class="bi bi-sliders"></i> {{ t.navbar.settings }}</a>
           {% if cuser.is_mod or cuser.is_admin or cuser.is_owner %}<a class="px-4 py-1" href="{{ env.admin_panel.path }}/"><i class="bi bi-wrench-adjustable-circle-fill"></i> {{ t.navbar.admin }}</a>{% endif %}
           <hr nomargin>

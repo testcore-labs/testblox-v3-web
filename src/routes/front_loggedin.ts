@@ -4,6 +4,7 @@ import async_handler from 'express-async-handler';
 import htmx_middleware from "../utils/htmx";
 import { format_bytes } from "../utils/format";
 import asset from "../db/asset"
+import user from "../db/user";
 import {asset_types} from "../types/assets"
 import filter from "../utils/filter";
 import env from "../utils/env";
@@ -67,8 +68,13 @@ routes.get("/filter/:this", notloggedin_handler, async_handler(async (req: Reque
   res.send(filter.text_all(req.params.this))
 }));
 
+routes.get("/play/:placeid", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  res.render("player/window.twig");
+}));
+
 routes.get("/home", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  res.render("home.twig");
+  let friends = await res.locals.cuser.get_friends();
+  res.render("home.twig", { friends: friends });
 }));
 
 routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
@@ -81,8 +87,21 @@ routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, re
   const order = String(req.query?.order).toString();
   const sort = String(req.query?.sort).toString();
   const games = await asset.all(asset_types.Place, 6, page, query, sort, order);
-  console.log(games);
   res.render("games.twig", { ...games.info});
+}));
+
+routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  const query = String(req.query?.q).toString();
+  let page = Number(req.query.p);
+  if(String(page) == "NaN" || Number(page) <= 0) {
+    page = 1;
+  }
+
+  const order = String(req.query?.order).toString();
+  const sort = String(req.query?.sort).toString();
+  const users = await user.all(6, page, query, sort, order);
+  console.log(users);
+  res.render("users.twig", { ...users.info});
 }));
 
 routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
@@ -99,11 +118,6 @@ routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Req
   } else {
     res.render("game.twig", { game: game });
   }
-}));
-
-
-routes.get("/sex/:title/:description/:userid/:file", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  res.send(await ((new asset()).create_place(req.params.title, req.params.description, Number(req.params.userid), req.params.file)));
 }));
 
 // admin only routes

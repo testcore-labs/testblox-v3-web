@@ -105,7 +105,11 @@ routes.post("/user/logout", async_handler(async (req: Request, res: Response) =>
 }),);
 
 routes.get("/searchbar", async_handler(async (req, res) => {
-  res.render("components/search_results_navbar.twig", { query: req.query.qnavbar !== "" ? req.query.qnavbar : "(hey search something)" })
+  if(req.query.qnavbar !== "") {
+    res.render("components/search_results_navbar.twig", { query: req.query.qnavbar })
+  } else {
+    res.end();
+  }
 }));
 
 routes.get("*", async_handler(async (req, res) => {

@@ -1,10 +1,12 @@
 import sql, { type postgres } from "../utils/sql";
 import xss from "xss";
 import argon2 from "argon2";
+import bbcode from "bbcode-ts";
 import { type message_type } from "../utils/message";
 import { membership_types } from "../types/membership";
 import { gender_types } from "../types/gender";
 import env from "../utils/env";
+import { orderby_enum } from "../types/orderby";
 
 const settings_obj = {
   locale: String, // user decides
@@ -63,6 +65,45 @@ class user {
     return this;
   }
 
+  static async all(
+    limit: number = 16, 
+    page: number = 1, 
+    query: string, 
+    sort: string = "createdat", 
+    order: string = orderby_enum.DESCENDING): 
+    Promise<message_type> {
+    const allowed_sorts = ["title", "description", "updatedat", "createdat"];
+    const allowed_wheres = ["title", "description"];
+
+    const start = (page - 1) * limit;
+    sort = Object(allowed_sorts)[sort];
+    let hs = order.toString().toUpperCase() === orderby_enum.ASCENDING; // how to sort
+
+    let nq; // not set query
+    if(query == "undefined") query = ""; nq = false;
+
+    let users = await sql`SELECT * 
+    FROM "assets" 
+    WHERE ${ allowed_wheres.reduce((_w, wheree) =>
+      sql`(${wheree} like ${ '%' + query + '%' })`,
+      sql`false`
+    )}
+    ORDER BY ${ sort } ${ hs ? sql`ASC` : sql`DESC` } 
+    LIMIT ${limit} OFFSET ${start}`;
+    
+    const total_items = users.length;
+    const total_pages = Math.ceil(total_items / limit);
+
+    return { success: true, message: "", info: { 
+      queries: users, 
+      total_pages: total_pages, 
+      page: page,
+      total_items: total_items,
+      allowed_sorts: allowed_sorts,
+      allowed_wheres: allowed_wheres,
+    }};
+  }
+
   async _updateat() {
     return await sql`UPDATE "users" SET "updatedat" = ${Date.now()} WHERE "id" = ${this.data?.id}`;
   }
@@ -86,6 +127,16 @@ class user {
   set username(set) {
     console.log(set);
   }  
+
+  get description() {
+    return this.data?.description ?? "";
+  }
+  get styled_description() {
+    let bbparser = new bbcode;
+    let desc = this.data?.description;
+    desc = bbparser.parse(desc, ["b", "i"]);
+    return desc ?? "";
+  }
 
   get password() { // this.data? is for not giving a fuck if its null 
     return xss(this.data?.username ?? "");
@@ -123,6 +174,35 @@ class user {
     await this._updateat();
   }
 
+  async friend_user() {
+    // todo
+  }
+
+  async accept_user() {
+    // todo
+  }
+
+  async get_friends() {
+    let friends = await sql`SELECT CASE
+        WHEN "from" = ${this.data?.id} THEN "to"
+        ELSE "from"
+      END as friend_id
+    FROM "friends" 
+    WHERE ("from" = ${this.data?.id} OR "to" = ${this.data?.id})
+    AND "accepted" = true`;
+
+    const friend_ids = friends.map(row => row.friend_id);
+    const user_friends = await Promise.all(
+      friend_ids.map(async friend_id => {
+        let friend = new user;
+        return await friend.by_id(friend_id);
+      })
+    );
+
+    return user_friends;
+  }
+
+
   get is_mod(): boolean {
     return this.data?.privelege === this.priveleges.mod;
   }
@@ -139,6 +219,9 @@ class user {
   //   return; // TODO: use assets to return the Image of the rendered character
   // }
 
+  get is_online() {
+    return ((Date.now() - (this.data?.online || 0)) < 30);
+  }
 
   get rand_token(): string {
     let characters = "0123456789abcdef"

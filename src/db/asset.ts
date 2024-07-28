@@ -124,7 +124,7 @@ class asset {
     let nq; // not set query
     if(query == "undefined") query = ""; nq = false;
 
-    let users = await sql`SELECT * 
+    let assets = await sql`SELECT * 
     FROM "assets" 
     WHERE "type" = ${type} AND ${ allowed_wheres.reduce((_w, wheree) =>
       sql`(${wheree} like ${ '%' + query + '%' })`,
@@ -133,14 +133,16 @@ class asset {
     ORDER BY ${ sort } ${ hs ? sql`ASC` : sql`DESC` } 
     LIMIT ${limit} OFFSET ${start}`;
     
-    const total_items = users.length;
+    const total_items = assets.length;
     const total_pages = Math.ceil(total_items / limit);
 
     return { success: true, message: "", info: { 
-      queries: users, 
+      queries: assets, 
       total_pages: total_pages, 
       page: page,
-      total_items: total_items
+      total_items: total_items,
+      allowed_sorts: allowed_sorts,
+      allowed_wheres: allowed_wheres,
     }};
   }
 

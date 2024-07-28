@@ -19,6 +19,7 @@
 } %}
 {% set error = errors[res.statusCode] %}
 {% set randomerr = error.errors|shuffle[0] %}
+{% set title = res.statusCode %}
 {% block content %}
 <div class="d-flex flex-column gap-3 ai-center jc-center m-5">
   <img pixelate src="/assets/img/tstblx_404.png" class="mb-2" height=80>

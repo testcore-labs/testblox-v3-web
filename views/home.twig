@@ -1,4 +1,5 @@
 {% extends "html.twig" %}
+{% set title = "home" %}
 
 {% block content %}
 {% set randomhis = [
@@ -21,13 +22,13 @@
     {% else %}
       <div class="d-grid pb-2" style="grid-auto-flow: column; gap: 0.75em; grid-auto-columns: 101.883px; width: 100%; overflow-x: scroll;">
       {% for friend in friends %}
-      <a href="/users/{{i}}/profile" class="d-flex flex-column" style="align-items: center; overflow: hidden; padding: 0; margin-top: 0.3em;">
+      <a href="/users/{{ friend.id }}/profile" class="d-flex flex-column" style="align-items: center; overflow: hidden; padding: 0; margin-top: 0.3em;">
         <div class="img-fluid pos-relative">
           <img src="/assets/img/placeholder_avatar-closeup.png" class="round-4 img-fluid">
-          <i class="pos-absolute icon-online bottom-0 right-0"></i>
+          {% if friend.is_online %}<i class="pos-absolute icon-online bottom-0 right-0"></i>{% endif %}
         </div>
-        <div class="d-flex flex-column border-box m-1 my-0 text-center"><h5 class="text-muted text-truncate">{{ friend.name|truncate(11, "…") }}</h5>
-        {#<small class="text-extramuted mt-1 s"><b class="breakword">{{ "something"|truncate(11, "…") }}</b></small></div>#} {# to implement #}
+        <div class="d-flex flex-column border-box m-1 my-0 text-center"><h5 class="text-muted text-truncate">{{ friend.username|truncate(11, "…") }}</h5>
+        {#<small class="text-extramuted mt-1 s"><b class="breakword">{{ "something"|truncate(11, "…") }}</b></small>#} {# to implement #}</div>
       </a>
       {% endfor %}
       </div>
