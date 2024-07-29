@@ -18,8 +18,8 @@ try {
     transform: { undefined: null }
   });
   // try to query
-  sql`SELECT 1`; // fails if not connected
-
+  await sql`SELECT 1`; // fails if not connected
+  
   logs.database(`connected to ${db_creds.username}:${db_creds.password.replace(/./gi, "*")}@${db_creds.host}:${db_creds.port}/${db_creds.database}`);
 } catch(e) {
   throw logs.database(`failed to connect: ${e}`);
