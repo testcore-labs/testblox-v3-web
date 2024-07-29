@@ -62,7 +62,8 @@ database:
   port: 5432
   database: "testblox-v3"
   username: "postgres"
-  password: "qqqq"
+  password: "qqqq"  
+  ssl: false # useless if on the same server as webserver
 
 rcc:
   # recommend you make this very long
@@ -70,7 +71,8 @@ rcc:
   user_agent: "testblox/rcc; testblox/cURL; Roblox/WinInet"
 
 # http config
-port: 80
+http:
+  port: 80
 
 # use nginx noob
 #ssl: true

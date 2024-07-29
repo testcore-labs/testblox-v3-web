@@ -101,6 +101,6 @@ app.use((err: any, req: any, res: any, next: any) => {
   }
 });
 
-app.listen(env.port, () => {
-  logs.http(`running at :${env.port}`);
+app.listen(env.http.port, () => {
+  logs.http(`running at :${env.http.port}`);
 });
