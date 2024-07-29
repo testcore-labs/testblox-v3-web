@@ -69,7 +69,8 @@ routes.get("/filter/:this", notloggedin_handler, async_handler(async (req: Reque
 }));
 
 routes.get("/play/:placeid", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  res.render("player/window.twig");
+  res.send("doesn't work rn");
+  //res.render("player/window.twig");
 }));
 
 routes.get("/home", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
@@ -148,6 +149,9 @@ routes.get(`${admin_route_path}/`, notloggedin_handler, admin_handler, async_han
 
 routes.get(`${admin_route_path}/debug`, debug_handler, notloggedin_handler, admin_handler, async_handler(async (req: Request, res: Response) => {
   res.render("admin/debug.twig")
+}));
+routes.get(`${admin_route_path}/invite-keys`, debug_handler, notloggedin_handler, admin_handler, async_handler(async (req: Request, res: Response) => {
+  res.render("admin/invite-keys.twig")
 }));
 
 export default routes;

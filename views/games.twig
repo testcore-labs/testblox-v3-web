@@ -9,19 +9,19 @@
   <div class="d-flex flex-row flex-wrap gap-2 ms-auto w-autoto100-sm">
   {% include '/components/pagination.twig' with {params: req.query, page: page, queries: queries, totalpages: total_pages, classes: "jc-center"} %}
   <div class="d-flex flex-row pillify flex-grow-1">
-  <input name="q" class="w-100" placeholder="search for a game.." value="{{ req.query.q }}" onkeydown="search_onkeyup(this)" id="game-search" type="search">
+  <input name="q" class="w-100" placeholder="{{ t.games.search }}" value="{{ req.query.q }}" onkeydown="search_onkeyup(this)" id="game-search" type="search">
   <button class="mx-1" onclick="search_onkeyup($('#game-search'), true)"><h5 class="bi bi-search"></h5></button>
   </div>
   <div class="pos-relative">
     <button onclick="dropdownify(this, $('#filterresults'));"><h4 class="bi bi-filter"></h4></button>
     <div class="pos-absolute dropdownify mt-1 card d-flex flex-column gap-3" style="width: 14em; z-index: 2;" id="filterresults">
-      <a href="?{{ query_remove_key(req.query, "order") }}order=ASC">order by <b>ascending</b></a>
-      <a href="?{{ query_remove_key(req.query, "order") }}order=DESC">order by <b>descending</b></a>
+      <a href="?{{ query_remove_key(req.query, "order") }}order=ASC">{{ t.games.order_by_ascending }}</a>
+      <a href="?{{ query_remove_key(req.query, "order") }}order=DESC">{{ t.games.order_by_descending }}</a>
       <hr class="mt-1 mb-1">
-      <a href="?{{ query_remove_key(req.query, "sort") }}sort=title">sort by <b>title</b></a>
-      <a href="?{{ query_remove_key(req.query, "sort") }}sort=description">sort by <b>description</b></a>
-      <a href="?{{ query_remove_key(req.query, "sort") }}sort=updatedat">sort by <b>updated</b></a>
-      <a href="?{{ query_remove_key(req.query, "sort") }}sort=createdat">sort by <b>created</b></a>
+      <a href="?{{ query_remove_key(req.query, "sort") }}sort=title">{{ t.games.sort_by_title }}</a>
+      <a href="?{{ query_remove_key(req.query, "sort") }}sort=description">{{ t.games.sort_by_description }}</a>
+      <a href="?{{ query_remove_key(req.query, "sort") }}sort=updatedat">{{ t.games.sort_by_updated }}</a>
+      <a href="?{{ query_remove_key(req.query, "sort") }}sort=createdat">{{ t.games.sort_by_created }}</a>
     </div>
   </div>
   </div>

@@ -30,6 +30,14 @@ home:
   see_all: see all
 games:
   games: games
+  search: search for a game..
+  order_by_ascending: order by ascending
+  order_by_descending: order by descending
+  sort_by_title: sort by title
+  sort_by_description: sort by description
+  sort_by_updated: sort by updated
+  sort_by_created: sort by created
+
 
 users:
   users: users

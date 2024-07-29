@@ -257,7 +257,6 @@ body {
 }
 
 body > .container {
-  padding: 0.4em;
   box-sizing: border-box;
   width: 100%;
   max-width: $containerwidth;
@@ -1067,6 +1066,13 @@ table.border-light {
   white-space: nowrap;
   overflow: hidden;
 }
+.text-truncate-l2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
 
 .flash-game-embed {
   margin: auto auto;
@@ -1391,6 +1397,9 @@ a {
 
 
 @media (min-width: 1px) {
+  .body-padding {
+    padding: 0 !important;
+  }
   .swap-element-400px {
     & > *.first {
       display: none;
@@ -1454,6 +1463,9 @@ a {
 }
   
 @media (min-width: 550px) {
+  .body-padding {
+    padding: 0.4em !important;
+  }
   .mobile-hide {
     display: initial;
   }

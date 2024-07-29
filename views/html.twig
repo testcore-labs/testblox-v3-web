@@ -16,7 +16,7 @@
     <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
     <title>{{ title ?? req.path }} | {{ env['app_name'] }}</title>
   </head>
-  <body class="p-4" style="box-sizing: border-box;">
+  <body class="body-padding" style="box-sizing: border-box;">
     <div class="container round-4" style="padding: 0;{% if enablecontainerbg ?? true %} background: #0c0c0c;{% endif %} {{ container_styles }}">
       {% if enablenavbar ?? true %}<nav class="d-flex flex-row flex-wrap gap-3 ai-center card card-dark-primary round-bx-0 py-2 p-3">
         <div class="navbar-hover d-flex flex-row flex-wrap ai-center gap-5 flex-grow-1 flex-shrink-1 me-2" style="flex-basis: 10em;">

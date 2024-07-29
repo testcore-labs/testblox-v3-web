@@ -10,7 +10,9 @@
         </div>
         <span class="breakword">{{ (game.description ?? "<i class='breakword'>no description set.</i>")|truncate(96, "…") }}</span>
       </div>
-      <button class="btn-play d-flex ai-center jc-center round-3 pos-absolute as-baseline" style="right: 0.25em; bottom: 0.25em; padding: 0.1em 0.1em 0.025em 0.125em; font-size: 1.55em;"><i class="bi bi-play-fill"></i></button>
+      <object>
+      <a href="/play/{{ game.id }}" class="btn-play d-flex ai-center jc-center round-3 pos-absolute as-baseline" style="right: 0.25em; bottom: 0.25em; padding: 0.1em 0.1em 0.025em 0.125em; font-size: 1.55em;"><i class="bi bi-play-fill"></i></a>
+      </object>
     </div> 
   </div>
   <div class="d-flex flex-column border-box m-1 my-0"><h4 class="text-muted breakword">{{ game.title|truncate(24, "…") }}</h4>
