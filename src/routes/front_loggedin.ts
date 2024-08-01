@@ -5,51 +5,19 @@ import htmx_middleware from "../utils/htmx";
 import { format_bytes } from "../utils/format";
 import asset from "../db/asset"
 import user from "../db/user";
+import invitekey from "../db/invitekey";
 import {asset_types} from "../types/assets"
 import filter from "../utils/filter";
-import env from "../utils/env";
+import env, { raw_env } from "../utils/env";
 import { filterXSS as xss } from "xss";
 import promokey from "../db/promokey";
 import os from "os";
 import type { message_type } from "../utils/message";
+import { notloggedin_handler, mod_handler, admin_handler, owner_handler } from "../utils/handlers";
+import si from "systeminformation";
+import { sys } from "typescript";
 
 routes.use(htmx_middleware);
-
-function notloggedin_handler(req: Request, res: Response, next: NextFunction) {
-  if(!res.locals.isloggedin) {
-    res.htmx.redirect("/");
-  } else {
-    next();
-  }
-}
-
-function debug_handler(req: Request, res: Response, next: NextFunction) {
-  if(!env.debug) {
-    if(env.admin_panel.debug.troll) {
-      res.htmx.redirect(env.admin_panel.debug.troll_url)
-    } else {
-      res.status(404).render("404.twig");
-    }
-  } else {
-    next();
-  }
-}
-
-function admin_handler(req: Request, res: Response, next: NextFunction) {
-  if(!(res.locals.cuser.is_admin || res.locals.cuser.is_owner)) {
-    res.status(404).render("404.twig");
-  } else {
-    next();
-  }
-}
-
-function mod_handler(req: Request, res: Response, next: NextFunction) {
-  if(!(res.locals.cuser.is_mod || res.locals.cuser.is_admin || res.locals.cuser.is_owner)) {
-    res.status(404).render("404.twig");
-  } else {
-    next();
-  }
-}
 
 routes.all("/redeem", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   const code = req.body?.code;
@@ -78,7 +46,7 @@ routes.get("/home", notloggedin_handler, async_handler(async (req: Request, res:
   res.render("home.twig", { friends: friends });
 }));
 
-routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+routes.get("/users/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   const query = String(req.query?.q).toString();
   let page = Number(req.query.p);
   if(String(page) == "NaN" || Number(page) <= 0) {
@@ -87,8 +55,8 @@ routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, re
 
   const order = String(req.query?.order).toString();
   const sort = String(req.query?.sort).toString();
-  const games = await asset.all(asset_types.Place, 6, page, query, sort, order);
-  res.render("games.twig", { ...games.info});
+  const games = await user.all(6, page, query, sort, order);
+  res.render("users.twig", { ...games.info});
 }));
 
 routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
@@ -100,9 +68,8 @@ routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, re
 
   const order = String(req.query?.order).toString();
   const sort = String(req.query?.sort).toString();
-  const users = await user.all(6, page, query, sort, order);
-  console.log(users);
-  res.render("users.twig", { ...users.info});
+  const games = await asset.all(asset_types.Place, 6, page, query, sort, order);
+  res.render("games.twig", { ...games.info});
 }));
 
 routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
@@ -124,34 +91,91 @@ routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Req
 // admin only routes
 const admin_route_path = env.admin_panel.path;
 
-routes.get(`${admin_route_path}/`, notloggedin_handler, admin_handler, async_handler(async (req: Request, res: Response) => {
-  const cpus = os.cpus();
-  const user_info = os.userInfo();
+const cpus = os.cpus();
+const user_info = os.userInfo();
+let sys_info = { 
+  inited: false,
+  user: {
+    name: user_info.username
+  },
+  host: {
+    ip: "0",
+    name: os.hostname()
+  },
+  cpu: { 
+    cores: cpus.length,
+    model: cpus[0].model,
+    temp: "0C°",
+    brand: "undefined",
+    usage: "NaN%",
+  }, 
+  ram: { 
+    free: "0.0B", 
+    total: "0.0B"
+  },
+  fs: {} as { [key: string]: any }
+};
 
-  res.render("admin/index.twig", { 
-    user: {
-      name: user_info.username
-    },
-    host: {
-      name: os.hostname()
-    },
-    cpu: { 
-      cores: cpus.length,
-      model: cpus[0].model 
-    }, 
-    ram: { 
-      free: format_bytes(os.freemem()), 
-      total: format_bytes(os.totalmem())
-    }
-  });
+let update_sys_info = async () => {
+  sys_info.ram.free = format_bytes(os.freemem(), 1);
+  sys_info.ram.total = format_bytes(os.totalmem(), 1);
+  sys_info.host.ip = await fetch("http://ip.me/", { headers: { "User-Agent": "curl/idklmao" } })
+    .then(async (response) => {
+      const ip = await response.text();
+      if(!(/(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])/.test(ip.toString()))) {
+        return "127.0.0.1";
+      } else {
+        return ip;
+      }
+    })
+
+  await si.diskLayout()
+    .then(data => {
+      Object.entries(data).forEach(async ([key, info]) => {
+        sys_info.fs[info.device] = { ... info, 
+          size: format_bytes(info.size, 2),
+        };
+      });
+      return;
+    });
+  sys_info.cpu.temp = await si.cpuTemperature()
+  // windows doesn't work lol..
+    .then(data => (data.chipset ?? "0").toString() + "C°");
+  sys_info.cpu.brand = await si.cpu()
+    .then(data => data.manufacturer);
+  sys_info.cpu.usage = await si.currentLoad()
+    .then(data => data.currentLoad.toFixed(1) + "%");
+
+  sys_info.inited = true;
+}
+update_sys_info();
+setInterval(update_sys_info, 30000);
+
+routes.get(`${admin_route_path}/`, notloggedin_handler, admin_handler, async_handler(async (req: Request, res: Response) => {
+  res.render("admin/index.twig", {... sys_info });
+  update_sys_info();
 }));
 
 
-routes.get(`${admin_route_path}/debug`, debug_handler, notloggedin_handler, admin_handler, async_handler(async (req: Request, res: Response) => {
+routes.get(`${admin_route_path}/env_editor`, notloggedin_handler, owner_handler, async_handler(async (req: Request, res: Response) => {
+  res.render("admin/env_editor.twig", { configdotyaml: raw_env })
+}));
+
+routes.get(`${admin_route_path}/debug`, notloggedin_handler, admin_handler, async_handler(async (req: Request, res: Response) => {
   res.render("admin/debug.twig")
 }));
-routes.get(`${admin_route_path}/invite-keys`, debug_handler, notloggedin_handler, admin_handler, async_handler(async (req: Request, res: Response) => {
-  res.render("admin/invite-keys.twig")
+
+routes.get(`${admin_route_path}/invite-keys`, notloggedin_handler, admin_handler, async_handler(async (req: Request, res: Response) => {
+  const query = String(req.query?.q).toString();
+  let page = Number(req.query.p);
+  if(String(page) == "NaN" || Number(page) <= 0) {
+    page = 1;
+  }
+
+  const order = String(req.query?.order).toString();
+  const sort = String(req.query?.sort).toString();
+  const invitekeys = await invitekey.all(6, page, query, sort, order);
+  res.render("admin/invite-keys.twig", { ...invitekeys.info})
 }));
 
 export default routes;

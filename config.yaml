@@ -33,10 +33,9 @@ behind_proxy: false # CloudFlare Mode ACtivated
 
 admin_panel:
   path: "/admin" # change for whatever reason idk
-  debug:
-    troll: true
-    #only if troll is true you can make it redirect to whatever page
-    troll_url: //pornhub.com
+  troll: true
+  #only if troll is true you can make it redirect to whatever page
+  troll_url: //pornhub.com
 
 session:
   name: TESTBLO_SECURITY # if you change this, it will log people out

@@ -13,6 +13,7 @@ let file = fs.readFileSync(path.join(root_path, 'config.yaml'), 'utf8');
 //  file = fs.readFileSync(path.join(root_path, 'config.dev.yaml'), 'utf8');
 //}
 
-const env = YAML.parse(file);;
+const env = YAML.parse(file);
 
 export default env;
+export { file as raw_env };

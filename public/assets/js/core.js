@@ -351,3 +351,8 @@ function search_onkeyup(_searchinput, clicked = false) {
     }
   });
 }
+
+// const keepalive_sse = new EventSource("/api/v1/keep_alive");
+// keepalive_sse.addEventListener("message", ({ data }) => {
+// 	console.log(data);
+// });

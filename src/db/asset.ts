@@ -60,6 +60,7 @@ class asset {
     asset_types.MeshPart,
   ];
   data: { [key: string]: any } | undefined;
+  user: user | undefined;
 
   constructor() {
     this.data = {};
@@ -73,6 +74,7 @@ class asset {
     if(assets.length > 0) {
       let asset = assets[0];
       this.data = asset;
+      this.user = await (new user).by_id(asset.creator);
     }
     return this;
   }
@@ -85,6 +87,7 @@ class asset {
     if(assets.length > 0) {
       let asset = assets[0];
       this.data = asset;
+      this.user = await (new user).by_id(asset.creator);
     }
     return this;
   }
@@ -103,41 +106,45 @@ class asset {
   get description() {
     return this.data?.description;
   }
-  get username() {
-    return this.data?.creator;
-  }
 
-  static async all(type: number = asset_types.Image, 
+  static async all(
+    type: number = asset_types.Image, 
     limit: number = 16, 
     page: number = 1, 
     query: string, 
     sort: string = "createdat", 
-    order: string = orderby_enum.DESCENDING): 
-    Promise<message_type> {
-    const allowed_sorts = ["title", "description", "updatedat", "createdat"];
+    order: string = orderby_enum.DESCENDING
+  ): Promise<message_type> {
+    const allowed_sorts = ["id", "title", "description", "updatedat", "createdat"];
     const allowed_wheres = ["title", "description"];
 
-    const start = (page - 1) * limit;
-    sort = Object(allowed_sorts)[sort];
-    let hs = order.toString().toUpperCase() === orderby_enum.ASCENDING; // how to sort
+    if(!allowed_sorts.includes(sort)) sort = "createdat";
+    if(query == "undefined") query = "";;
+    order = order_enum(order);
 
-    let nq; // not set query
-    if(query == "undefined") query = ""; nq = false;
-
-    let assets = await sql`SELECT * 
+    const offset = (page - 1) * limit;
+    let items = await sql`SELECT * 
     FROM "assets" 
-    WHERE "type" = ${type} AND ${ allowed_wheres.reduce((_w, wheree) =>
+    WHERE ${ allowed_wheres.reduce((_w, wheree) =>
       sql`(${wheree} like ${ '%' + query + '%' })`,
       sql`false`
     )}
-    ORDER BY ${ sort } ${ hs ? sql`ASC` : sql`DESC` } 
-    LIMIT ${limit} OFFSET ${start}`;
+    ORDER BY ${ sql(sort) } ${ sql.unsafe(order) } 
+    LIMIT ${limit} OFFSET ${offset}`;
     
-    const total_items = assets.length;
+    const total_items = items.length;
     const total_pages = Math.ceil(total_items / limit);
 
+    const item_ids = items.map(row => row.id);
+    const new_items = await Promise.all(
+      item_ids.map(async item_id => {
+        let new_item = new asset;
+        return await new_item.by_id(item_id);
+      })
+    );
+
     return { success: true, message: "", info: { 
-      queries: assets, 
+      items: new_items, 
       total_pages: total_pages, 
       page: page,
       total_items: total_items,

@@ -6,9 +6,9 @@ import { type message_type } from "../utils/message";
 import { membership_types } from "../types/membership";
 import { gender_types } from "../types/gender";
 import env from "../utils/env";
-import { orderby_enum } from "../types/orderby";
+import { orderby_enum, order_enum } from "../types/orderby";
 
-const settings_obj = {
+type settings_type = {
   locale: String, // user decides
   language: String, // user decides
   css: String, // this has to secured (also make this scoped so u cant fuck wit the whole page)
@@ -70,32 +70,38 @@ class user {
     page: number = 1, 
     query: string, 
     sort: string = "createdat", 
-    order: string = orderby_enum.DESCENDING): 
-    Promise<message_type> {
-    const allowed_sorts = ["title", "description", "updatedat", "createdat"];
-    const allowed_wheres = ["title", "description"];
+    order: string = orderby_enum.DESCENDING
+  ): Promise<message_type> {
+    const allowed_sorts = ["id", "username", "description", "updatedat", "createdat"];
+    const allowed_wheres = ["username", "description"];
 
-    const start = (page - 1) * limit;
-    sort = Object(allowed_sorts)[sort];
-    let hs = order.toString().toUpperCase() === orderby_enum.ASCENDING; // how to sort
+    if(!allowed_sorts.includes(sort)) sort = "createdat";
+    if(query == "undefined") query = "";;
+    order = order_enum(order);
 
-    let nq; // not set query
-    if(query == "undefined") query = ""; nq = false;
-
-    let users = await sql`SELECT * 
-    FROM "assets" 
+    const offset = (page - 1) * limit;
+    let items = await sql`SELECT * 
+    FROM "users" 
     WHERE ${ allowed_wheres.reduce((_w, wheree) =>
       sql`(${wheree} like ${ '%' + query + '%' })`,
       sql`false`
     )}
-    ORDER BY ${ sort } ${ hs ? sql`ASC` : sql`DESC` } 
-    LIMIT ${limit} OFFSET ${start}`;
+    ORDER BY ${ sql(sort) } ${ sql.unsafe(order) } 
+    LIMIT ${limit} OFFSET ${offset}`;
     
-    const total_items = users.length;
+    const total_items = items.length;
     const total_pages = Math.ceil(total_items / limit);
 
+    const item_ids = items.map(row => row.id);
+    const new_items = await Promise.all(
+      item_ids.map(async item_id => {
+        let new_item = new user;
+        return await new_item.by_id(item_id);
+      })
+    );
+
     return { success: true, message: "", info: { 
-      queries: users, 
+      items: new_items, 
       total_pages: total_pages, 
       page: page,
       total_items: total_items,
@@ -160,6 +166,15 @@ class user {
     return String(money);
   }
 
+  
+  async set_membership(membership_type: membership_types = 0, lastfor: number = (Date.now() + (3600 * 24 * 30) * 1000) /* month */) {
+    this.data = await sql`UPDATE "users" SET membership = ${membership_type}, membership_valid = ${lastfor} WHERE "id" = ${this.data?.id} RETURNING *`;
+    await this._updateat();
+  }
+
+  get has_membership() {
+    return (this.data?.membership > 0);
+  }
 
   async set_money(amount: number) {
     await sql`UPDATE "users" SET currency = ${amount} WHERE "id" = ${this.data?.id}`;
@@ -215,12 +230,17 @@ class user {
     return this.data?.privelege === this.priveleges.owner;
   }
 
-  // get headshot(): File {
-  //   return; // TODO: use assets to return the Image of the rendered character
-  // }
+  get headshot() {
+    return;
+  }
+
+  async set_online() {
+    this.data = await sql`UPDATE "users" SET online = ${ Date.now() + 30 * 1000 } WHERE "id" = ${this.data?.id} RETURNING *`;
+    await this._updateat();
+  }
 
   get is_online() {
-    return ((Date.now() - (this.data?.online || 0)) < 30);
+    return ((Date.now() - (this.data?.online || 0)) < 60 * 1000);
   }
 
   get rand_token(): string {

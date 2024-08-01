@@ -6,7 +6,7 @@
       <div class="d-flex flex-column gap-3 p-2 pb-5 break-all round-4" style="background: linear-gradient(180deg, rgba(0,0,0, 0.975) 0%, rgba(0,0,0, 0.35) 100%); height: 100%;">
         <div class="d-flex flex-row gap-3 ai-center">
           <img width=24 height=24 class="round-2" src="/assets/img/placeholder_avatar-closeup.png">
-          <b class="text-truncate">ownedby</b>
+          <b class="text-truncate">{{ game.user.username }}</b>
         </div>
         <span class="breakword">{{ (game.description ?? "<i class='breakword'>no description set.</i>")|truncate(96, "…") }}</span>
       </div>

@@ -3,9 +3,21 @@
 {% block content %}
 <h2>invite keys</h2>
 <hr class="mt-3 mb-2">
-<div class="d-flex flex-column gap-3">
-  {% for t in (0..5) %}
-  <div>dasa</div>
+<table class="w-100 border-dark" style="text-align: left;">
+  <thead>
+  <tr>
+    <th style="width: 2em;">id</th>
+    <th>code</th>
+    <th>usedby</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for invkey in items %}
+    <tr>
+      <td>{{ invkey.id }}</td>
+      <td>{{ invkey.code }}</td>
+      <td>{{ invkey.usedby.exists ? invkey.usedby.username : '<i class="text-muted">not used</i>' }}</td>
+    </tr>
   {% endfor %}
-</div>
+</table> 
 {% endblock %}

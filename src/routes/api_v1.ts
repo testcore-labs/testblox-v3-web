@@ -102,7 +102,30 @@ routes.post("/user/logout", async_handler(async (req: Request, res: Response) =>
     res.status(500);
     res.json({success: false, message: "error occured."});
   }
-}),);
+}));
+
+// import { createSession, createChannel } from "better-sse";
+// import { sleep } from "bun";
+// const ping_online = createChannel();
+
+// setInterval(() => {
+//   console.log("sss");
+//   ping_online.broadcast("ss " +Math.random(), "message");
+// }, 1000);
+
+// routes.get("/keep_alive", async (req, res) => {
+// 	const session = await createSession(req, res);
+//   ping_online.register(session);
+//   res.locals.cuser.set_online();
+// });
+
+routes.get("/keep_alive", async_handler(async (req, res) => {
+  if(res.locals.isloggedin) {
+    res.json({ "success": res.locals.cuser.set_online() });
+  } else {
+    res.json({ "success": false, "message": "not logged in" });
+  }
+}));
 
 routes.get("/searchbar", async_handler(async (req, res) => {
   if(req.query.qnavbar !== "") {
@@ -115,6 +138,6 @@ routes.get("/searchbar", async_handler(async (req, res) => {
 routes.get("*", async_handler(async (req, res) => {
   res.status(404);
   res.json({success: false, message: "not a valid api endpoint."});
-}),);
+}));
 
 export default routes;

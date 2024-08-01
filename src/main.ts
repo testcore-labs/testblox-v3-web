@@ -54,16 +54,16 @@ app.use(
 // PLEASE upload the file somewhere else from tmp, since its TEMPORARY, and we should clean the folder each run aswell
 //app.use(multer({dest:root_path+'/files/tmp/'}).smthing);
 
-app.use(async (req, res, next) => {
+app.use(async_handler(async (req, res, next) => {
   app.disable("x-powered-by");
   res.set("X-Powered-By", "PHP/5.6.40"); // get fucking trolled
 
   logs.request(req.method.toString(), req.originalUrl.toString(), req.ip?.toString() ?? "127.0.0.1", req.get('user-agent')?.toString() ?? "")
   next();
-});
+}));
 // separated so cuser isnt used for assets, good for perfomance
 app.use("/assets", express.static(path.join(__dirname, "../public/assets")));
-app.use(async (req, res, next) => {
+app.use(async_handler(async (req, res, next) => {
   res.locals.req = req;
   res.locals.res = res;
   res.locals.env = env;
@@ -77,7 +77,7 @@ app.use(async (req, res, next) => {
   res.locals.isloggedin = req.cookies[env.session.name] && (await cuser).exists; // await DOES change everything >:(
 
   next();
-});
+}));
 
 app.use(front_loggedin_routes); 
 app.use(front_routes);
@@ -94,13 +94,17 @@ app.get("*", async_handler(async (req, res) => {
 }));
 
 app.use((err: any, req: any, res: any, next: any) => {
-  logs.custom(err.stack.replace(err.name + ": ", ""), colors.red("error: " +err.name));
-  if(env.debug) {
-    let error = err.stack;
-    res.set("content-type", "text/plain").status(500).send(error);
+  try {
+    logs.custom(err.stack.replace(err.name + ": ", ""), colors.red("error: " +err.name));
+    if(env.debug) {
+      let error = err.stack;
+      res.set("content-type", "text/plain").status(500).send(error);
+    }
+  } catch(e) {
+    console.log("the error handler errored??");
   }
 });
 
-app.listen(env.http.port, () => {
+let server = app.listen(env.http.port, () => {
   logs.http(`running at :${env.http.port}`);
 });

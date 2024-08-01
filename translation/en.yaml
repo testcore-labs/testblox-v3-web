@@ -31,13 +31,15 @@ home:
 games:
   games: games
   search: search for a game..
-  order_by_ascending: order by ascending
-  order_by_descending: order by descending
-  sort_by_title: sort by title
-  sort_by_description: sort by description
-  sort_by_updated: sort by updated
-  sort_by_created: sort by created
 
-
+# please dont remove the html aka <b> and </b>, dont modify the tags aswell
+filter:
+  order_by_ascending: order by <b>ascending</b>
+  order_by_descending: order by <b>descending</b>
+  sort_by_id: sort by <b>id</b>
+  sort_by_title: sort by <b>title</b>
+  sort_by_description: sort by <b>description</b>
+  sort_by_updated: sort by <b>updated</b>
+  sort_by_created: sort by <b>created</b>
 users:
   users: users

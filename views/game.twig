@@ -6,7 +6,7 @@
   <div class="flex-1" style="flex-basis: 32em; flex-shrink: 1;"><img src="/assets/img/crossroads16x9.png" class="img-fluid" style="height: 100%; width: 100%; object-fit: contain; aspect-ratio: 16/9;"></div>
   <div class="flex-1 d-flex flex-column gap-1" style="flex-basis: 12em; flex-grow: 2;">
     <h1>{{ game.title }}</h1>
-    <span class="mb-3">by <a class="link-light" href="/users/0/profile">qzip</a></span>
+    <span class="mb-3">by <a class="link-light" href="/users/{{ game.user.id }}/profile">{{ game.user.username }}</a></span>
     <a href="/play/{{ game.id }}" class="d-flex jc-center ai-center btn-play p-1 mt-auto"><i class="bi bi-play-fill m-auto" style="font-size: 2.5em; line-height: 0.65em;"></i></a>
   </div>
 </div>
@@ -20,7 +20,7 @@
     }
     event.target.setAttribute('disabled', 'true');
     }">
-    <button class="flex-1 text-center" disabled role="tab" aria-controls="tab-contents" hx-get="/game/{{ game.id }}/about" disabled>about</button>
+    <button class="flex-1 text-center" role="tab" aria-controls="tab-contents" hx-get="/game/{{ game.id }}/about" disabled>about</button>
     <button class="flex-1 text-center" role="tab" aria-controls="tab-contents" hx-get="/game/{{ game.id }}/store">store</button>
     <button class="flex-1 text-center" role="tab" aria-controls="tab-contents" hx-get="/game/{{ game.id }}/servers">servers</button>
   </div>

@@ -1,9 +1,10 @@
-// i feel like future-proofing names is the way to go :3
 const enum membership_types {
-  NONE = "None", 
-  TIER1 = "BuildersClub", 
-  TIER2 = "TurboBuildersClub",
-  TIER3 = "OutrageousBuildersClub",
+  NONE = 0, 
+  TIER1 = 1,
+  TIER2 = 2,
+  TIER3 = 3,
+
+  TIER_BETA = 4,
 };
 
 export { membership_types };

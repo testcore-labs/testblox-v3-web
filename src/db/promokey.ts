@@ -1,10 +1,6 @@
 import sql, { type postgres } from "../utils/sql";
-import path from "path";
 import user from "./user";
-import root_path from "../utils/root_path";
 import type { message_type } from "../utils/message";
-
-const asset_folder = path.join(root_path, "files", "assets");
 
 class promokey {
   data: { [key: string]: any } | undefined;
@@ -40,38 +36,51 @@ class promokey {
   async redeem(usedby: number): Promise<message_type> {
     let usr = new user();
     await usr.by_id(usedby);
+    if(!usr.exists) {
+      return { success: false, message: "redeem.invalid_user" };
+    }
 
     if(!this.exists) {
       return { success: false, message: "redeem.invalid_code" };
     }
 
     if(usr.exists) {
-      let given = false;
+      let given = "none";
 
       if(this.data?.usedby != null) {
         return { success: false, message: "redeem.used_code" };
       }
 
+      if(this.data?.createdby === usr.id) {
+        return { success: false, message: "redeem.cant_use_own_code" };
+      }
+
       if(this.data?.currency != null) {
-        given = true;
+        given = "currency";
         usr.add_money(this.data.currency);
       } else if(this.data?.item) {
         // to implement
-        //given = true;
+        //given = "item";
         //usr.add_item = this.data.item;
+      } else if(this.data?.membership) {
+        if(usr.has_membership >= this.data?.membership) {
+          return { success: false, message: "redeem.same_membership" };
+        }
+        given = "membership";
+        usr.set_membership(this.data?.membership);
       }
       
-      if(given) {
+      if(given !== "none") {
         await sql`UPDATE "promokeys" SET "usedby" = ${usedby} WHERE "id" = ${this.data?.id}`;
         await this._updateat();
-        return { success: true, message: "redeem.given_currency", info: { 
+        return { success: true, message: `redeem.given_${given}`, info: { 
           code: this.data?.code, 
           currency: this.data?.currency,
           item: this.data?.item,
         }};
       }
     }
-    return { success: false, message: "redeem.invalid_user" };
+    return { success: false, message: "redeem.unknown" };
   }
 }
 
