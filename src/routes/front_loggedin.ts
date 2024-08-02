@@ -16,6 +16,7 @@ import type { message_type } from "../utils/message";
 import { notloggedin_handler, mod_handler, admin_handler, owner_handler } from "../utils/handlers";
 import si from "systeminformation";
 import { sys } from "typescript";
+import { pcall } from "../utils/pcall";
 
 routes.use(htmx_middleware);
 
@@ -117,6 +118,7 @@ let sys_info = {
 };
 
 let update_sys_info = async () => {
+  try {
   sys_info.ram.free = format_bytes(os.freemem(), 1);
   sys_info.ram.total = format_bytes(os.totalmem(), 1);
   sys_info.host.ip = await fetch("http://ip.me/", { headers: { "User-Agent": "curl/idklmao" } })
@@ -147,6 +149,9 @@ let update_sys_info = async () => {
     .then(data => data.currentLoad.toFixed(1) + "%");
 
   sys_info.inited = true;
+  } catch(e) {
+    console.error("admin info failed updating: ", e);
+  }
 }
 update_sys_info();
 setInterval(update_sys_info, 30000);
