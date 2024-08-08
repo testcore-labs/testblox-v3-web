@@ -1,5 +1,5 @@
 import sql, { type postgres } from "../utils/sql";
-import user from "./user";
+import entity_user from "./user";
 import type { message_type } from "../utils/message";
 
 class promokey {
@@ -34,9 +34,9 @@ class promokey {
   }
 
   async redeem(usedby: number): Promise<message_type> {
-    let usr = new user();
-    await usr.by_id(usedby);
-    if(!usr.exists) {
+    let user = new entity_user();
+    await user.by_id(usedby);
+    if(!user.exists) {
       return { success: false, message: "redeem.invalid_user" };
     }
 
@@ -44,30 +44,30 @@ class promokey {
       return { success: false, message: "redeem.invalid_code" };
     }
 
-    if(usr.exists) {
+    if(user.exists) {
       let given = "none";
 
       if(this.data?.usedby != null) {
         return { success: false, message: "redeem.used_code" };
       }
 
-      if(this.data?.createdby === usr.id) {
+      if(this.data?.createdby === user.id) {
         return { success: false, message: "redeem.cant_use_own_code" };
       }
 
       if(this.data?.currency != null) {
         given = "currency";
-        usr.add_money(this.data.currency);
+        user.add_money(this.data.currency);
       } else if(this.data?.item) {
         // to implement
         //given = "item";
         //usr.add_item = this.data.item;
       } else if(this.data?.membership) {
-        if(usr.has_membership >= this.data?.membership) {
+        if(user.has_membership >= this.data?.membership) {
           return { success: false, message: "redeem.same_membership" };
         }
         given = "membership";
-        usr.set_membership(this.data?.membership);
+        user.set_membership(this.data?.membership);
       }
       
       if(given !== "none") {

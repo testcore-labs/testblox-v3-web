@@ -11,7 +11,7 @@ import filter from "../utils/filter";
 import feed from "../db/feed";
 import asset from "../db/asset"
 import invitekey from "../db/invitekey";
-import user from "../db/user";
+import entity_user from "../db/user";
 import promokey from "../db/promokey";
 
 import async_handler from 'express-async-handler';
@@ -57,7 +57,7 @@ routes.get("/users/", notloggedin_handler, async_handler(async (req: Request, re
 
   const order = String(req.query?.order).toString();
   const sort = String(req.query?.sort).toString();
-  const users = await user.all(6, page, query, sort, order);
+  const users = await entity_user.all(6, page, query, sort, order);
   res.render("users.twig", { ...users.info});
 }));
 

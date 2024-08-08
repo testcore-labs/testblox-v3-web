@@ -2,11 +2,11 @@ import sql, { type postgres } from "../utils/sql";
 import bbcode from "bbcode-ts";
 import { type message_type } from "../utils/message";
 import { orderby_enum, validate_orderby } from "../types/orderby";
-import user from "./user";
+import entity_user from "./user";
 
 class feed {
   data: { [key: string]: any };
-  user: user | undefined;
+  user: entity_user | undefined;
   bbcode_strict: bbcode;
 
   constructor() {
@@ -24,7 +24,7 @@ class feed {
     LIMIT 1`;
     if(items.length > 0) {
       let item = items[0];
-      this.user = await (new user).by_id(item.creator);
+      this.user = await (new entity_user).by_id(item.creator);
       this.data = item;
     }
     return this;
@@ -37,7 +37,7 @@ class feed {
     LIMIT 1`;
     if(items.length > 0) {
       let item = items[0];
-      this.user = await (new user).by_id(item.creator);
+      this.user = await (new entity_user).by_id(item.creator);
       this.data = item;
     }
     return this;
@@ -53,7 +53,7 @@ class feed {
     LIMIT 1`;
     if(items.length > 0) {
       let item = items[0];
-      this.user = await (new user).by_id(item.creator);
+      this.user = await (new entity_user).by_id(item.creator);
       this.data = item;
     }
     return this;
@@ -66,7 +66,7 @@ class feed {
     LIMIT 1`;
     if(items.length > 0) {
       let item = items[0];
-      this.user = await (new user).by_id(item.creator);
+      this.user = await (new entity_user).by_id(item.creator);
       this.data = item;
     }
     return this;

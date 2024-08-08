@@ -4,7 +4,7 @@ import logs from "./utils/log";
 import { shuffle } from "./utils/array"
 import type { message_type } from "./utils/message";
 import filter from "./utils/filter";
-import user from "./db/user";
+import entity_user from "./db/user";
 import { param } from "express-validator";
 
 const bot_token = env.discord.token || "";
@@ -79,22 +79,29 @@ class discord_bot {
       func: (msg, params) => msg.reply(filter.text(msg.content.replace(params[0], "")))
     },
     {
-      command: "user",
+      command: "user.get",
       category: "information",
       description: "gets users raw data",
       func: async (msg, params) => { 
-        const selected_user = await (new user).by_id(Number(params[1]))
+        const selected_user = await (new entity_user).by_id(Number(params[1]))
         return msg.reply(`\`\`\`json\n${JSON.stringify(selected_user.data ?? {}, null, 2)}\`\`\``);
       }
     },
     {
-      command: "register_user",
+      command: "user.all",
+      category: "information",
+      description: "gets users raw data",
+      func: async (msg, params) => { 
+        let page = Number(params[1]);
+        const users = await entity_user.all(1 , (Number.isNaN(page) ? 1 : page), "")
+        return msg.reply(`\`\`\`json\n${JSON.stringify(users ?? {}, null, 2)}\`\`\``);
+      }
+    },
+    {
+      command: "user.register",
       category: "information",
       description: "registers a user, using 1st arg as username and 2nd as password",
-      func: async (msg, params) => { 
-        const selected_user = await (new user).register(params[1], params[2]);
-        return msg.reply(`\`\`\`json\n${JSON.stringify(selected_user ?? {}, null, 2)}\`\`\``);
-      }
+      func: async (msg, params) => msg.reply(`no more acc creation mr ${ msg.author.username }`)
     },
     {
       command: "get_ip",
@@ -176,6 +183,7 @@ class discord_bot {
 
     this.client.on(Events.Error, (err: Error) => {
       logs.discord("client error: " + err);
+      console.error(err);
     });
   }
 
@@ -187,6 +195,7 @@ class discord_bot {
       })
       .catch((err) => {
         console.error("error starting bot", err);
+        console.error(err);
       });
   }
 }

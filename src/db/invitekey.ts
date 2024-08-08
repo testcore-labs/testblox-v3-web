@@ -1,14 +1,14 @@
 import sql, { type postgres } from "../utils/sql";
 import path from "path";
-import user from "./user";
+import entity_user from "./user";
 import root_path from "../utils/root_path";
 import type { message_type } from "../utils/message";
 import { orderby_enum, validate_orderby } from "../types/orderby";
 
 class invitekey {
   data: { [key: string]: any };
-  usedby: user | undefined;
-  createdby: user | undefined;
+  usedby: entity_user | undefined;
+  createdby: entity_user | undefined;
 
   constructor() {
     this.data = {};
@@ -21,8 +21,8 @@ class invitekey {
     LIMIT 1`;
     if(promokeys.length > 0) {
       let promokey = promokeys[0];
-      this.usedby = await (new user).by_id(promokey.usedby);
-      this.createdby = await (new user).by_id(promokey.createdby);
+      this.usedby = await (new entity_user).by_id(promokey.usedby);
+      this.createdby = await (new entity_user).by_id(promokey.createdby);
       this.data = promokey;
     }
     return this;
@@ -35,8 +35,8 @@ class invitekey {
     LIMIT 1`;
     if(promokeys.length > 0) {
       let promokey = promokeys[0];
-      this.usedby = await (new user).by_id(promokey.usedby);
-      this.createdby = await (new user).by_id(promokey.createdby);
+      this.usedby = await (new entity_user).by_id(promokey.usedby);
+      this.createdby = await (new entity_user).by_id(promokey.createdby);
       this.data = promokey;
     }
     return this;
@@ -111,7 +111,7 @@ class invitekey {
   }
 
   async redeem(usedby: number): Promise<message_type> {
-    let usr = new user();
+    let usr = new entity_user();
     await usr.by_id(usedby);
     if(!usr.exists) {
       return { success: false, message: "redeem.invalid_user" };

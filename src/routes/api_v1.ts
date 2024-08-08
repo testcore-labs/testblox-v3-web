@@ -1,5 +1,5 @@
 import express, { type Express, type Request, type Response } from "express";
-import user from "../db//user";
+import entity_user from "../db/user";
 const routes = express.Router();
 import { type message_type } from "../utils/message";
 import async_handler from 'express-async-handler';
@@ -27,12 +27,11 @@ const creation_and_login_limiter = rateLimit({
 
 routes.post("/user/create", creation_and_login_limiter, async_handler(async (req: Request, res: Response) => {
   try {
-    const usr = new user();
-    const resp = await usr.register(req.body.username?.toString(), req.body.password?.toString());
+    const user = await entity_user.register(req.body.username?.toString(), req.body.password?.toString());
   
-    if(resp.success) {
-      if(resp.info !== undefined) {
-        res.cookie(env.session.name, resp.info["token"].toString(), { 
+    if(user.success) {
+      if(user.info !== undefined) {
+        res.cookie(env.session.name, user.info["token"].toString(), { 
           expires: new Date(Date.now() + Number(env.session.expires)), 
           secure: env.production ? true : false, 
           sameSite: env.production ? 'strict' : 'lax' 
@@ -40,14 +39,14 @@ routes.post("/user/create", creation_and_login_limiter, async_handler(async (req
       }
     }
 
-    if(req.query.redirect && resp.success) {
+    if(req.query.redirect && user.success) {
       res.redirect("/redirect?url="+encodeURI(req.query?.redirect?.toString()));
     } else {
     if(!req.query.plaintext) {
-      res.send(resp.message);
+      res.send(user.message);
     } else {
-      res.status(resp.status ?? 400); // 400 for generic err
-      res.json(resp);
+      res.status(user.status ?? 400); // 400 for generic err
+      res.json(user);
     }
     }
   } catch(e) {
@@ -59,26 +58,25 @@ routes.post("/user/create", creation_and_login_limiter, async_handler(async (req
 
 routes.post("/user/login", creation_and_login_limiter, async_handler(async (req: Request, res: Response) => {
   try {
-    const usr = new user();
-    const resp = await usr.login(req.body.username?.toString(), req.body.password?.toString());
+    const user = await entity_user.login(req.body.username?.toString(), req.body.password?.toString());
     
-    if(resp.success) {
-      if(resp.info !== undefined) {
-        res.cookie(env.session.name, resp.info["token"].toString(), { 
+    if(user.success) {
+      if(user.info !== undefined) {
+        res.cookie(env.session.name, user.info["token"].toString(), { 
           expires: new Date(Date.now() + Number(env.session.expires)), 
           secure: env.production ? true : false, 
           sameSite: env.production ? 'strict' : 'lax' 
         });
       }
     }
-    if(req.query.redirect && resp.success) {
+    if(req.query.redirect && user.success) {
       res.redirect("/redirect?url="+encodeURI(req.query?.redirect?.toString()));
     } else {
     if(!req.query.plaintext) {
-      res.send(resp.message);
+      res.send(user.message);
     } else {
-      res.status(resp.status ?? 400); // 400 for generic err
-      res.json(resp);
+      res.status(user.status ?? 400); // 400 for generic err
+      res.json(user);
     }
     }
   } catch(e) {

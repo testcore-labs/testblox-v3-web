@@ -3,7 +3,7 @@ import xss from "xss";
 import fs from "fs";
 import path from "path";
 import argon2 from "argon2";
-import user from "./user";
+import entity_user from "./user";
 import { type message_type } from "../utils/message";
 import { asset_types } from "../types/assets";
 import { privacy_types, validate_privacy } from "../types/privacy";
@@ -60,7 +60,7 @@ class asset {
     asset_types.MeshPart,
   ];
   data: { [key: string]: any };
-  user: user | undefined;
+  user: entity_user | undefined;
 
   constructor() {
     this.data = {};
@@ -74,7 +74,7 @@ class asset {
     if(assets.length > 0) {
       let asset = assets[0];
       this.data = asset;
-      this.user = await (new user).by_id(asset.creator);
+      this.user = await (new entity_user).by_id(asset.creator);
     }
     return this;
   }
@@ -87,7 +87,7 @@ class asset {
     if(assets.length > 0) {
       let asset = assets[0];
       this.data = asset;
-      this.user = await (new user).by_id(asset.creator);
+      this.user = await (new entity_user).by_id(asset.creator);
     }
     return this;
   }

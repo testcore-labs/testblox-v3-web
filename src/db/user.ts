@@ -9,9 +9,10 @@ import { privelege_types } from "../types/priveleges";
 import env from "../utils/env";
 import { orderby_enum, validate_orderby } from "../types/orderby";
 import asset from "./asset";
+import { pcall } from "../utils/pcall";
 
-class user {
-  settings_template = {
+class entity_user {
+  static settings_template = {
     locale: "en-us", // for privacy reasons i wont detect the users locale
     css: "",
 
@@ -96,7 +97,7 @@ class user {
     const item_ids = items.map(row => row.id);
     const new_items = await Promise.all(
       item_ids.map(async item_id => {
-        let new_item = new user;
+        let new_item = new entity_user;
         return await new_item.by_id(item_id);
       })
     );
@@ -231,7 +232,7 @@ class user {
     const friend_ids = friends.map(row => row.friend_id);
     const user_friends = await Promise.all(
       friend_ids.map(async friend_id => {
-        let friend = new user;
+        let friend = new entity_user;
         return await friend.by_id(friend_id);
       })
     );
@@ -273,7 +274,7 @@ class user {
     return ((Date.now() - (this.data?.online || 0)) < 60 * 1000);
   }
 
-  get rand_token(): string {
+  static get rand_token(): string {
     let characters = "0123456789abcdef"
     let str = ""
     for(let i = 0; i < 96; i++){
@@ -282,7 +283,7 @@ class user {
     return str;
   }
 
-  async check_and_rand_token(i = 0): Promise<any> {
+  static async check_and_rand_token(i = 0): Promise<any> {
     let token = this.rand_token;
     const users_find = await sql`SELECT * 
     FROM "users" 
@@ -300,7 +301,7 @@ class user {
     }
   }
 
-  username_validate(username: any) {
+  static username_validate(username: any) {
     let rules = {
       "username.empty": (!username || username == "" || username.length == 0),
       "username.is_more_than_20": username.length > 20,
@@ -314,7 +315,7 @@ class user {
     return false;
   }
 
-  password_validate(password: any) {
+  static password_validate(password: any) {
     let rules = {
       "password.empty": (!password || password == "" || password.length == 0),
       "password.is_more_than_32": password.length > 32,
@@ -328,9 +329,20 @@ class user {
     return false;
   }
 
+  async generate_hash(password: string) {
+    let [ success, password_hash ] = await pcall(async () => await argon2.hash(password, {
+      type: argon2.argon2id,
+      hashLength: 128,
+    }));
+    if(success instanceof Error) {
+      throw success;
+    } else {
+      return password_hash;
+    }
+  }
 
   // run this with a pcall (yes i made a simpler way to catch errs) or try catch clause
-  async register(username: any, password: any): Promise<message_type> {
+  static async register(username: any, password: any): Promise<message_type> {
     let token = await this.check_and_rand_token(); // too lazy to make it use message type
     if(token && token.stack && token.message) {
       const msg: message_type = {success: false, message: token.message};
@@ -378,7 +390,7 @@ class user {
     }
   }
 
-  async login(username: any, password: any, ): Promise<message_type> {
+  static async login(username: any, password: any, ): Promise<message_type> {
     username = username.toString();
     password = password.toString();
 
@@ -437,4 +449,4 @@ class user {
 
 }
 
-export default user;
+export default entity_user;

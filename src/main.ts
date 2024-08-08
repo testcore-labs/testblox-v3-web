@@ -9,11 +9,11 @@ import discord_bot from "./bot";
 
 import env from "./utils/env";
 process.env.TZ = env.timezone;
-import user from "./db/user";
+import entity_user from "./db/user";
 import './utils/sql';
 import twig from "./utils/twig";
 import logs from "./utils/log";
-import { pcall } from "./utils/pcall";
+import { pcall_msg } from "./utils/pcall";
 
 import translate from "./utils/translate";
 import arbiter from "./arbiter";
@@ -26,7 +26,7 @@ import api_rcc_roblox_routes from "./routes/rbx/rcc";
 
 
 const dsc_bot = new discord_bot;
-pcall(async () => {await dsc_bot.start_bot()});
+pcall_msg(async () => {await dsc_bot.start_bot()});
 
 new arbiter();
 translate.init();
@@ -73,7 +73,7 @@ app.use(async_handler(async (req, res, next) => {
   res.locals.t = translate.translations[req.cookies?.locale ? req.cookies?.locale.toString() : env.locale];
 
   // cuser = current user
-  let cuser = new user();
+  let cuser = new entity_user();
   await cuser.by_token(req.cookies[env.session.name]);
   res.locals.cuser = cuser;
   res.locals.isloggedin = req.cookies[env.session.name] && (await cuser).exists; // await DOES change everything >:(

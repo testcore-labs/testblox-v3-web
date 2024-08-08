@@ -1,12 +1,12 @@
 import { shuffle } from "../utils/array";
 import env from '../utils/env';
 import { timeago } from '../utils/time';
-import { pcall } from '../utils/pcall';
+import { pcall_msg } from '../utils/pcall';
 import twig from "twig";
 import translate from "../utils/translate";
 
 twig.extendFilter("shuffle", function(array: any): any {
-  const shuffled = pcall(() => shuffle(array));
+  const shuffled = pcall_msg(() => shuffle(array));
   if(shuffled.success) {
     return shuffled.value;
   } else {
