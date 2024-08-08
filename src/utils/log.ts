@@ -104,6 +104,15 @@ class logs {
     logs.push(message);
     logs.print(message);
   }
+  static discord(txt: string | number) {
+    const message = printf(logs.format, 
+      colors.white(logs.time()), 
+      colors.blue("discord"),
+      colors.white(txt.toString())
+    );
+    logs.push(message);
+    logs.print(message);
+  }
 }
 
 export default logs;

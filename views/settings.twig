@@ -1,0 +1,16 @@
+{% extends "html.twig" %}
+{% set title = "settings" %}
+
+{% block content %}
+<div class="d-flex flex-row flex-wrap gap-3">
+  <div class="d-flex flex-column gap-3" hx-target="#settings-content" role="tablist" id="settings-tab" style="flex-basis: 10em;">
+    <input type="search" onkeyup="search_html(this, $('#settings-tab'))" placeholder="search...">
+    <a class="d-flex flex-row gap-3 ai-center" hx-get="/settings/account"><h4 class="bi bi-person-gear"></h4> account</a>
+    <a class="d-flex flex-row gap-3 ai-center" hx-get="/settings/customization"><h4 class="bi bi-palette2"></h4> customization</a>
+  </div>
+  <div nomargin class="vr-ify"></div>
+  <div id="settings-content" hx-get="/settings/account" hx-trigger="revealed" class="p-2 flex-1">
+    test dfgfddfgf
+  </div>
+</div>
+{% endblock %}

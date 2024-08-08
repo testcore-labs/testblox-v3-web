@@ -6,16 +6,9 @@
 "hello", "hola", "bonjour", "hallo", "ciao", "olá", "hallo", "здравствуйте", "你好", "こんにちは", "안녕하세요", "مرحباً", "नमस्ते", "jambo", "merhaba", "γειά σας", "שלום", "hej", "hei", "hei", "hej", "cześć", "helló", "xin chào", "สวัสดี", "سلام", "salut", "ahoj", "নমস্কার", "привіт", "kumusta", "hai", "dia dhuit", "halò", "halló", "labas", "tere", "bok", "здравейте", "здраво", "hello", "ahoj", "sveiki", "გამარჯობა", "नमस्ते", "բարև", "ہیلو", "bawo ni", "sawubona", "helo",
 ] %}
 {% set randomhi = randomhis|shuffle[0] %}
-<div class="d-flex flex-column flex-wrap gap-2">
-  <div class="d-flex flex-row gap-6 ai-center flex-1">
-    <div class="pos-relative">
-    <img class="round-4" height=128 src="/assets/img/placeholder_avatar-closeup.png">
-    {% if cuser.is_online %}<i class="pos-absolute icon-online bottom-0 right-0 p-2" style="transform: translate(25%, 25%);"></i>{% endif %}
-    </div>
-    <h2>{{ randomhi }}, {{ cuser.username }}</h2>
-  </div>
-  <hr class="mt-3 mb-2">
-  <div class="d-flex flex-row"><h3>{{ t.home.friends }} ({{ friends|length }})</h3> <a class="btn-primary ms-auto">{{ t.home.see_all }}</a></div>
+<div class="d-flex flex-row flex-wrap-reverse gap-4" style="align-content: flex-start;">
+  <div class="d-flex flex-column flex-1" style="flex-basis: 30em;">
+    <div class="d-flex flex-row gap-5"><h3>{{ t.home.friends }} ({{ friends|length }})</h3> <a class="btn-primary ms-auto as-baseline">{{ t.home.see_all }}</a></div>
     {% if friends|length == 0 %}
       <div class="d-flex flex-column ai-center gap-2 p-2">
       <h1 style="font-size: 4em;" class="bi bi-egg-fried"></h1>
@@ -23,11 +16,11 @@
       <small class="text-muted">heres a fried egg for you</small>
       </div>
     {% else %}
-      <div class="d-grid pb-2" style="grid-auto-flow: column; gap: 0.75em; grid-auto-columns: 101.883px; width: 100%; overflow-x: scroll;">
+      <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));">
       {% for friend in friends %}
       <a href="/users/{{ friend.id }}/profile" class="d-flex flex-column" style="align-items: center; padding: 0; margin-top: 0.3em;">
         <div class="img-fluid pos-relative">
-          <img src="/assets/img/placeholder_avatar-closeup.png" class="round-4 img-fluid">
+          <img src="{{ friend.get_headshot() }}" class="round-4 img-fluid">
           {% if friend.is_online %}<i class="pos-absolute icon-online bottom-0 right-0" style="transform: translate(25%, 25%);"></i>{% endif %}
         </div>
         <div class="d-flex flex-column border-box m-1 my-0 text-center"><h5 class="text-muted text-truncate">{{ friend.username|truncate(11, "…") }}</h5>
@@ -36,19 +29,61 @@
       {% endfor %}
       </div>
     {% endif %}
-  <hr class="mt-3 mb-2">
-  <div class="d-flex flex-row"><h3>{{ t.home.recently_played }}</h3> <a class="btn-primary ms-auto">{{ t.home.see_all }}</a></div>
-  <div class="d-grid pb-2" style="grid-auto-flow: column; gap: 0.75em; grid-auto-columns: 139.233px; width: 100%; overflow-x: scroll;">
-    {% for i in 1..6 %}
-    <a href="/game/{{i}}/name" class="d-flex flex-column" style="overflow: hidden; padding: 0; margin-top: 0.3em;">
-      <div class="img-fluid pos-relative">
-        <img src="/assets/img/crossroads.png" class="round-4 img-fluid">
+
+    <hr class="mt-3 mb-2">
+
+    <div class="d-flex flex-row gap-5"><h3>{{ t.home.recently_played }}</h3> <a class="btn-primary ms-auto as-baseline">{{ t.home.see_all }}</a></div>
+    {% if recently_played|length == 0 %}
+      <div class="d-flex flex-column ai-center gap-2 p-2">
+      <h1 style="font-size: 4em;" class="bi bi-egg-fried"></h1>
+      <h4>no recently played games</h4>
+      <small class="text-muted">maybe play a game?</small>
       </div>
-      <div class="d-flex flex-column border-box m-1 my-0"><h5 class="text-muted breakword text-truncate">Crossrgggggggggggggggggggggoads</h5>
-        <span class="d-flex flex-row gap-3 ai-center text-extramuted mt-1"><i class="bi bi-people"></i> <b class="breakword">1 playing</b></span>
-      </div>
-      </a>
+    {% else %}
+      <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));">
+      {% for game in recently_played %}
+        {% include '/components/game_default.twig' with { game } %}
       {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="d-flex flex-column gap-3 flex-1" style="flex-basis: 10em;">
+  <div class="d-flex flex-row gap-6 ai-center">
+    <div class="pos-relative">
+    <img class="round-4" height=96 width=96 src="{{ cuser.get_headshot() }}">
+    {% if cuser.is_online %}<i class="pos-absolute icon-online bottom-0 right-0 p-2" style="transform: translate(25%, 25%);"></i>{% endif %}
+    </div>
+    <h2>{{ randomhi }}, {{ cuser.username }}</h2>
+  </div>
+  <hr nomargin>
+  <div class="d-flex flex-column">
+    <div class="d-flex flex-column gap-3">
+    <div class="d-flex flex-row card card-dark-primary hide-if-no-text" id="result"></div>
+      <form hx-post="/api/v1/feed/send?plaintext" hx-on::after-request="document.body.dispatchEvent(new Event('refresh'));" id="feedsend" hx-target="#result" hx-swap="innerHTML" class="d-flex flex-row pillify shadow-1 round-4">
+        <input class="shadowless w-100 flex-1" placeholder="how are y'all?" name="feed_text" type="text">
+        <button class="shadowless" type="submit" id="feedsendbtn"><h5 class="bi bi-send"></h5></button>
+      </form>
+      <div hx-get="/api/v1/feed/posts?p={{page}}&html" id="feed_posts" hx-trigger="every 30s, refresh from:body" class="d-flex flex-column gap-4">
+      {% if feeds.info.items|length != 0 %}
+      {% for feed in feeds.info.items %}
+        {% include '/components/feed_default.twig' with { feed } %}
+      {% endfor %}
+      {% else %}
+      <div class="d-flex flex-column ai-center gap-2 p-2">
+      <h1 style="font-size: 4em;" class="bi bi-egg-fried"></h1>
+      <h4>no messages</h4>
+      <small class="text-muted">you could be the first one to send a message!</small>
+      </div>
+      {% endif %}
+      </div>
+      <div class="d-flex flex-row">
+        {% include '/components/pagination.twig' with {params: req.query, max_btns: 8, page: feeds.info.page, queries: feeds.info.items, totalpages: feeds.info.total_pages, classes: "jc-center mx-auto"} %}
+      </div>
+    </div>
+  </div>
+  <hr nomargin>
+
   </div>
 </div>
 {% endblock %}

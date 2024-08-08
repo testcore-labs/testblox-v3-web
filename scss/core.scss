@@ -229,6 +229,10 @@ h1,
   font-size: 2.5em;
 }
 
+:-moz-loading {
+  background: #000;
+}
+
 ::-moz-selection {
   color: invert($accent-darker);
   background: $accent-darker;
@@ -298,15 +302,15 @@ h6 {
 }
 
 .ratio-banner {
-  aspect-ratio: 728/90
+  aspect-ratio: 728/90 !important;
 }
 
 .ratio-skyscraper {
-  aspect-ratio: 160/600;
+  aspect-ratio: 160/600 !important;
 }
 
 .ratio-rectangle {
-  aspect-ratio: 300/250;
+  aspect-ratio: 300/250 !important;
 }
 
 .ratio-1x1::before {
@@ -815,6 +819,8 @@ textarea {
   }
 }
 
+
+
 a {
   transition: none;
   text-decoration: none;
@@ -823,18 +829,18 @@ a {
 
 a.link:link {
   transition: color ease 1s;
-  color: lighten($accent, 10%);
+  color: lighten($accent, 15%);
 }
 a.link:visited {
   transition: color ease 1s;
-  color: lighten($accent, 7%);
+  color: lighten($accent, 20%);
 }
 a.link:hover {
   transition: color ease 0.5s;
-  color: lighten($accent, 15%);
+  color: lighten($accent, 30%);
 }
 a.link:active {
-  color: lighten($accent, 25%);
+  color: lighten($accent, 12.5%);
 }
 
 
@@ -1409,6 +1415,10 @@ a {
       display: inherit;
     }
   }
+  
+  div[id^='ad-skyscraper-'] {
+    display: none;
+  }
 
   .flex-col-to-row {
     flex-direction: row;
@@ -1535,6 +1545,13 @@ a {
     display: default;
   }
 }
+
+@media (min-width: 1200px) {
+  div[id^='ad-skyscraper-'] {
+    display: inherit;
+  }
+}
+
 @media (min-width: 400px) {
   .swap-element-400px {
     & > *.first {
@@ -1823,8 +1840,17 @@ img {
 .overflow-scroll {
   overflow: scroll;
 }
+.resize-y {
+  resize: vertical !important;
+}
+.resize-x {
+  resize: horizontal !important;
+}
+.resize-both {
+  resize: both !important;
+}
 .resize-none {
-  resize: none;
+  resize: none !important;
 }
 .clearfix {
   &::after {
@@ -2035,4 +2061,29 @@ animation: loadingbaranim 2.5s ease infinite alternate;
   100% {
     left: 0%;
   }
+}
+
+dialog {
+  all: unset;
+  transition: visibility 0.2s, opacity 0.2s ease;
+  &[open] {
+    opacity: 1;
+    visibility: visible;
+  }
+  &:not([open]) {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 0.25em;
+  padding: 0.75em;
+  border: 1px solid $primary-2;
+  background: rgba($primary-1, 0.4);
+  backdrop-filter: blur(0.75em);
+  color: #fff;
+  box-shadow: 2px 2px 6px 6px $shadow;
 }

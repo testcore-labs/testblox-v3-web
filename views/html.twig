@@ -11,13 +11,23 @@
     <meta content="{{ title ?? pagename }}" property="og:title">
     <meta content="nothing.." property="og:description">
     <meta name="theme-color" content="#650fde">
+    <script src="/assets/js/core_legacy.js"></script>
     <script src="/assets/js/core.js"></script>
     <script src="/assets/js/htmx.min.js"></script>
     <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
     <title>{{ title ?? req.path }} | {{ env['app_name'] }}</title>
   </head>
   <body class="body-padding" style="box-sizing: border-box;">
-    <div class="container round-4" style="padding: 0;{% if enablecontainerbg ?? true %} background: #0c0c0c;{% endif %} {{ container_styles }}">
+    <div class="container round-4 pos-relative" style="padding: 0;{% if enablecontainerbg ?? true %} background: #0c0c0c;{% endif %} {{ container_styles }}">
+      {% if not cuser.has_membership or cuser.settings.show_ads %}
+      <div id="ad-skyscraper-1" class="pos-absolute" style="right: calc(100% + 1em); top: 50%; transform: translate(0, -50%);">
+        <img class="ratio-skyscraper w-100 mb-4" style="min-width: 128px;" src="/assets/img/ad-skyscraper.png">
+      </div>
+      <div id="ad-skyscraper-2" class="pos-absolute" style="left: calc(100% + 1em); top: 50%; transform: translate(0, -50%);">
+        <img class="ratio-skyscraper w-100 mb-4" style="min-width: 128px;" src="/assets/img/ad-skyscraper.png">
+      </div>
+      {% endif %}
+      
       {% if enablenavbar ?? true %}<nav class="d-flex flex-row flex-wrap gap-3 ai-center card card-dark-primary round-bx-0 py-2 p-3">
         <div class="navbar-hover d-flex flex-row flex-wrap ai-center gap-5 flex-grow-1 flex-shrink-1 me-2" style="flex-basis: 10em;">
         <a class="nav-logo" href="/"></a>
@@ -42,7 +52,7 @@
         </div>
         <div class="pos-relative">
           <div class="d-flex flex-row ai-center gap-3 c-pointer" onclick="dropdownify(this, $('#userdropdown'));">
-          <img class="round-4" src="/assets/img/placeholder_avatar-closeup.png" width=32>
+          <img class="round-4" src="{{ cuser.get_headshot() }}" height=32 width=32>
           <small class="bi bi-caret-down-fill"></small>
           </div>
           

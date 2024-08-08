@@ -1,23 +1,22 @@
 import express, { type Express, type Request, type Response, type NextFunction } from "express";
 const routes = express.Router();
-import async_handler from 'express-async-handler';
-import htmx_middleware from "../utils/htmx";
-import { format_bytes } from "../utils/format";
-import asset from "../db/asset"
-import user from "../db/user";
-import invitekey from "../db/invitekey";
-import {asset_types} from "../types/assets"
-import filter from "../utils/filter";
-import env, { raw_env } from "../utils/env";
-import { filterXSS as xss } from "xss";
-import promokey from "../db/promokey";
-import os from "os";
-import type { message_type } from "../utils/message";
-import { notloggedin_handler, mod_handler, admin_handler, owner_handler } from "../utils/handlers";
-import si from "systeminformation";
-import { sys } from "typescript";
-import { pcall } from "../utils/pcall";
 
+import { notloggedin_handler, mod_handler, admin_handler, owner_handler } from "../utils/handlers";
+import { format_bytes } from "../utils/format";
+import {asset_types} from "../types/assets"
+import type { message_type } from "../utils/message";
+import htmx_middleware from "../utils/htmx";
+import env, { raw_env } from "../utils/env";
+import filter from "../utils/filter";
+import feed from "../db/feed";
+import asset from "../db/asset"
+import invitekey from "../db/invitekey";
+import user from "../db/user";
+import promokey from "../db/promokey";
+
+import async_handler from 'express-async-handler';
+import os from "os";
+import si from "systeminformation";
 routes.use(htmx_middleware);
 
 routes.all("/redeem", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
@@ -37,14 +36,16 @@ routes.get("/filter/:this", notloggedin_handler, async_handler(async (req: Reque
   res.send(filter.text_all(req.params.this))
 }));
 
-routes.get("/play/:placeid", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  res.send("doesn't work rn");
-  //res.render("player/window.twig");
-}));
-
 routes.get("/home", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  let page = Number(req.query.p);
+  if(String(page) == "NaN" || Number(page) <= 0) {
+    page = 1;
+  }
+
+  let feeds = await feed.all(5, page, "", "", "");
+  let recently_played = await res.locals.cuser.recently_played();
   let friends = await res.locals.cuser.get_friends();
-  res.render("home.twig", { friends: friends });
+  res.render("home.twig", { friends: friends, recently_played, feeds: feeds });
 }));
 
 routes.get("/users/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
@@ -56,8 +57,8 @@ routes.get("/users/", notloggedin_handler, async_handler(async (req: Request, re
 
   const order = String(req.query?.order).toString();
   const sort = String(req.query?.sort).toString();
-  const games = await user.all(6, page, query, sort, order);
-  res.render("users.twig", { ...games.info});
+  const users = await user.all(6, page, query, sort, order);
+  res.render("users.twig", { ...users.info});
 }));
 
 routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
@@ -69,23 +70,66 @@ routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, re
 
   const order = String(req.query?.order).toString();
   const sort = String(req.query?.sort).toString();
-  const games = await asset.all(asset_types.Place, 6, page, query, sort, order);
+  const games = await asset.all([asset_types.Place], 6, page, query, sort, order);
   res.render("games.twig", { ...games.info});
+}));
+
+
+
+routes.get("/catalog/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  const query = String(req.query?.q).toString();
+  let page = Number(req.query.p);
+  if(String(page) == "NaN" || Number(page) <= 0) {
+    page = 1;
+  }
+
+  const order = String(req.query?.order).toString();
+  const sort = String(req.query?.sort).toString();
+  const catalog = await asset.all(asset.catalog_types, 6, page, query, sort, order);
+  res.render("catalog.twig", { ...catalog.info});
+}));
+
+const settings_tabs: {[key: string]: any} = {
+  account: {
+    icon: "person-gear",
+    file: "account",
+    url: "account",
+  }
+}
+routes.get("/settings/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  res.render("settings.twig", settings_tabs);
+}));
+routes.get("/settings/:setting", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  const setting = req.params.setting.toString();
+  let settings_tab = settings_tabs[setting];
+  if(settings_tab) {
+    res.render(`settings/${settings_tab.file}.twig`);
+  } else {
+    res.render(`settings/account.twig`)
+  }
 }));
 
 routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   let game = await (new asset()).by_id(Number(req.params?.id));
+  let option = req.params?.name ? req.params?.name : game.title;
 
-  if(req.params?.name && req.params?.name == "about") {
-    res.send("<h3 class=\"mb-2\">description</h3>" + xss(game.description ?? ""));
-  } else if(req.params?.name && req.params?.name == "store") {
-    res.send("<h3 class=\"mb-2\">store</h3>" + xss(game.description ?? ""));
-  } else if(req.params?.name && req.params?.name == "servers") {
-    res.send("<h3 class=\"mb-2\">servers</h3>" + xss(game.description ?? ""));
-  } else if(req.params?.name != game.title) {
-    res.send("y u tryna fake gam");
-  } else {
-    res.render("game.twig", { game: game });
+  switch(option) {
+    case "about":
+      res.render("components/game_tabs.twig", { tab: option, game });
+      break;
+    case "store":
+      res.render("components/game_tabs.twig", { tab: option, game });
+      break;
+    case "servers":
+      res.render("components/game_tabs.twig", { tab: option, game });
+      break;
+    case "play":
+      res.send("doesn't work rn");
+      //res.render("player/window.twig");
+      break;
+    default:
+      res.render("game.twig", { game: game });
+      break;
   }
 }));
 

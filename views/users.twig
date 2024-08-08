@@ -7,7 +7,7 @@
 <div class="d-flex flex-row flex-wrap ai-center gap-3">
   <h2>{{ t.users.users }}</h2>
   <div class="d-flex flex-row flex-wrap gap-2 ms-auto w-autoto100-sm">
-  {% include '/components/pagination.twig' with {params: req.query, page: page, queries: queries, totalpages: total_pages, classes: "jc-center"} %}
+  {% include '/components/pagination.twig' with {params: req.query, page: page, queries: items, totalpages: total_pages, classes: "jc-center"} %}
   <div class="d-flex flex-row pillify flex-grow-1">
   <input name="q" class="w-100" placeholder="search for a game.." value="{{ req.query.q }}" onkeydown="search_onkeyup(this)" id="game-search" type="search">
   <button class="mx-1" onclick="search_onkeyup($('#game-search'), true)"><h5 class="bi bi-search"></h5></button>
@@ -39,9 +39,17 @@
     {% set allow_hr = false %}
     {% for user in items %}
       {%- if allow_hr ?? false %}<hr class="mt-1 mb-1">{% endif -%}
-        <div>
-          <img src="{{ }}">
-        </div>
+        <a href="/users/{{ user.id }}/profile" class="d-flex flex-row flex-wrap gap-4 ai-center">
+          <div class="pos-relative">
+          <img height=64 width=64 src="{{ user.get_headshot() }}">
+          {% if user.is_online %}<i class="pos-absolute icon-online bottom-0 right-0" style="transform: translate(25%, 25%);"></i>{% endif %}
+          </div>
+          <div class="d-flex flex-column gap-2">
+          <b>{{ user.username }}</b>
+          <small class="text-muted">{{ user.status }}</small>
+          </div>
+          <small class="text-muted ms-auto">{% if user.is_online %}online{% else %}{{ user.online|timeago }}{% endif %}</small>
+        </a>
       {% set allow_hr = true %}
     {% endfor -%}
   </div>

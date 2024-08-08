@@ -1,0 +1,10 @@
+{% if tab == "about" %}
+  <h3 class="mb-2">description</h3>
+  <div>{{ game.description }}</div>
+{% elseif tab == "store" %}
+  <h3 class="mb-2">store</h3>
+  <div>nothing in the store</div>
+{% elseif tab == "servers" %}
+  <h3 class="mb-2">servers</h3>
+  <div>no servers</div>
+{% endif %}

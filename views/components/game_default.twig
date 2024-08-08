@@ -1,18 +1,20 @@
 <a href="/game/{{ game.id }}/{{ game.title }}" class="mb-3 d-flex flex-column game-card" style="padding: 0; margin-top: 0.3em;">
   <div class="img-fluid pos-relative">
-    <img src="/assets/img/crossroads.png" class="round-4 img-fluid">
+    <img src="{{ game.get_icon() }}" class="round-4 img-fluid">
     <div class="bottom-0 left-0 hide-stuff ridge-md pos-absolute py-1 ps-2 pe-6 round-0" style="background: #0c0c0c;">bc</div>
     <div class="more-info d-flex flex-column gap-3 pos-absolute right-0 bottom-0 border-box w-100 h-100">
-      <div class="d-flex flex-column gap-3 p-2 pb-5 break-all round-4" style="background: linear-gradient(180deg, rgba(0,0,0, 0.975) 0%, rgba(0,0,0, 0.35) 100%); height: 100%;">
+      <div class="d-flex flex-column gap-3 p-2 break-all round-2" style="background: linear-gradient(180deg, rgba(0,0,0, 0.975) 0%, rgba(0,0,0, 0.35) 100%); height: 100%;">
         <div class="d-flex flex-row gap-3 ai-center">
-          <img width=24 height=24 class="round-2" src="/assets/img/placeholder_avatar-closeup.png">
+          <img width=24 height=24 class="round-2" src="{{ game.user.get_headshot() }}">
           <b class="text-truncate">{{ game.user.username }}</b>
         </div>
+        <hr nomargin>
         <span class="breakword">{{ (game.description ?? "<i class='breakword'>no description set.</i>")|truncate(96, "…") }}</span>
+      
+        <object>
+          <a href="/game/{{ game.id }}/play" class="btn-play d-flex ai-center jc-center round-3 pos-absolute as-baseline" style="right: 0.25em; bottom: 0.25em; padding: 0.1em 0.1em 0.025em 0.125em; font-size: 1.55em;"><i class="bi bi-play-fill"></i></a>
+        </object>
       </div>
-      <object>
-      <a href="/play/{{ game.id }}" class="btn-play d-flex ai-center jc-center round-3 pos-absolute as-baseline" style="right: 0.25em; bottom: 0.25em; padding: 0.1em 0.1em 0.025em 0.125em; font-size: 1.55em;"><i class="bi bi-play-fill"></i></a>
-      </object>
     </div> 
   </div>
   <div class="d-flex flex-column border-box m-1 my-0"><h4 class="text-muted breakword">{{ game.title|truncate(24, "…") }}</h4>

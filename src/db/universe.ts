@@ -42,7 +42,7 @@ class universe {
   }
 
   get exists() {
-    return this.data != undefined;
+    return Object.keys(this.data ?? {}).length !== 0;
   }
 
   get placeid() {

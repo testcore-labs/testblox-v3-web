@@ -80,12 +80,14 @@ class filter {
       "cain",
       "coin",
       "corn",
-      "conn"
+      "conn",
+      "racoon",
     ];
   }
 
   private static filter(text: string) {
-    let filtered_text = text;
+    let filtered_text = text.trimStart();
+    filtered_text.trimEnd();
     let filtered = false;
     let amount_filtered = 0;
     filtered_text = filtered_text.toString();
@@ -93,16 +95,24 @@ class filter {
       const uni_char = String.fromCodePoint(parseInt(code_char, 16));
       filtered_text.replaceAll(uni_char, "");
     });
-
+    
     this.bad_words.forEach(bad_word => {
       const pattern = bad_word.replace(/\+/g, '[a-zA-Z0-9!?]');
       const regex = new RegExp(pattern, 'gi');
-      
 
       filtered_text = filtered_text.replace(regex, (match) => {
-        filtered = true;
-        amount_filtered = amount_filtered + 1;
-        return (this.replacement_char).repeat(match.length);
+        if(this.whitelist_words.find(v => { 
+          if(v.includes(filtered_text)) {
+            return true;
+          }
+          return false;
+        })) {
+          return match;
+        } else {
+          filtered = true;
+          amount_filtered = amount_filtered + 1;
+          return (this.replacement_char).repeat(match.length);
+        }
       });
     });
 

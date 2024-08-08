@@ -5,28 +5,29 @@ import bbcode from "bbcode-ts";
 import { type message_type } from "../utils/message";
 import { membership_types } from "../types/membership";
 import { gender_types } from "../types/gender";
+import { privelege_types } from "../types/priveleges";
 import env from "../utils/env";
-import { orderby_enum, order_enum } from "../types/orderby";
-
-type settings_type = {
-  locale: String, // user decides
-  language: String, // user decides
-  css: String, // this has to secured (also make this scoped so u cant fuck wit the whole page)
-
-  log_logins: Boolean,
-}
+import { orderby_enum, validate_orderby } from "../types/orderby";
+import asset from "./asset";
 
 class user {
-  priveleges = {
-    member: 1,
-    mod: 2,
-    admin: 3,
-    owner: 4
+  settings_template = {
+    locale: "en-us", // for privacy reasons i wont detect the users locale
+    css: "",
+
+    show_ads: true,
+
+    log_logins: true // discord poll said they want it on default
   }
-  data: { [key: string]: any } | undefined;
+  data: { [key: string]: any };
+  bbcode_strict: bbcode;
 
   constructor() {
     this.data = {};
+    this.bbcode_strict = new bbcode;
+    this.bbcode_strict.tags.a.func = (txt, params) => 
+      `<a class="link" href="/redirect?url=${encodeURI(params["url"])}">${txt}</a>`;
+    this.bbcode_strict.allowed_tags = ["b", "i", "d", "u", "a", "c"]; 
   }
 
   async by_id(id: number) {
@@ -77,10 +78,10 @@ class user {
 
     if(!allowed_sorts.includes(sort)) sort = "createdat";
     if(query == "undefined") query = "";;
-    order = order_enum(order);
+    order = validate_orderby(order);
 
     const offset = (page - 1) * limit;
-    let items = await sql`SELECT * 
+    let items = await sql`SELECT *, (SELECT COUNT(*) FROM "invitekeys") AS total_count
     FROM "users" 
     WHERE ${ allowed_wheres.reduce((_w, wheree) =>
       sql`(${wheree} like ${ '%' + query + '%' })`,
@@ -89,7 +90,7 @@ class user {
     ORDER BY ${ sql(sort) } ${ sql.unsafe(order) } 
     LIMIT ${limit} OFFSET ${offset}`;
     
-    const total_items = items.length;
+    const total_items = items[0] != undefined ? items[0].total_count : 0;
     const total_pages = Math.ceil(total_items / limit);
 
     const item_ids = items.map(row => row.id);
@@ -134,14 +135,19 @@ class user {
     console.log(set);
   }  
 
+  get settings() {
+    return this.data?.settings;
+  }
+
+  get status() {
+    return this.data?.status ?? "";
+  }
+
   get description() {
     return this.data?.description ?? "";
   }
-  get styled_description() {
-    let bbparser = new bbcode;
-    let desc = this.data?.description;
-    desc = bbparser.parse(desc, ["b", "i"]);
-    return desc ?? "";
+  get bb_description() {
+    return this.bbcode_strict.parse(this.description);
   }
 
   get password() { // this.data? is for not giving a fuck if its null 
@@ -151,6 +157,23 @@ class user {
     if(this.data) {
       this.data.password = pw;
     }
+  }
+
+  async recently_played() {
+    let games = await sql`SELECT * 
+    FROM "recently_played" 
+    WHERE "userid" = ${this.data.id} 
+    ORDER BY updatedat DESC
+    LIMIT 1`;
+
+    const item_ids = games.map(row => row.placeid);
+    const new_items = await Promise.all(
+      item_ids.map(async item_id => {
+        let new_item = new asset;
+        return await new_item.by_id(item_id);
+      })
+    );
+    return new_items;
   }
 
   get money(): number {
@@ -185,7 +208,6 @@ class user {
   async add_money(amount: number) {
     await sql`UPDATE "users" SET currency = currency + ${ Number(amount) } WHERE "id" = ${this.data?.id}`;
     if(this.data) this.data.currency = Number(this.data.currency) + Number(amount);
-    console.log(this.data?.currency);
     await this._updateat();
   }
 
@@ -219,19 +241,27 @@ class user {
 
 
   get is_mod(): boolean {
-    return this.data?.privelege === this.priveleges.mod;
+    return this.data?.privelege === privelege_types.mod;
   }
 
   get is_admin(): boolean {
-    return this.data?.privelege === this.priveleges.admin;
+    return this.data?.privelege === privelege_types.admin;
   }
 
   get is_owner(): boolean {
-    return this.data?.privelege === this.priveleges.owner;
+    return this.data?.privelege === privelege_types.owner;
   }
 
-  get headshot() {
-    return;
+  // a pointer to a file
+  async get_headshot() {
+    let headshot = this.data?.headshot;
+    if(headshot == 0) {
+      return "/assets/img/reviewpending.png";
+    }
+  }
+
+  get online() {
+    return this.data?.online;
   }
 
   async set_online() {
@@ -246,7 +276,7 @@ class user {
   get rand_token(): string {
     let characters = "0123456789abcdef"
     let str = ""
-    for(let i = 0; i < 64; i++){
+    for(let i = 0; i < 96; i++){
       str += characters[Math.floor(Math.random() * 16)]
     }
     return str;
@@ -332,12 +362,7 @@ class user {
       currency: env.currency.starter, 
       gender: gender_types.NONE, 
       membership: membership_types.NONE, 
-      settings: sql.json({
-        locale: "en-us", // for privacy reasons i wont detect the users locale
-        css: "",
-
-        log_logins: true // discord poll said they want it on default
-      }),
+      settings: sql.json(this.settings_template),
       createdat: time, 
       updatedat: time,
     }

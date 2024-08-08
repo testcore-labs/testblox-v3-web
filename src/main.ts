@@ -5,7 +5,7 @@ import async_handler from 'express-async-handler';
 import cookie_parser from "cookie-parser";
 import { queryParser as query_parser} from "express-query-parser";
 import cors from "cors";
-//import multer from "multer";
+import discord_bot from "./bot";
 
 import env from "./utils/env";
 process.env.TZ = env.timezone;
@@ -13,6 +13,7 @@ import user from "./db/user";
 import './utils/sql';
 import twig from "./utils/twig";
 import logs from "./utils/log";
+import { pcall } from "./utils/pcall";
 
 import translate from "./utils/translate";
 import arbiter from "./arbiter";
@@ -22,6 +23,10 @@ import front_loggedin_routes from "./routes/front_loggedin";
 import api_v1_routes from "./routes/api_v1";
 import api_roblox_routes from "./routes/rbx/api";
 import api_rcc_roblox_routes from "./routes/rbx/rcc";
+
+
+const dsc_bot = new discord_bot;
+pcall(async () => {await dsc_bot.start_bot()});
 
 new arbiter();
 translate.init();
@@ -50,9 +55,6 @@ app.use(
     parseNumber: true
   })
 )
-
-// PLEASE upload the file somewhere else from tmp, since its TEMPORARY, and we should clean the folder each run aswell
-//app.use(multer({dest:root_path+'/files/tmp/'}).smthing);
 
 app.use(async_handler(async (req, res, next) => {
   app.disable("x-powered-by");
@@ -101,7 +103,7 @@ app.use((err: any, req: any, res: any, next: any) => {
       res.set("content-type", "text/plain").status(500).send(error);
     }
   } catch(e) {
-    console.log("the error handler errored??");
+    console.error(err);
   }
 });
 

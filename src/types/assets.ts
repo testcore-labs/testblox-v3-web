@@ -1,16 +1,29 @@
 const enum asset_types {
   // unfortunately roblox would like me to Name Things Like This.
   Image = 1,
+  GIF = 1.5,
   TShirt = 2,
   Audio = 3,
   Mesh = 4,
   Lua = 5,
+  /**
+  * @deprecated
+  */
+  HTML = 6,
+  /**
+  * @deprecated
+  */
+  Text = 7,
   Hat = 8, // Legacy, newer versions would use *Accessory.
   Place = 9,
   Model = 10,
   Shirt = 11,
   Pants = 12,
   Decal = 13,
+  /**
+  * @custom
+  */
+  Thumbnail = 14, // CUSTOM!!!
   Head = 17,
   Face = 18,
   Gear = 19,
@@ -56,7 +69,7 @@ const enum asset_types {
   // LeftShoeAccessory = 70,
   // RightShoeAccessory = 71,
   // DressSkirtAccessory = 72,
-  // FontFamily = 73,
+  FontFamily = 73,
   // EyebrowAccessory = 76,
   // EyelashAccessory = 77,
   // MoodAnimation = 78,

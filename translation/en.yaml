@@ -31,6 +31,9 @@ home:
 games:
   games: games
   search: search for a game..
+catalog:
+  catalog: catalog
+  search: search for an item..
 
 # please dont remove the html aka <b> and </b>, dont modify the tags aswell
 filter:

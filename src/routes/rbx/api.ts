@@ -8,7 +8,7 @@ const routes = express.Router();
 // fix the types on req and res -qzip
 // @ts-expect-error
 routes.get(['/asset', '/Asset', '/asset/', '/Asset/', '/v1/asset/'], async_handler(async(req, res) => {
-    if(req.query?.id == "../db.php") {
+    if((req.query?.id)?.toString()?.startsWith("../")) {
         res.set("content-type", "text/plain")
         // snowys TERRIBLE code
         return res.send(`<?php

@@ -6,16 +6,16 @@ import argon2 from "argon2";
 import user from "./user";
 import { type message_type } from "../utils/message";
 import { asset_types } from "../types/assets";
-import { privacy_types } from "../types/privacy";
+import { privacy_types, validate_privacy } from "../types/privacy";
 import { moderation_status_types } from "../types/moderation";
 import root_path from "../utils/root_path";
 import env from "../utils/env";
-import { orderby_enum, order_enum } from "../types/orderby";
+import { orderby_enum, validate_orderby } from "../types/orderby";
 
 const asset_folder = path.join(root_path, "files", "assets");
 
 class asset {
-  catalog_types = [
+  static catalog_types = [
     asset_types.Hat,
     asset_types.TShirt,
     asset_types.Shirt,
@@ -47,7 +47,7 @@ class asset {
     asset_types.WaistAccessory,
     asset_types.DeathAnimation,
   ];
-  library_types = [
+  static library_types = [
     asset_types.Audio,
     asset_types.Mesh,
     asset_types.Lua,
@@ -59,7 +59,7 @@ class asset {
     asset_types.Plugin,
     asset_types.MeshPart,
   ];
-  data: { [key: string]: any } | undefined;
+  data: { [key: string]: any };
   user: user | undefined;
 
   constructor() {
@@ -93,7 +93,7 @@ class asset {
   }
 
   get exists() {
-    return typeof(this.data) != undefined;
+    return Object.keys(this.data ?? {}).length !== 0;
   }
 
   get id() {
@@ -106,33 +106,48 @@ class asset {
   get description() {
     return this.data?.description;
   }
+  get file() {
+    return this.data?.file;
+  }
+
+  async get_image() {
+    return await (new asset).by_id(this.data.icon);
+  }
+  
+  // api
+  get_icon() {
+    return `/api/v1/asset/icon?id=${this.data.id}`;
+  }
 
   static async all(
-    type: number = asset_types.Image, 
+    types: number[] = [asset_types.Image], 
     limit: number = 16, 
     page: number = 1, 
     query: string, 
     sort: string = "createdat", 
-    order: string = orderby_enum.DESCENDING
+    order: string = orderby_enum.DESCENDING,
+    privacy: number = privacy_types.PUBLIC,
   ): Promise<message_type> {
     const allowed_sorts = ["id", "title", "description", "updatedat", "createdat"];
     const allowed_wheres = ["title", "description"];
 
     if(!allowed_sorts.includes(sort)) sort = "createdat";
     if(query == "undefined") query = "";;
-    order = order_enum(order);
+    order = validate_orderby(order);
+    privacy = validate_privacy(privacy);
 
     const offset = (page - 1) * limit;
-    let items = await sql`SELECT * 
+    let items = await sql`SELECT *, (SELECT COUNT(*) FROM "assets") AS total_count
     FROM "assets" 
-    WHERE ${ allowed_wheres.reduce((_w, wheree) =>
+    WHERE "type" IN ${ sql(types) } AND
+    ${ allowed_wheres.reduce((_w, wheree) =>
       sql`(${wheree} like ${ '%' + query + '%' })`,
       sql`false`
-    )}
+    )} AND "privacy" = ${ privacy }
     ORDER BY ${ sql(sort) } ${ sql.unsafe(order) } 
     LIMIT ${limit} OFFSET ${offset}`;
     
-    const total_items = items.length;
+    const total_items = items[0] != undefined ? items[0].total_count : 0;
     const total_pages = Math.ceil(total_items / limit);
 
     const item_ids = items.map(row => row.id);
@@ -167,13 +182,13 @@ class asset {
   }
 
   get for_catalog() {
-    if(this.catalog_types[this.data?.type]) {
+    if(asset.catalog_types[this.data?.type]) {
       return true;
     }
   }
 
   get for_library() {
-    if(this.library_types[this.data?.type]) {
+    if(asset.library_types[this.data?.type]) {
       return true;
     }
   }
@@ -190,7 +205,30 @@ class asset {
   }
 
   async create_place(title: any, description: any, userid: number, file: string): Promise<message_type> {
-    return {"success": false, "message": "NOT IMPLEMENTED."}
+    const time = Date.now();
+    let params = {
+      title: title,
+      description: description, 
+      type: asset_types.Place,
+      icon: 0, // asset_types.Image id
+      file: "",
+      privacy: privacy_types.PRIVATE,
+      creator: userid,
+      moderation: moderation_status_types.REVIEWING,
+      data: {},
+      createdat: time, 
+      updatedat: time,
+    }
+
+    let st = await sql`
+      INSERT INTO "assets" ${sql(params)}
+      RETURNING *`;
+    if(st.length > 0) {
+      let query = st[0];
+      return {success: true, message: "created account.", info: { id: query?.id, token: query?.token }}; 
+    } else {
+      return {success: false, message: "failed to create account."}
+    }
   }
 }
 

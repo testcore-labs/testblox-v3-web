@@ -33,7 +33,7 @@ routes.get("/", loggedin_handler, async_handler((req: Request, res: Response) =>
   res.render("index.twig");
 }));
 
-routes.get("/tos", loggedin_handler, async_handler((req: Request, res: Response) => {
+routes.get("/tos", async_handler((req: Request, res: Response) => {
   res.render("tos.twig");
 }));
 

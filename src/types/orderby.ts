@@ -3,14 +3,14 @@ const enum orderby {
   DESCENDING = "DESC"
 }
 
-export function order_enum(str: string): orderby {
+export function validate_orderby(str: string, def: string = orderby.ASCENDING): orderby {
   switch (str) {
     case "ASC":
       return orderby.ASCENDING;
     case "DESC":
       return orderby.DESCENDING;
     default:
-      return orderby.ASCENDING;
+      return validate_orderby(def);
   }
 }
 

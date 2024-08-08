@@ -3,10 +3,10 @@ import path from "path";
 import user from "./user";
 import root_path from "../utils/root_path";
 import type { message_type } from "../utils/message";
-import { orderby_enum, order_enum } from "../types/orderby";
+import { orderby_enum, validate_orderby } from "../types/orderby";
 
 class invitekey {
-  data: { [key: string]: any } | undefined;
+  data: { [key: string]: any };
   usedby: user | undefined;
   createdby: user | undefined;
 
@@ -54,10 +54,10 @@ class invitekey {
 
     if(!allowed_sorts.includes(sort)) sort = "createdat";
     if(query == "undefined") query = "";;
-    order = order_enum(order);
+    order = validate_orderby(order);
 
     const offset = (page - 1) * limit;
-    let items = await sql`SELECT * 
+    let items = await sql`SELECT *, (SELECT COUNT(*) FROM "invitekeys") AS total_count
     FROM "invitekeys" 
     WHERE ${ allowed_wheres.reduce((_w, wheree) =>
       sql`(${wheree} like ${ '%' + query + '%' })`,
@@ -66,7 +66,7 @@ class invitekey {
     ORDER BY ${ sql(sort) } ${ sql.unsafe(order) } 
     LIMIT ${limit} OFFSET ${offset}`;
     
-    const total_items = items.length;
+    const total_items = items[0] != undefined ? items[0].total_count : 0;
     const total_pages = Math.ceil(total_items / limit);
 
     const item_ids = items.map(row => row.id);

@@ -2,79 +2,45 @@
 {% set title = "catalog" %}
 
 {% block content %}
-<div class="d-flex flex-row gap-3 flex-grow-1">
-  <div class="d-flex flex-row pillify shadow-1 round-4 flex-grow-1" style="height: 2.4em;">
-    <input type="search" style="flex-grow: 1;" name="q" value="{{ request.q }}" placeholder="search for a user..">
-    <a submitt type="submit" href="?q={{ request.q }}&{% if request.sort %}sort={{ request.sort }}&{% endif %}p={{ page }}" class="d-flex ai-center jc-center btn-primary shadowless border-light-1 px-4" style="background: #000;"><h5 class="bi bi-search text-muted"></h5></a>
+{% import "./_macros.twig" as utils %}
+<div class="d-flex flex-column gap-1">
+<div class="d-flex flex-row flex-wrap ai-center gap-3">
+  <h2>{{ t.catalog.catalog }}</h2>
+  <div class="d-flex flex-row flex-wrap gap-2 ms-auto w-autoto100-sm">
+  {% include '/components/pagination.twig' with {params: req.query, page: page, queries: items, totalpages: total_pages, classes: "jc-center"} %}
+  <div class="d-flex flex-row pillify flex-grow-1">
+  <input name="q" class="w-100" placeholder="{{ t.catalog.search }}" value="{{ req.query.q }}" onkeydown="search_onkeyup(this)" id="game-search" type="search">
+  <button class="mx-1" onclick="search_onkeyup($('#game-search'), true)"><h5 class="bi bi-search"></h5></button>
   </div>
-  <script>
-    document.querySelector("[name=\"q\"]").addEventListener("keyup", function(event) {
-    var submit = document.querySelector("[submitt]")
-    event.preventDefault();
-    submit.setAttribute("href", submit.getAttribute("href").replace(/q=([^&]*)/, "q=" + this.value))
-    if (event.keyCode === 13) {
-      submit.click();
-    }
-    });
-  </script>
-  <div class="d-flex pos-relative">
-    <button class="d-flex flex-row ai-center jc-center" onclick="dropdownify(this, $('#catalogsearchdropdown'));"><h4 class="bi bi-funnel px-1"></h4></button>
-    <div class="d-flex flex-column card gap-4 dropdownify pos-absolute right-0 top-0" id="catalogsearchdropdown" style="width: 15em;">
-      <a href="?{% if request.q %}q={{ request.q }}&{% endif %}sort=username{% if request.order %}&order={{ request.order }}{% endif %}" class="flex-1" {% if request.sort == "username" %}text-disabled{% endif %}>
-      sort by <b>username</b></a>
-      <a href="?{% if request.q %}q={{ request.q }}&{% endif %}sort=desc{% if request.order %}&order={{ request.order }}{% endif %}" class="flex-1" {% if request.sort == "desc" %}text-disabled{% endif %}>
-      sort by <b>description</b></a>
-      <a href="?{% if request.q %}q={{ request.q }}&{% endif %}sort=createdat{% if request.order %}&order={{ request.order }}{% endif %}" class="flex-1" {% if request.sort == "createdat" %}text-disabled{% endif %}>
-      sort by <b>created at</b></a>
-      <a href="?{% if request.q %}q={{ request.q }}&{% endif %}sort=id{% if request.order %}&order={{ request.order }}{% endif %}" class="flex-1" {% if request.sort == "id" or not request.sort %}text-disabled{% endif %}>
-      sort by <b>id</b></a>
-      <a href="?{% if request.q %}q={{ request.q }}&{% endif %}sort={{ request.sort }}&order={% if request.order == "ASC" %}DESC{% else %}ASC{% endif %}" class="flex-1">
-      sort in {% if request.order == "ASC" %}<b>descending</b>{% else %}<b>ascending</b>{% endif %} order</a>
+  <div class="pos-relative">
+    {# i do not like html forms for this as it clears when u select a diff filter #}
+    <button onclick="dropdownify(this, $('#filterresults'));"><h4 class="bi bi-filter"></h4></button>
+    <div class="pos-absolute dropdownify mt-1 card d-flex flex-column gap-3" style="width: 14em; z-index: 2;" id="filterresults">
+      <a href="?{{ query_remove_key(req.query, "order") }}order=ASC">{{ t.filter.order_by_ascending }}</a>
+      <a href="?{{ query_remove_key(req.query, "order") }}order=DESC">{{ t.filter.order_by_descending }}</a>
+      <hr class="mt-1 mb-1">
+      <a href="?{{ query_remove_key(req.query, "sort") }}sort=id">{{ t.filter.sort_by_id }}</a>
+      <a href="?{{ query_remove_key(req.query, "sort") }}sort=title">{{ t.filter.sort_by_title }}</a>
+      <a href="?{{ query_remove_key(req.query, "sort") }}sort=description">{{ t.filter.sort_by_description }}</a>
+      <a href="?{{ query_remove_key(req.query, "sort") }}sort=updatedat">{{ t.filter.sort_by_updated }}</a>
+      <a href="?{{ query_remove_key(req.query, "sort") }}sort=createdat">{{ t.filter.sort_by_created }}</a>
     </div>
   </div>
+  </div>
 </div>
-{% if catalog|length == 0 %}
-<div class="d-flex flex-column gap-3 m-5 ai-center text-center">
-  <h3>no catalog found</h3>
-  <div>try searching something different or going to a different page</div>
-</div>
+<hr class="mt-3 mb-2">
+{% if items|length == 0 %}
+  <div class="d-flex flex-column ai-center gap-2 p-3">
+  <h1 style="font-size: 4em;" class="bi bi-egg-fried"></h1>
+  <h4>no catalog found</h4>
+  <small class="text-muted">heres a fried egg for you</small>
+  </div>
 {% else %}
-<table class="w-100 mt-3" style="table-layout: auto;">
-  <tr>
-    <th class="text-left">user</th>
-    <th class="text-center">created at</th>
-  </tr>
-  {% for user in catalog %}
-    {% set user = global("controllers\\user", [con, user.id]) %}
-    <tr>
-      <td class="text-truncate break-all"><a class="d-flex flex-row gap-4 ai-center text-truncate break-all" href="/catalog/{{ user.get_id() }}/profile">
-      <div class="img-fluid pos-relative" style="max-width: 75px;">
-        <img src="/assets/img/placeholder_avatar-closeup.png" class="round-4 img-fluid w-100">
-        <i class="pos-absolute icon-online bottom-0 right-0" small></i>
-      </div>
-      <div class="d-flex flex-column m-1 my-0"><h3 class="text-muted table-td-wrap">{{ user.get_username() }}</h3>
-      <small class="text-extramuted mt-1 s table-td-wrap">{{ user.get_desc() }}</small></div>
-      </a>
-      </td>
-      <td class="text-center"><a href="/catalog/{{ user.get_id() }}/profile"><small class="text-extramuted mt-1">{{ user.get_createdat()|date("Y-m-d h:i:s") }}</small></a></td>
-  </tr>
-  {% endfor %}
-</table>
+  <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));">
+    {% for game in items %}
+      {% include '/components/game_default.twig' with {game: game} %}
+    {% endfor %}
+  </div>
 {% endif %}
-{% if catalog|length != 0 %}
-{% set dotset = false %}
-<div style="display: flex; gap: 0.5em; flex-direction: row; justify-content: center; font-size: 1.2em;">
-  <a {% if page == 1 %}disabled{% else %}href="?{% if request.q %}q={{ request.q }}&{% endif %}{% if request.sort %}sort={{ request.sort }}&{% endif %}{% if request.order %}order={{ request.order }}&{% endif %}p={{ (1 <= page - 1) and (page - 1 <= totalpages) ? page - 1 : 1 }}"{% endif %}><button {% if page == 1 %}disabled{% endif %}>previous</button></a>
-  {% for pagee in (1 .. (totalpages)) %}
-    {% if pagee > 2 and pagee <= totalpages - 2 and pagee != page %}
-      {% if not dotset %} {% set dotset = true %}
-        <button disabled style="min-width: 25px;">...</button>
-      {% endif %} 
-    {% else %}
-      <a {% if page == pagee %}disabled{% else %}href="?{% if request.q %}q={{ request.q }}&{% endif %}{% if request.sort %}sort={{ request.sort }}&{% endif %}{% if request.order %}order={{ request.order }}&{% endif %}p={{ pagee }}"{% endif %}><button {% if page == pagee %}disabled{% endif %}>{{ pagee }}</button></a>
-    {% endif %}
-  {% endfor %}
-  <a {% if page == totalpages %}disabled{% else %}href="?{% if request.q %}q={{ request.q }}&{% endif %}{% if request.sort %}sort={{ request.sort }}&{% endif %}{% if request.order %}order={{ request.order }}&{% endif %}p={{ (1 <= page + 1) and (page + 1 <= totalpages) ? page + 1 : totalpages }}"{% endif %}><button {% if page == totalpages %}disabled{% endif %}>next</button></a>
 </div>
-{% endif %}
 {% endblock %}

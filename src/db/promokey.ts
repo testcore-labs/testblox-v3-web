@@ -3,7 +3,7 @@ import user from "./user";
 import type { message_type } from "../utils/message";
 
 class promokey {
-  data: { [key: string]: any } | undefined;
+  data: { [key: string]: any };
 
   constructor() {
     this.data = {};

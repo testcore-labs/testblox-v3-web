@@ -1,5 +1,6 @@
 import { shuffle } from "../utils/array";
 import env from '../utils/env';
+import { timeago } from '../utils/time';
 import { pcall } from '../utils/pcall';
 import twig from "twig";
 import translate from "../utils/translate";
@@ -17,9 +18,16 @@ twig.extendFilter("parse_json", function(json: string): any {
   if(typeof json === 'undefined') return;
   return JSON.parse(json);
 });
+twig.extendFilter("timeago", function(timestamp: number): any {
+  return timeago(timestamp);
+});
+
 
 twig.extendFilter("t", function(txt: string, args: any): any {
   return translate.text(txt, args[0]);
+});
+twig.extendFilter("nr2br", function(txt: string, args: any): any {
+  return txt.replaceAll(/\n\r?/g, '&#13;&#10;');
 });
 twig.extendFunction("transcompletion", function(locale: string): any {
   return translate.completion(locale);
