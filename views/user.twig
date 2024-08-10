@@ -1,0 +1,12 @@
+{% extends "html.twig" %}
+{% set title = "users" %}
+
+{% block content %}
+{% import "./_macros.twig" as utils %}
+<div class="d-flex flex-column gap-3">
+  <div>
+    <% console.log("this is "+this.env.app_name) %>
+    {{ user.username }}
+  </div>
+</div>
+{% endblock %}

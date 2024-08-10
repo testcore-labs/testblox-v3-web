@@ -5,7 +5,7 @@ import root_path from "../utils/root_path";
 import type { message_type } from "../utils/message";
 import { orderby_enum, validate_orderby } from "../types/orderby";
 
-class invitekey {
+class entity_invitekey {
   data: { [key: string]: any };
   usedby: entity_user | undefined;
   createdby: entity_user | undefined;
@@ -72,7 +72,7 @@ class invitekey {
     const item_ids = items.map(row => row.id);
     const new_items = await Promise.all(
       item_ids.map(async item_id => {
-        let new_item = new invitekey;
+        let new_item = new entity_invitekey;
         return await new_item.by_id(item_id);
       })
     );
@@ -161,4 +161,4 @@ class invitekey {
   }
 }
 
-export default invitekey;
+export default entity_invitekey;

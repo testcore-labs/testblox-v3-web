@@ -18,13 +18,13 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@lrre-foss/rcctalk": "https://github.com/lrre-foss/rcctalk",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
     "@types/dateformat": "^5.0.2",
     "@types/express": "^4.17.21",
     "@types/locale": "^0.1.4",
     "@types/lowdb": "^1.0.15",
-    "@types/twig": "^1.12.16",
     "@types/yaml": "^1.9.7",
     "argon2": "^0.40.3",
     "autoprefixer": "^10.4.19",
@@ -54,7 +54,8 @@
     "sass": "^1.77.8",
     "systeminformation": "^5.23.2",
     "timeago.js": "^4.0.2",
-    "twig": "^1.17.1",
+    "trellis": "https://github.com/lrre-foss/trellis",
+    "twig": "https://github.com/testcore-labs/twiggle.git",
     "xss": "^1.0.15",
     "yaml": "^2.5.0"
   }

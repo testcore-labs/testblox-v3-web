@@ -2,14 +2,14 @@ import db from "../utils/sql";
 import xss from "xss";
 import argon2 from "argon2";
 import { type message_type } from "../utils/message";
-import asset from "../db/asset";
+import entity_asset from "../db/asset";
 import type { universes_table } from "./tables/universes";
 import type { assets_table, place_type } from "./tables/assets";
 import { moderation_status_types } from "../types/moderation";
 import { privacy_types } from "../types/privacy";
 import { asset_types } from "../types/assets";
 
-class universe {
+class entity_universe {
   id: number;
   data: universes_table | undefined;
   table: any;
@@ -66,7 +66,7 @@ class universe {
       createdat: 0
     }
 
-    let new_place = await (new asset).create_place(title, "placeholder text", creator, file);
+    let new_place = await (new entity_asset).create_place(title, "placeholder text", creator, file);
 
     if(new_place.success) {
       new_universe.placeid = typeof new_place.info?.id == "number" ? new_place.info?.id : -1; // this will never happen and if it does we will know
@@ -86,4 +86,4 @@ class universe {
   }
 }
 
-export default universe;
+export default entity_universe;

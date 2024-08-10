@@ -1,4 +1,4 @@
-import Discord, { Client, Events, GatewayIntentBits, Message } from "discord.js";
+import Discord, { Client, EmbedBuilder, Events, GatewayIntentBits, Message } from "discord.js";
 import env from "./utils/env";
 import logs from "./utils/log";
 import { shuffle } from "./utils/array"
@@ -78,13 +78,25 @@ class discord_bot {
       description: "filters naughty words",
       func: (msg, params) => msg.reply(filter.text(msg.content.replace(params[0], "")))
     },
+    // fyi i took this example https://discordjs.guide/popular-topics/embeds.html#embed-preview
     {
       command: "user.get",
       category: "information",
       description: "gets users raw data",
       func: async (msg, params) => { 
-        const selected_user = await (new entity_user).by_id(Number(params[1]))
-        return msg.reply(`\`\`\`json\n${JSON.stringify(selected_user.data ?? {}, null, 2)}\`\`\``);
+        let userid = Number.isNaN(params[1]) ? 1 : Number(params[1]);
+        const selected_user = await (new entity_user).by_id(userid);
+        const new_embed = new EmbedBuilder()
+	        .setColor(0x0099FF)
+	        .setTitle(selected_user.username)
+	        .setDescription(selected_user.description.length == 0 ? " " : selected_user.description)
+	        // .setThumbnail('d')
+	        .addFields(
+		        { name: 'privelege', value: selected_user.what_privelege },
+	        )
+	        .setImage(`https://${env.domain}${ await selected_user.get_headshot() }`)
+	        .setFooter({ text: selected_user.status.length == 0 ? " " : selected_user.status });
+        return msg.reply({ embeds: [new_embed] });
       }
     },
     {
@@ -92,8 +104,8 @@ class discord_bot {
       category: "information",
       description: "gets users raw data",
       func: async (msg, params) => { 
-        let page = Number(params[1]);
-        const users = await entity_user.all(1 , (Number.isNaN(page) ? 1 : page), "")
+        let page = Number.isNaN(params[1]) ? 1 : Number(params[1]);
+        const users = await entity_user.all(1 , page, "")
         return msg.reply(`\`\`\`json\n${JSON.stringify(users ?? {}, null, 2)}\`\`\``);
       }
     },

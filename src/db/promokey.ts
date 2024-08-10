@@ -2,7 +2,7 @@ import sql, { type postgres } from "../utils/sql";
 import entity_user from "./user";
 import type { message_type } from "../utils/message";
 
-class promokey {
+class entity_promokey {
   data: { [key: string]: any };
 
   constructor() {
@@ -84,4 +84,4 @@ class promokey {
   }
 }
 
-export default promokey;
+export default entity_promokey;

@@ -13,7 +13,7 @@ import entity_user from "./db/user";
 import './utils/sql';
 import twig from "./utils/twig";
 import logs from "./utils/log";
-import { pcall_msg } from "./utils/pcall";
+import { pcall } from "./utils/pcall";
 
 import translate from "./utils/translate";
 import arbiter from "./arbiter";
@@ -26,7 +26,7 @@ import api_rcc_roblox_routes from "./routes/rbx/rcc";
 
 
 const dsc_bot = new discord_bot;
-pcall_msg(async () => {await dsc_bot.start_bot()});
+pcall(async () => {await dsc_bot.start_bot()});
 
 new arbiter();
 translate.init();
@@ -45,8 +45,9 @@ app.set("twig options", {
 });
 app.use(express.urlencoded({
     extended: false,
-    limit: "4mb"
+    limit: "25mb"
 }));
+app.use(express.json());
 app.use(
   query_parser({
     parseNull: true,

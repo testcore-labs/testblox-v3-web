@@ -4,7 +4,7 @@ import { type message_type } from "../utils/message";
 import { orderby_enum, validate_orderby } from "../types/orderby";
 import entity_user from "./user";
 
-class feed {
+class entity_feed {
   data: { [key: string]: any };
   user: entity_user | undefined;
   bbcode_strict: bbcode;
@@ -102,12 +102,11 @@ class feed {
     const item_ids = items.map(row => row.id);
     const new_items = await Promise.all(
       item_ids.map(async item_id => {
-        let new_item = new feed;
+        let new_item = new entity_feed;
         return await new_item.by_id(item_id);
       })
     );
 
-    console.log(items.length);
     return { success: true, message: "", info: { 
       items: new_items, 
       total_pages: total_pages, 
@@ -157,6 +156,20 @@ class feed {
     return false;
   }
 
+  static wait_cooldown = 15;
+  static async check_if_recently_posted(userid: number) {
+    let st = await sql`SELECT * FROM "feed"
+    WHERE creator = ${userid}
+    ORDER BY updatedat DESC`;
+    if(st.length > 0) {
+      const updatedat = st[0].updatedat;
+      return [((Date.now() - updatedat) <= this.wait_cooldown * 1000), 
+      (this.wait_cooldown - Math.round((Date.now() - updatedat) / 100) / 10)];
+    } else {
+      return [false, 0];
+    }
+  }
+
   static async send(txt: any, userid: number, replyto: number): Promise<message_type> {
     txt = txt.toString();
 
@@ -175,6 +188,11 @@ class feed {
       createdat: time
     }
 
+    const [hasposted, timetowait] = await this.check_if_recently_posted(userid);
+    if(hasposted) {
+      return {success: true, message: `wait ${timetowait} second(s)`}; 
+    }
+
     let st = await sql`
       INSERT INTO "feed" ${sql(params)}
       RETURNING *`;
@@ -188,4 +206,4 @@ class feed {
 
 }
 
-export default feed;
+export default entity_feed;

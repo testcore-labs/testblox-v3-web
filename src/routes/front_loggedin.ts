@@ -8,11 +8,11 @@ import type { message_type } from "../utils/message";
 import htmx_middleware from "../utils/htmx";
 import env, { raw_env } from "../utils/env";
 import filter from "../utils/filter";
-import feed from "../db/feed";
-import asset from "../db/asset"
-import invitekey from "../db/invitekey";
+import entity_feed from "../db/feed";
+import entity_asset from "../db/asset"
+import entity_invitekey from "../db/invitekey";
 import entity_user from "../db/user";
-import promokey from "../db/promokey";
+import entity_promokey from "../db/promokey";
 
 import async_handler from 'express-async-handler';
 import os from "os";
@@ -24,7 +24,7 @@ routes.all("/redeem", notloggedin_handler, async_handler(async (req: Request, re
   
   let resp: message_type = { success: false, message: "" };
   if(code !== undefined) {
-  let promkey = new promokey();
+  let promkey = new entity_promokey();
   await promkey.by_code(code);
   resp = await promkey.redeem(res.locals.cuser.id);
   }
@@ -42,24 +42,12 @@ routes.get("/home", notloggedin_handler, async_handler(async (req: Request, res:
     page = 1;
   }
 
-  let feeds = await feed.all(5, page, "", "", "");
-  let recently_played = await res.locals.cuser.recently_played();
-  let friends = await res.locals.cuser.get_friends();
+  let feeds = await entity_feed.all(5, page, "", "", "");
+  let recently_played = await res.locals.cuser.recently_played(8);
+  let friends = await res.locals.cuser.get_friends(12);
   res.render("home.twig", { friends: friends, recently_played, feeds: feeds });
 }));
 
-routes.get("/users/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  const query = String(req.query?.q).toString();
-  let page = Number(req.query.p);
-  if(String(page) == "NaN" || Number(page) <= 0) {
-    page = 1;
-  }
-
-  const order = String(req.query?.order).toString();
-  const sort = String(req.query?.sort).toString();
-  const users = await entity_user.all(6, page, query, sort, order);
-  res.render("users.twig", { ...users.info});
-}));
 
 routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   const query = String(req.query?.q).toString();
@@ -70,47 +58,12 @@ routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, re
 
   const order = String(req.query?.order).toString();
   const sort = String(req.query?.sort).toString();
-  const games = await asset.all([asset_types.Place], 6, page, query, sort, order);
+  const games = await entity_asset.all([asset_types.Place], 6, page, query, sort, order);
   res.render("games.twig", { ...games.info});
 }));
 
-
-
-routes.get("/catalog/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  const query = String(req.query?.q).toString();
-  let page = Number(req.query.p);
-  if(String(page) == "NaN" || Number(page) <= 0) {
-    page = 1;
-  }
-
-  const order = String(req.query?.order).toString();
-  const sort = String(req.query?.sort).toString();
-  const catalog = await asset.all(asset.catalog_types, 6, page, query, sort, order);
-  res.render("catalog.twig", { ...catalog.info});
-}));
-
-const settings_tabs: {[key: string]: any} = {
-  account: {
-    icon: "person-gear",
-    file: "account",
-    url: "account",
-  }
-}
-routes.get("/settings/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  res.render("settings.twig", settings_tabs);
-}));
-routes.get("/settings/:setting", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  const setting = req.params.setting.toString();
-  let settings_tab = settings_tabs[setting];
-  if(settings_tab) {
-    res.render(`settings/${settings_tab.file}.twig`);
-  } else {
-    res.render(`settings/account.twig`)
-  }
-}));
-
 routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  let game = await (new asset()).by_id(Number(req.params?.id));
+  let game = await (new entity_asset).by_id(Number(req.params?.id));
   let option = req.params?.name ? req.params?.name : game.title;
 
   switch(option) {
@@ -130,6 +83,71 @@ routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Req
     default:
       res.render("game.twig", { game: game });
       break;
+  }
+}));
+
+
+routes.get("/users/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  const query = String(req.query?.q).toString();
+  let page = Number(req.query.p);
+  if(String(page) == "NaN" || Number(page) <= 0) {
+    page = 1;
+  }
+
+  const order = String(req.query?.order).toString();
+  const sort = String(req.query?.sort).toString();
+  const users = await entity_user.all(8, page, query, sort, order);
+  res.render("users.twig", { ...users.info});
+}));
+
+routes.get("/users/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  let user = await (new entity_user).by_id(Number(req.params?.id));
+  let option = req.params?.name ? req.params?.name : "profile";
+
+  switch(option) {
+    case "profile":
+      res.render("user.twig", { user: user });
+      break;
+    default:
+      res.render("user.twig", { user: user });
+      break;
+  }
+}));
+
+
+routes.get("/catalog/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  const query = String(req.query?.q).toString();
+  let page = Number(req.query.p);
+  if(String(page) == "NaN" || Number(page) <= 0) {
+    page = 1;
+  }
+
+  const order = String(req.query?.order).toString();
+  const sort = String(req.query?.sort).toString();
+  const catalog = await entity_asset.all(entity_asset.catalog_types, 6, page, query, sort, order);
+  res.render("catalog.twig", { ...catalog.info});
+}));
+
+const settings_tabs: {[key: string]: any} = {
+  account: {
+    icon: "person-gear",
+    file: "account",
+    url: "account",
+  }
+}
+
+
+routes.get("/settings/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  res.render("settings.twig", settings_tabs);
+}));
+
+routes.get("/settings/:setting", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  const setting = req.params.setting.toString();
+  let settings_tab = settings_tabs[setting];
+  if(settings_tab) {
+    res.render(`settings/${settings_tab.file}.twig`);
+  } else {
+    res.render(`settings/account.twig`)
   }
 }));
 
@@ -223,7 +241,7 @@ routes.get(`${admin_route_path}/invite-keys`, notloggedin_handler, admin_handler
 
   const order = String(req.query?.order).toString();
   const sort = String(req.query?.sort).toString();
-  const invitekeys = await invitekey.all(6, page, query, sort, order);
+  const invitekeys = await entity_invitekey.all(6, page, query, sort, order);
   res.render("admin/invite-keys.twig", { ...invitekeys.info})
 }));
 

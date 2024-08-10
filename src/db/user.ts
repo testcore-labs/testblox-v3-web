@@ -8,7 +8,7 @@ import { gender_types } from "../types/gender";
 import { privelege_types } from "../types/priveleges";
 import env from "../utils/env";
 import { orderby_enum, validate_orderby } from "../types/orderby";
-import asset from "./asset";
+import entity_asset from "./asset";
 import { pcall } from "../utils/pcall";
 
 class entity_user {
@@ -160,17 +160,17 @@ class entity_user {
     }
   }
 
-  async recently_played() {
+  async recently_played(limit: 8) {
     let games = await sql`SELECT * 
     FROM "recently_played" 
     WHERE "userid" = ${this.data.id} 
     ORDER BY updatedat DESC
-    LIMIT 1`;
+    LIMIT ${limit}`;
 
     const item_ids = games.map(row => row.placeid);
     const new_items = await Promise.all(
       item_ids.map(async item_id => {
-        let new_item = new asset;
+        let new_item = new entity_asset;
         return await new_item.by_id(item_id);
       })
     );
@@ -220,14 +220,20 @@ class entity_user {
     // todo
   }
 
-  async get_friends() {
+  async get_friends(limit: 16) {
     let friends = await sql`SELECT CASE
         WHEN "from" = ${this.data?.id} THEN "to"
         ELSE "from"
       END as friend_id
     FROM "friends" 
+    INNER JOIN "users" ON "users".id = CASE
+      WHEN "from" = ${this.data?.id} THEN "to"
+      ELSE "from"
+    END
     WHERE ("from" = ${this.data?.id} OR "to" = ${this.data?.id})
-    AND "accepted" = true`;
+    AND "accepted" = true
+    ORDER BY users.username ASC
+    LIMIT ${limit}`;
 
     const friend_ids = friends.map(row => row.friend_id);
     const user_friends = await Promise.all(
@@ -240,6 +246,13 @@ class entity_user {
     return user_friends;
   }
 
+  get what_privelege(): string {
+    return privelege_types[this.data?.privelege];
+  }
+
+  get is_member(): boolean {
+    return this.data?.privelege === privelege_types.member;
+  }
 
   get is_mod(): boolean {
     return this.data?.privelege === privelege_types.mod;
@@ -272,6 +285,13 @@ class entity_user {
 
   get is_online() {
     return ((Date.now() - (this.data?.online || 0)) < 60 * 1000);
+  }
+
+  get updatedat() {
+    return this.data?.updatedat;
+  }
+  get createdat() {
+    return this.data?.createdat;
   }
 
   static get rand_token(): string {

@@ -6,10 +6,11 @@ import async_handler from 'express-async-handler';
 import env from '../utils/env';
 import path from "path";
 import { rateLimit } from 'express-rate-limit';
-import asset from "../db/asset";
+import entity_asset from "../db/asset";
 import { asset_types } from "../types/assets";
 import root_path from "../utils/root_path";
-import feed from "../db/feed";
+import fs from "fs";
+import entity_feed from "../db/feed";
 
 // limiters
 const msg_too_many_reqs: message_type = {success: false, status: 429, message: "too many requests, try again later."};
@@ -144,11 +145,10 @@ routes.get("/keep_alive", async_handler(async (req, res) => {
   }
 }));
 
-
+// since the owner is editing a yaml config im trusting them with it
 routes.post("/owner/env_edit", async_handler(async (req, res, next) => {
   if(res.locals.isloggedin && res.locals.cuser.is_owner) {
-    console.log(req.body);
-    res.send(req.body);
+    res.send(fs.writeFileSync(path.join(root_path, "config.yaml"), req.body?.data));
   } else {
     next();
   }
@@ -163,8 +163,8 @@ routes.get("/searchbar", async_handler(async (req, res) => {
 }));
 
 routes.get("/asset/icon", async_handler(async (req, res) => {
-  let asset_id = Number(req.query.id)
-  let new_asset = await (new asset).by_id(asset_id);
+  let asset_id = Number(req.query.id);
+  let new_asset = await (new entity_asset).by_id(asset_id);
   if(new_asset.is_place) {
     let file = await new_asset.get_image();
     if(file.exists) {
@@ -190,7 +190,7 @@ routes.get("/feed/posts", async_handler(async (req, res) => {
     limit = 5;
   }
 
-  let feeds = await feed.all(limit, page, "", "", "");
+  let feeds = await entity_feed.all(limit, page, "", "", "");
   if(!req.query?.html) {
     res.render("components/feeds.twig", { feeds: feeds?.info?.items });
   } else {
@@ -202,7 +202,7 @@ routes.post("/feed/send", async_handler(async (req, res) => {
   let txt = req.body?.feed_text.toString();
   let replyto = Number(req.body?.replyto ?? 0);
 
-  let sent = await feed.send(txt, res.locals.cuser.id, replyto);
+  let sent = await entity_feed.send(txt, res.locals.cuser.id, replyto);
   if(!req.query?.plaintext) {
     res.send(sent.message);
   } else {

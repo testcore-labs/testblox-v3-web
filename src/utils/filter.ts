@@ -74,6 +74,9 @@ class filter {
     this.bad_words = [
       "n+gg+r",
       "n+gga",
+      "ch+nk",
+      "o",
+      "j+gg+boo",
       "coon",
     ];
     this.whitelist_words = [
@@ -82,6 +85,7 @@ class filter {
       "corn",
       "conn",
       "racoon",
+      "raccoon",
     ];
   }
 

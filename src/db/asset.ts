@@ -14,7 +14,7 @@ import { orderby_enum, validate_orderby } from "../types/orderby";
 
 const asset_folder = path.join(root_path, "files", "assets");
 
-class asset {
+class entity_asset {
   static catalog_types = [
     asset_types.Hat,
     asset_types.TShirt,
@@ -111,7 +111,7 @@ class asset {
   }
 
   async get_image() {
-    return await (new asset).by_id(this.data.icon);
+    return await (new entity_asset).by_id(this.data.icon);
   }
   
   // api
@@ -153,7 +153,7 @@ class asset {
     const item_ids = items.map(row => row.id);
     const new_items = await Promise.all(
       item_ids.map(async item_id => {
-        let new_item = new asset;
+        let new_item = new entity_asset;
         return await new_item.by_id(item_id);
       })
     );
@@ -182,13 +182,13 @@ class asset {
   }
 
   get for_catalog() {
-    if(asset.catalog_types[this.data?.type]) {
+    if(entity_asset.catalog_types[this.data?.type]) {
       return true;
     }
   }
 
   get for_library() {
-    if(asset.library_types[this.data?.type]) {
+    if(entity_asset.library_types[this.data?.type]) {
       return true;
     }
   }
@@ -232,4 +232,4 @@ class asset {
   }
 }
 
-export default asset;
+export default entity_asset;

@@ -20,7 +20,7 @@ require(["vs/editor/editor.main"], function() {
 
 function configdotyamlsave() {
   let value = editor.getValue()
-  let form_data = new FormData();
+  let form_data = new URLSearchParams();
   form_data.append('data', value);
   let response = fetch("/api/v1/owner/env_edit", {
     method: "POST",
