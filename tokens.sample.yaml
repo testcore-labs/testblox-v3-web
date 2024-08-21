@@ -1,0 +1,6 @@
+# this is a sample file, please rename it to tokens.yaml
+# else this wont get loaded
+discord:
+  token: "DISCORD_TOKEN_GOES_HERE"
+rcc:
+  api_key: "RCC_KEY_GOES_HERE"

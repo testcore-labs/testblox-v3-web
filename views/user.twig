@@ -4,9 +4,86 @@
 {% block content %}
 {% import "./_macros.twig" as utils %}
 <div class="d-flex flex-column gap-3">
-  <div>
-    <% console.log("this is "+this.env.app_name) %>
-    {{ user.username }}
+  {% if cuser.has_admin_panel %}<div class="card p-2 d-flex flex-row flex-wrap gap-3 user-admin-actions">
+  <h4 class="d-flex flex-row ai-center gap-3"><i class="bi bi-wrench-adjustable-circle-fill"></i> <span>quick actions</span></h4>
+  <div class="ms-auto"></div>
+  <a href="{{ env.admin_panel.path }}/user/{{ user.id }}" class="btn-primary"><i class="bi bi-database"></i> view/edit</a>
+  </div>{% endif %}
+  <div class="card d-flex flex-row flex-wrap gap-4 pos-relative user-1">
+    <div class="pos-relative">
+      <img class="round-4 user-avatar-headshot" width=128 height=128 src="{{ user.get_headshot() }}">
+      {% if user.is_online %}<i class="pos-absolute icon-online bottom-0 right-0 p-2" style="transform: translate(25%, 25%);"></i>{% endif %}
+    </div>
+    <div class="d-flex flex-column gap-2">
+      <h2 class="user-username">{{ user.username }}</h2>
+      <div class="text-muted user-status"><b>"</b>{{ user.status }}<b>"</b></div>
+      <div class="d-flex flex-row gap-4 mt-auto p-1 user-information">
+        <div class="d-flex flex-column ai-center user-friend-counter">
+          <h5 class="text-muted title">friends</h5>
+          <div class="text-muted count">1</div>
+        </div>
+        <div class="d-flex flex-column ai-center user-follower-counter">
+          <h5 class="text-muted title">followers</h5>
+          <div class="text-muted count">1</div>
+        </div>
+        <div class="d-flex flex-column ai-center user-following-counter">
+          <h5 class="text-muted title">following</h5>
+          <div class="text-muted count">1</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex flex-column ms-auto">
+      <div class="d-flex flex-row gap-3 ai-center mt-auto ms-auto user-action-row">
+        <label class="btn-primary d-flex flex-row gap-3"><input class="user-css-checkbox" type="checkbox"> <span>CSS</span></label>
+        <button class="user-follow-button">follow</button>
+        <button class="user-friend-button">friend</button>
+      </div>
+    </div>
+    
+    <div class="pos-absolute" style="top: 0.25em; right: 0.5em;">
+      <div class="pos-relative d-flex flex-row">
+        <a class="ms-auto c-pointer" onclick="dropdownify(this, $('#user-options'));"><h3 class="bi bi-three-dots stroke-2-black"></h3></a>
+        <div id="user-options" class="pos-absolute card card-dark-primary px-0 d-flex flex-column gap-3 dropdownify">
+          <a class="px-4 py-1 user-block-dropdown" href="./block">block</a>
+        </div>
+      </div>
+    </div>
   </div>
+  <div id="tabs" hx-target="#tab-content" role="tablist" class="d-flex flex-row pillify flex-wrap"
+    hx-on:htmx-after-on-load="htmx_tabs(this, event)">
+    <button class="flex-1 text-center" role="tab" aria-controls="tab-contents" hx-get="/users/{{ user.id }}/avatar" disabled>avatar</button>
+    <button class="flex-1 text-center" role="tab" aria-controls="tab-contents" hx-get="/users/{{ user.id }}/games">games</button>
+    <button class="flex-1 text-center" role="tab" aria-controls="tab-contents" hx-get="/users/{{ user.id }}/items">items</button>
+    <button class="flex-1 text-center" role="tab" aria-controls="tab-contents" hx-get="/users/{{ user.id }}/groups">groups</button>
+  </div>
+  <div id="tab-content" role="tabpanel" hx-get="/users/{{ user.id }}/avatar" hx-trigger="revealed"></div>
+  <hr nomargin>
+  <div class="d-flex flex-row gap-3" style="justify-content: space-around;">
+    <div class="d-flex flex-column ai-center">
+      <h5>created at</h5>
+      <span>{{ (user.createdat / 1000)|date("Y-m-d H:i:s") }}</span>
+    </div>
+    <div class="d-flex flex-column ai-center">
+      <h5>updated at</h5>
+      <span>{{ (user.updatedat / 1000)|date("Y-m-d H:i:s") }}</span>
+    </div>
+  </div>
+
+  <style class="user-custom-css"></style>
+  <script>
+  const load_css = elem(".user-css-checkbox");
+
+  function updatecss() {
+    if(load_css.checked) {
+      elem(".user-custom-css").textContent = `{{ user.settings.css }}`;
+    } else {
+      elem(".user-custom-css").textContent = ``;
+    }
+  }
+
+  updatecss();
+  load_css.addEventListener("change", () => updatecss());
+  </script>
 </div>
 {% endblock %}

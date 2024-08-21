@@ -1,6 +1,6 @@
 // status of moderationer
 
-const enum moderation_status_types {
+enum moderation_status_types {
   REVIEWING, 
   REJECTED, 
   APPROVED

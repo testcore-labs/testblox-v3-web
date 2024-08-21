@@ -1,6 +1,6 @@
 import express, { type Express, type Request, type Response } from "express";
 import * as path from "path";
-import colors from "colors";
+import colors from "./utils/colors";
 import async_handler from 'express-async-handler';
 import cookie_parser from "cookie-parser";
 import { queryParser as query_parser} from "express-query-parser";
@@ -23,10 +23,12 @@ import front_loggedin_routes from "./routes/front_loggedin";
 import api_v1_routes from "./routes/api_v1";
 import api_roblox_routes from "./routes/rbx/api";
 import api_rcc_roblox_routes from "./routes/rbx/rcc";
+import ENUM from "./types/enums";
+import sql from "./utils/sql";
 
 
 const dsc_bot = new discord_bot;
-pcall(async () => {await dsc_bot.start_bot()});
+await pcall(async () => await dsc_bot.start_bot());
 
 new arbiter();
 translate.init();
@@ -70,12 +72,15 @@ app.use(async_handler(async (req, res, next) => {
   res.locals.req = req;
   res.locals.res = res;
   res.locals.env = env;
+  res.locals.ENUM = ENUM;
   res.locals.translations = translate.translations;
   res.locals.t = translate.translations[req.cookies?.locale ? req.cookies?.locale.toString() : env.locale];
 
   // cuser = current user
   let cuser = new entity_user();
-  await cuser.by_token(req.cookies[env.session.name]);
+  await cuser.by(entity_user.query()
+    .where(sql`token = ${req.cookies[env.session.name]}`)
+  );
   res.locals.cuser = cuser;
   res.locals.isloggedin = req.cookies[env.session.name] && (await cuser).exists; // await DOES change everything >:(
 
@@ -107,7 +112,6 @@ app.use((err: any, req: any, res: any, next: any) => {
     console.error(err);
   }
 });
-
 let server = app.listen(env.http.port, () => {
   logs.http(`running at :${env.http.port}`);
 });

@@ -2,7 +2,7 @@ import sql, { type postgres } from "../utils/sql";
 import path from "path";
 import entity_user from "./user";
 import root_path from "../utils/root_path";
-import type { message_type } from "../utils/message";
+import type { message_type } from "../types/message";
 import { orderby_enum, validate_orderby } from "../types/orderby";
 
 class entity_invitekey {

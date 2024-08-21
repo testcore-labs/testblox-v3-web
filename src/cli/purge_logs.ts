@@ -1,4 +1,4 @@
-import colors from "colors";
+import colors from "../utils/colors";
 import readline from 'node:readline';
 import fs from 'fs';
 import path from 'path';

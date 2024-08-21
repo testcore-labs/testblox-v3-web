@@ -1,8 +1,28 @@
 // new core.js because old one was built on top since last year lol
 const elem = document.querySelector.bind(document);
 const elems = document.querySelectorAll.bind(document);
+const ws_protocol = (location.protocol === 'https:') ? "wss" : "ws";
 const api_endpoint = {
   v1: "/api/v1",
+};
+
+const loaded = new Promise((resolve) => {
+  document.addEventListener("DOMContentLoaded", resolve);
+});
+
+
+const cuser = {
+  set_money_locally: async (amount) => {
+    await loaded;
+    amount = Number(amount);
+    if(!Number.isNaN(amount)) {
+      let money_div = elem(".cuser-money-div")
+      let money_amount = elem(".cuser-money-amount")
+
+      money_div.setAttribute("title", amount);
+      money_amount.textContent = amount;
+    }
+  }
 };
 
 // if image fails to load, this will set a fallback.
@@ -48,3 +68,19 @@ const api_endpoint = {
     }, 30000);
   }
 })();
+
+document.addEventListener("DOMContentLoaded", async () => {
+  let cmd_ltrs = "";
+  let cmd_match = "--cmd";
+  let cmd_window = document.querySelector("#cmd_window");
+  document.addEventListener('keyup', (event) => {
+  cmd_ltrs += event.key;
+  if(cmd_ltrs.length > cmd_match.length * 3) { // 3 tries
+    cmd_ltrs = "";
+  }
+  if(cmd_ltrs.match(cmd_match)) {
+    cmd_ltrs = "";
+    cmd_window.classList.toggle("d-none");
+  }
+  });
+});

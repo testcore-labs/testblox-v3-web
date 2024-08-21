@@ -4,67 +4,66 @@ import fs from "fs";
 import path from "path";
 import argon2 from "argon2";
 import entity_user from "./user";
-import { type message_type } from "../utils/message";
-import { asset_types } from "../types/assets";
-import { privacy_types, validate_privacy } from "../types/privacy";
-import { moderation_status_types } from "../types/moderation";
+import { type message_type } from "../types/message";
+import type _ENUM from "../types/enums";
+import ENUM from "../types/enums";
 import root_path from "../utils/root_path";
 import env from "../utils/env";
-import { orderby_enum, validate_orderby } from "../types/orderby";
+import { validate_orderby } from "../types/orderby";
+import { validate_privacy } from "../types/privacy";
+import entity_base from "./base";
+import type { asset_data_types } from "../types/assets_data"; 
 
 const asset_folder = path.join(root_path, "files", "assets");
 
-class entity_asset {
+class entity_asset extends entity_base {
+  table = "assets";
   static catalog_types = [
-    asset_types.Hat,
-    asset_types.TShirt,
-    asset_types.Shirt,
-    asset_types.Pants,
-    asset_types.Face,
-    asset_types.Gear,
-    asset_types.Head,
-    asset_types.Torso,
-    asset_types.LeftArm,
-    asset_types.RightArm,
-    asset_types.LeftLeg,
-    asset_types.RightLeg,
-    asset_types.Package,
-    asset_types.RunAnimation,
-    asset_types.FallAnimation,
-    asset_types.IdleAnimation,
-    asset_types.JumpAnimation,
-    asset_types.PoseAnimation,
-    asset_types.SwimAnimation,
-    asset_types.WalkAnimation,
-    asset_types.ClimbAnimation,
-    asset_types.DeathAnimation,
-    asset_types.HairAccessory,
-    asset_types.FaceAccessory,
-    asset_types.NeckAccessory,
-    asset_types.ShoulderAccessory,
-    asset_types.FrontAccessory,
-    asset_types.BackAccessory,
-    asset_types.WaistAccessory,
-    asset_types.DeathAnimation,
+    ENUM.assets.Hat,
+    ENUM.assets.TShirt,
+    ENUM.assets.Shirt,
+    ENUM.assets.Pants,
+    ENUM.assets.Face,
+    ENUM.assets.Gear,
+    ENUM.assets.Head,
+    ENUM.assets.Torso,
+    ENUM.assets.LeftArm,
+    ENUM.assets.RightArm,
+    ENUM.assets.LeftLeg,
+    ENUM.assets.RightLeg,
+    ENUM.assets.Package,
+    ENUM.assets.RunAnimation,
+    ENUM.assets.FallAnimation,
+    ENUM.assets.IdleAnimation,
+    ENUM.assets.JumpAnimation,
+    ENUM.assets.PoseAnimation,
+    ENUM.assets.SwimAnimation,
+    ENUM.assets.WalkAnimation,
+    ENUM.assets.ClimbAnimation,
+    ENUM.assets.DeathAnimation,
+    ENUM.assets.HairAccessory,
+    ENUM.assets.FaceAccessory,
+    ENUM.assets.NeckAccessory,
+    ENUM.assets.ShoulderAccessory,
+    ENUM.assets.FrontAccessory,
+    ENUM.assets.BackAccessory,
+    ENUM.assets.WaistAccessory,
+    ENUM.assets.DeathAnimation,
   ];
   static library_types = [
-    asset_types.Audio,
-    asset_types.Mesh,
-    asset_types.Lua,
-    asset_types.Model,
-    asset_types.Decal,
-    asset_types.Badge,
-    asset_types.Animation,
-    asset_types.GamePass,
-    asset_types.Plugin,
-    asset_types.MeshPart,
+    ENUM.assets.Audio,
+    ENUM.assets.Mesh,
+    ENUM.assets.Lua,
+    ENUM.assets.Model,
+    ENUM.assets.Decal,
+    ENUM.assets.Badge,
+    ENUM.assets.Animation,
+    ENUM.assets.GamePass,
+    ENUM.assets.Plugin,
+    ENUM.assets.MeshPart,
   ];
-  data: { [key: string]: any };
-  user: entity_user | undefined;
 
-  constructor() {
-    this.data = {};
-  }
+  user: entity_user | undefined;
 
   async by_id(id: number) {
     let assets = await sql`SELECT * 
@@ -74,7 +73,9 @@ class entity_asset {
     if(assets.length > 0) {
       let asset = assets[0];
       this.data = asset;
-      this.user = await (new entity_user).by_id(asset.creator);
+      this.user = await (new entity_user).by(entity_user.query()
+        .where(sql`id = ${ asset.creator }`)
+      );
     }
     return this;
   }
@@ -87,7 +88,9 @@ class entity_asset {
     if(assets.length > 0) {
       let asset = assets[0];
       this.data = asset;
-      this.user = await (new entity_user).by_id(asset.creator);
+      this.user = await (new entity_user).by(entity_user.query()
+        .where(sql`id = ${ asset.creator }`)
+      );
     }
     return this;
   }
@@ -120,63 +123,72 @@ class entity_asset {
   }
 
   static async all(
-    types: number[] = [asset_types.Image], 
+    types: number[] = [ENUM.assets.Image], 
     limit: number = 16, 
     page: number = 1, 
-    query: string, 
+    query: string = "", 
     sort: string = "createdat", 
-    order: string = orderby_enum.DESCENDING,
-    privacy: number = privacy_types.PUBLIC,
+    order: string = ENUM.order.DESCENDING,
+    privacy: number = ENUM.privacy.PUBLIC,
+    custom_wheres: Array<postgres.PendingQuery<postgres.Row[]>> = [],
   ): Promise<message_type> {
-    const allowed_sorts = ["id", "title", "description", "updatedat", "createdat"];
-    const allowed_wheres = ["title", "description"];
 
-    if(!allowed_sorts.includes(sort)) sort = "createdat";
-    if(query == "undefined") query = "";;
-    order = validate_orderby(order);
-    privacy = validate_privacy(privacy);
+    let stmt = this.query()
+      .search(query, ["title", "description"], false)
+      .separate(`AND`)
+      .page(page)
+      .where(sql`type IN ${ sql(types) }`)
+      .where(sql`privacy = ${privacy}`)
+      .sort_safe(sort, {
+        id: "id", 
+        title: "title", 
+        description: "description", 
+        updated: "updatedat", 
+        created: "createdat"
+        })
+      .randomize(sort == "random")
+      .direction(order)
+      .limit(limit);
 
-    const offset = (page - 1) * limit;
-    let items = await sql`SELECT *, (SELECT COUNT(*) FROM "assets") AS total_count
-    FROM "assets" 
-    WHERE "type" IN ${ sql(types) } AND
-    ${ allowed_wheres.reduce((_w, wheree) =>
-      sql`(${wheree} like ${ '%' + query + '%' })`,
-      sql`false`
-    )} AND "privacy" = ${ privacy }
-    ORDER BY ${ sql(sort) } ${ sql.unsafe(order) } 
-    LIMIT ${limit} OFFSET ${offset}`;
-    
-    const total_items = items[0] != undefined ? items[0].total_count : 0;
-    const total_pages = Math.ceil(total_items / limit);
+    custom_wheres.forEach(where => {
+      stmt = stmt.where(where);
+    });
+      
+    let result = await stmt.exec();
 
-    const item_ids = items.map(row => row.id);
+
+    const item_ids = result.data.map((row: any) => row.id);
     const new_items = await Promise.all(
-      item_ids.map(async item_id => {
+      item_ids.map(async (item_id: number) => {
         let new_item = new entity_asset;
         return await new_item.by_id(item_id);
       })
     );
 
     return { success: true, message: "", info: { 
-      items: new_items, 
-      total_pages: total_pages, 
-      page: page,
-      total_items: total_items,
-      allowed_sorts: allowed_sorts,
-      allowed_wheres: allowed_wheres,
+      items: new_items,
+      ...result
     }};
   }
 
   get is_place() {
-    if(this.data?.type == asset_types.Place) {
+    if(this.data?.type == ENUM.assets.Place) {
       return true;
     }
   }
 
+  place() {
+    let funcs: { [key: string]: () => any } = {};
+
+    funcs["bc_only"] = () => {
+      return this.data?.data?.bc_only ?? false;
+    }
+
+    return funcs; 
+  }
   
   get for_games() {
-    if(this.data?.type == asset_types.Place) {
+    if(this.data?.type == ENUM.assets.Place) {
       return true;
     }
   }
@@ -209,13 +221,23 @@ class entity_asset {
     let params = {
       title: title,
       description: description, 
-      type: asset_types.Place,
-      icon: 0, // asset_types.Image id
+      type: ENUM.assets.Place,
+      icon: 0, // ENUM.assets.Image id
       file: "",
-      privacy: privacy_types.PRIVATE,
+      privacy: ENUM.privacy.PRIVATE,
       creator: userid,
-      moderation: moderation_status_types.REVIEWING,
-      data: {},
+      moderation: ENUM.moderation.REVIEWING,
+      data: {
+        server_size: 8,
+        bc_only: false,
+        gears_allowed: false,
+        vip_price: NaN, // if NaN, then no vip servers
+        desktop_enabled: true,
+        mobile_enabled: false,
+        tablet_enabled: false,
+        vr_enabled: false,
+        thumbnails: { 0: NaN }, // ENUM.assets.thumbnail
+      } as asset_data_types[typeof ENUM.assets.Place],
       createdat: time, 
       updatedat: time,
     }

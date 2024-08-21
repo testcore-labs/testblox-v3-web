@@ -1,4 +1,4 @@
-import colors from 'colors/safe';
+import colors from "../utils/colors";
 import { log_time } from '../utils/time';
 import env from '../utils/env'
 import { printf } from 'fast-printf'

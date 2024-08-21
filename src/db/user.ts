@@ -2,16 +2,20 @@ import sql, { type postgres } from "../utils/sql";
 import xss from "xss";
 import argon2 from "argon2";
 import bbcode from "bbcode-ts";
-import { type message_type } from "../utils/message";
-import { membership_types } from "../types/membership";
-import { gender_types } from "../types/gender";
-import { privelege_types } from "../types/priveleges";
+import { type message_type } from "../types/message";
 import env from "../utils/env";
-import { orderby_enum, validate_orderby } from "../types/orderby";
+import { validate_orderby } from "../types/orderby";
 import entity_asset from "./asset";
 import { pcall } from "../utils/pcall";
+import ENUM from "../types/enums";
+import type ENUM_T from "../types/enums";
+import type { membership_types } from "../types/membership";
+import entity_base from "./base";
+import cooldown from "../utils/cooldown";
 
-class entity_user {
+class entity_user extends entity_base {
+  table = "users";
+
   static settings_template = {
     locale: "en-us", // for privacy reasons i wont detect the users locale
     css: "",
@@ -20,104 +24,53 @@ class entity_user {
 
     log_logins: true // discord poll said they want it on default
   }
-  data: { [key: string]: any };
   bbcode_strict: bbcode;
 
   constructor() {
-    this.data = {};
+    super();
     this.bbcode_strict = new bbcode;
     this.bbcode_strict.tags.a.func = (txt, params) => 
       `<a class="link" href="/redirect?url=${encodeURI(params["url"])}">${txt}</a>`;
     this.bbcode_strict.allowed_tags = ["b", "i", "d", "u", "a", "c"]; 
   }
 
-  async by_id(id: number) {
-    let users = await sql`SELECT * 
-    FROM "users" 
-    WHERE "id" = ${id} 
-    LIMIT 1`;
-    if(users.length > 0) {
-      let user = users[0];
-      this.data = user;
-    }
-    return this;
-  }
-
-  async by_username(username: string) {
-    let users = await sql`SELECT * 
-    FROM "users" 
-    WHERE "username" = ${username} 
-    LIMIT 1`;
-    if(users.length > 0) {
-      let user = users[0];
-      this.data = user;
-    }
-    return this;
-  }
-
-  async by_token(token: string) {
-    let users = await sql`SELECT * 
-    FROM "users" 
-    WHERE "token" = ${token} 
-    LIMIT 1`;
-    if(users.length > 0) {
-      let user = users[0];
-      this.data = user;
-    }
-    return this;
-  }
-
   static async all(
     limit: number = 16, 
     page: number = 1, 
-    query: string, 
+    query: string = "", 
     sort: string = "createdat", 
-    order: string = orderby_enum.DESCENDING
+    order: string = ENUM.order.DESCENDING
   ): Promise<message_type> {
-    const allowed_sorts = ["id", "username", "description", "updatedat", "createdat"];
-    const allowed_wheres = ["username", "description"];
+    let result = await this.query()
+      .search(query, ["username", "description", "status"], false)
+      .separate(`AND`)
+      .page(page)
+      .sort_safe(sort, {
+        id: "id", 
+        username: "username", 
+        description: "description", 
+        updated: "updatedat", 
+        created: "createdat"
+        })
+      .randomize(sort == "random")
+      .direction(order)
+      .limit(limit)
+      .exec();
 
-    if(!allowed_sorts.includes(sort)) sort = "createdat";
-    if(query == "undefined") query = "";;
-    order = validate_orderby(order);
-
-    const offset = (page - 1) * limit;
-    let items = await sql`SELECT *, (SELECT COUNT(*) FROM "invitekeys") AS total_count
-    FROM "users" 
-    WHERE ${ allowed_wheres.reduce((_w, wheree) =>
-      sql`(${wheree} like ${ '%' + query + '%' })`,
-      sql`false`
-    )}
-    ORDER BY ${ sql(sort) } ${ sql.unsafe(order) } 
-    LIMIT ${limit} OFFSET ${offset}`;
-    
-    const total_items = items[0] != undefined ? items[0].total_count : 0;
-    const total_pages = Math.ceil(total_items / limit);
-
-    const item_ids = items.map(row => row.id);
+    const item_ids = result.data.map((row: any) => row.id);
     const new_items = await Promise.all(
-      item_ids.map(async item_id => {
+      item_ids.map(async (item_id: number) => {
         let new_item = new entity_user;
-        return await new_item.by_id(item_id);
+        return await new_item.by(this.query()
+          .where(sql`id = ${item_id}`)
+        );
       })
     );
 
     return { success: true, message: "", info: { 
-      items: new_items, 
-      total_pages: total_pages, 
-      page: page,
-      total_items: total_items,
-      allowed_sorts: allowed_sorts,
-      allowed_wheres: allowed_wheres,
+      items: new_items,
+      ...result
     }};
-  }
-
-  async _updateat() {
-    return await sql`UPDATE "users" SET "updatedat" = ${Date.now()} WHERE "id" = ${this.data?.id}`;
-  }
-
-  get exists() {
-    return Object.keys(this.data ?? {}).length !== 0;
   }
 
   get id() {
@@ -129,35 +82,22 @@ class entity_user {
   
   // future me, dont directly use "set" funcs from classes:
   // 1. you might wanna lock the username change behind a currency paywall (not irl money lol)
-  get username() { // this.data? is for not giving a fuck if its null 
-    return this.data?.username ?? "";
-  }
-  set username(set) {
-    console.log(set);
-  }  
 
-  get settings() {
-    return this.data?.settings;
-  }
-
-  get status() {
-    return this.data?.status ?? "";
-  }
-
-  get description() {
-    return this.data?.description ?? "";
-  }
   get bb_description() {
     return this.bbcode_strict.parse(this.description);
   }
 
-  get password() { // this.data? is for not giving a fuck if its null 
-    return xss(this.data?.username ?? "");
-  }
-  set password(pw: string) {
-    if(this.data) {
-      this.data.password = pw;
-    }
+  async get_games(
+    limit: number = 16, 
+    page: number = 1, 
+    query: string, 
+    sort: string = "createdat", 
+    order: string = ENUM.order.DESCENDING,
+    privacy: number = ENUM.privacy.PUBLIC,
+  ) {
+    let games = await entity_asset.all([ENUM.assets.Place], limit, page, query, sort, order, privacy, [ sql`creator = ${this.id}` ])
+    console.log(games); 
+    return games;
   }
 
   async recently_played(limit: 8) {
@@ -181,6 +121,39 @@ class entity_user {
     return Number(this.data?.currency);
   }
 
+  async gamble_2x(gamble_amount: number = 0): Promise<message_type> {
+    if(Number.isNaN(gamble_amount)) {
+      return { success: false, message: "gamble.no_amount_given" }
+    } else {
+      if(this.money >= gamble_amount && !(gamble_amount <= 0)) {
+        let [can_do, wait_amount] = cooldown.apply(this.id, (1 * 1000));
+        if(!can_do) {
+          return { success: false, message: `gamble.wait`, info: {
+            wait: (wait_amount / 1000)
+          }} 
+        }
+  
+        let random = Math.ceil(Math.random() * 4);
+        let won_amount = -gamble_amount;
+        if(random == 3) {
+          won_amount = Math.floor(gamble_amount * 2);
+        }
+  
+        let won_or_lost = won_amount >= gamble_amount;
+
+        await this.add_money(won_amount);
+        return { success: true, message: `gamble.${ won_or_lost ? `won` : `lost`}`, info: { 
+          won_or_lost: won_or_lost, 
+          won_amount: won_amount, 
+          left: this.money, 
+          random: random 
+        }}
+      } else {
+        return { success: false, message: "gamble.not_enough_money" }
+      }
+    }
+  }
+
   get short_money(): string {
     let money = Intl.NumberFormat('en-US', {
       notation: "compact",
@@ -191,13 +164,21 @@ class entity_user {
   }
 
   
-  async set_membership(membership_type: membership_types = 0, lastfor: number = (Date.now() + (3600 * 24 * 30) * 1000) /* month */) {
+  async set_membership(membership_type: membership_types = ENUM.membership.TIER_1, lastfor: number = (Date.now() + (3600 * 24 * 30) * 1000) /* month */) {
     this.data = await sql`UPDATE "users" SET membership = ${membership_type}, membership_valid = ${lastfor} WHERE "id" = ${this.data?.id} RETURNING *`;
     await this._updateat();
   }
 
   get has_membership() {
-    return (this.data?.membership > 0);
+    return (this.data?.membership > 0 && Date.now() < this.data?.membership_valid);
+  }
+
+  get membership() {
+    return this.data?.membership;
+  }
+
+  get what_membership() {
+    return (Date.now() < this.data?.membership_valid) ? this.data?.membership : 0;
   }
 
   async set_money(amount: number) {
@@ -239,7 +220,9 @@ class entity_user {
     const user_friends = await Promise.all(
       friend_ids.map(async friend_id => {
         let friend = new entity_user;
-        return await friend.by_id(friend_id);
+        return await friend.by(entity_user.query()
+          .where(sql`id = ${ friend_id }`)
+        );
       })
     );
 
@@ -247,28 +230,40 @@ class entity_user {
   }
 
   get what_privelege(): string {
-    return privelege_types[this.data?.privelege];
+    return ENUM.priveleges[this.data?.privelege];
   }
 
   get is_member(): boolean {
-    return this.data?.privelege === privelege_types.member;
+    return this.data?.privelege === ENUM.priveleges.member;
   }
 
   get is_mod(): boolean {
-    return this.data?.privelege === privelege_types.mod;
+    return this.data?.privelege === ENUM.priveleges.mod;
   }
 
   get is_admin(): boolean {
-    return this.data?.privelege === privelege_types.admin;
+    return this.data?.privelege === ENUM.priveleges.admin;
   }
 
   get is_owner(): boolean {
-    return this.data?.privelege === privelege_types.owner;
+    return this.data?.privelege === ENUM.priveleges.owner;
+  }
+  
+  get has_admin_panel(): boolean {
+    return this.data?.privelege >= ENUM.priveleges.mod;
   }
 
-  // a pointer to a file
+
+  // a pointer to a publicly-accesible file
   async get_headshot() {
     let headshot = this.data?.headshot;
+    if(headshot == 0) {
+      return "/assets/img/reviewpending.png";
+    }
+  }
+  
+  async get_fullbody() {
+    let headshot = this.data?.fullbody;
     if(headshot == 0) {
       return "/assets/img/reviewpending.png";
     }
@@ -295,10 +290,10 @@ class entity_user {
   }
 
   static get rand_token(): string {
-    let characters = "0123456789abcdef"
+    let characters = "0123456789abcdefABCDEFxyzXYZ"
     let str = ""
     for(let i = 0; i < 96; i++){
-      str += characters[Math.floor(Math.random() * 16)]
+      str += characters[Math.floor(Math.random() * characters.length)]
     }
     return str;
   }
@@ -349,7 +344,7 @@ class entity_user {
     return false;
   }
 
-  async generate_hash(password: string) {
+  static async generate_hash(password: string) {
     let [ success, password_hash ] = await pcall(async () => await argon2.hash(password, {
       type: argon2.argon2id,
       hashLength: 128,
@@ -363,12 +358,6 @@ class entity_user {
 
   // run this with a pcall (yes i made a simpler way to catch errs) or try catch clause
   static async register(username: any, password: any): Promise<message_type> {
-    let token = await this.check_and_rand_token(); // too lazy to make it use message type
-    if(token && token.stack && token.message) {
-      const msg: message_type = {success: false, message: token.message};
-      return msg;
-    }
-
     username = username.toString();
     password = password.toString();
 
@@ -382,7 +371,13 @@ class entity_user {
       return { success: false, message: String(pw_err) };
     }
 
-    const hash = await argon2.hash(password ?? "");
+    const [success, hash] = await pcall(async () => await this.generate_hash(password));
+
+    let token = await this.check_and_rand_token(); // too lazy to make it use message type
+    if(token && token.stack && token.message) {
+      const msg: message_type = {success: false, message: token.message};
+      return msg;
+    }
 
     const time = Date.now();
     let params = {
@@ -390,11 +385,12 @@ class entity_user {
       password: hash, 
       token: token,
       privelege: 1,
-      status: "i'm new to testblox!",
+      status: env.user.status,
       currency: env.currency.starter, 
-      gender: gender_types.NONE, 
-      membership: membership_types.NONE, 
+      gender: ENUM.gender.NONE, 
+      membership: ENUM.membership.NONE, 
       settings: sql.json(this.settings_template),
+      online: time,
       createdat: time, 
       updatedat: time,
     }
@@ -429,17 +425,22 @@ class entity_user {
     if(st.length > 0) {
       let query = st[0];
 
-      let argon_verify = false;
-      try {
-        argon_verify = (await argon2.verify(query?.password.toString() ?? "", password));
-      } catch(e) {
-        // "TypeError: pchstr must contain a $ as first char" usually means your string is not a argon2 hash
-        return {success: false, message: env.debug ? "argon2 failed to hash: "+e : "username or password is incorrect."};
+      let [success, argon_verify = false] = await pcall(async () => {
+        return (await argon2.verify(query?.password.toString() ?? "", password));
+      });
+
+      if(success instanceof Error) {
+        return {success: false, message: env.debug 
+          ? "argon2 failed to hash: " + success 
+          : "username or password is incorrect."};
       }
+
       if(!argon_verify) {
+        let new_token = this.check_and_rand_token(); 
         return {success: false, message: env.debug ? "password is invalid" : "username or password is incorrect."};
+      } else {
+        return {success: true, message: "created account.", info: { id: query?.id, token: query?.token }}; 
       }
-      return {success: true, message: "created account.", info: { id: query?.id, token: query?.token }}; 
     } else {
       return {success: false, message: env.debug ? "user not found" : "username or password is incorrect."}
     }

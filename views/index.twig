@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="d-flex flex-row flex-wrap gap-4">
-<div class="d-flex round-4" style="flex-grow: 5; flex-basis: 25em; background: #000; backdrop-filter: blur(0.15em);">
+<div class="d-flex round-4" style="flex-grow: 5; flex-basis: 35em; background: #000; backdrop-filter: blur(0.15em);">
 <div class="d-flex flex-column pos-relative border-box p-3 gap-2" style="flex: 3; justify-content: center; text-align: center; flex-basis: 25em; aspect-ratio: 16/9;">
 <video id="bg" playsinline autoplay muted loop class="round-4 pos-absolute top-0 left-0 right-0 bottom-0" style="object-fit: contain; width: 100%; height: 100%; filter: blur(0.15em);">
 <source src="/assets/vid/limbogp.mp4" type="video/mp4">
@@ -24,7 +24,7 @@
 {# was gonna be used as a gallery for images and shit #}
 </div>
 </div>
-<div class="d-flex flex-column gap-5 as-baseline flex-1" style="flex-grow: 1; flex-basis: 17.5em;">
+<div class="d-flex flex-column gap-5 as-baseline flex-1" style="flex-grow: 3; flex-basis: 17.5em;">
 {% if req.query.type == "login" or req.query.type == "" or not req.query.type %}
 <form class="d-flex flex-column gap-2 as-baseline w-100" hx-target="#result" hx-swap="innerHTML" hx-post="/api/v1/user/login?plaintext&redirect=/">
   <div class="d-flex flex-row card card-dark-primary hide-if-no-text" id="result"></div>

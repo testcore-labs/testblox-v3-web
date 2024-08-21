@@ -1,6 +1,6 @@
 import sql, { type postgres } from "../utils/sql";
 import entity_user from "./user";
-import type { message_type } from "../utils/message";
+import type { message_type } from "../types/message";
 
 class entity_promokey {
   data: { [key: string]: any };

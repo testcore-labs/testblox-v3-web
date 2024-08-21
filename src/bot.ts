@@ -1,11 +1,13 @@
-import Discord, { Client, EmbedBuilder, Events, GatewayIntentBits, Message } from "discord.js";
+import Discord, { Client, EmbedBuilder, Events, GatewayIntentBits, Message, AttachmentBuilder } from "discord.js";
 import env from "./utils/env";
 import logs from "./utils/log";
 import { shuffle } from "./utils/array"
-import type { message_type } from "./utils/message";
+import type { message_type } from "./types/message";
 import filter from "./utils/filter";
 import entity_user from "./db/user";
 import { param } from "express-validator";
+import { pcall } from "./utils/pcall";
+import ENUM from "./types/enums";
 
 const bot_token = env.discord.token || "";
 
@@ -76,7 +78,8 @@ class discord_bot {
       command: "filter",
       category: "fun",
       description: "filters naughty words",
-      func: (msg, params) => msg.reply(filter.text(msg.content.replace(params[0], "")))
+      func: (msg, params) => msg.reply(filter.text(msg.content.replace(params[0], ""))
+      .replace(Discord.MessageMentions.EveryonePattern, 'everyone'))
     },
     // fyi i took this example https://discordjs.guide/popular-topics/embeds.html#embed-preview
     {
@@ -105,8 +108,17 @@ class discord_bot {
       description: "gets users raw data",
       func: async (msg, params) => { 
         let page = Number.isNaN(params[1]) ? 1 : Number(params[1]);
-        const users = await entity_user.all(1 , page, "")
-        return msg.reply(`\`\`\`json\n${JSON.stringify(users ?? {}, null, 2)}\`\`\``);
+        const users = await entity_user.all(12, page, "", "id", ENUM.order.ASCENDING)
+        let attachment = new AttachmentBuilder(
+          Buffer.from(
+            JSON.stringify(users, undefined, 2),
+            'utf-8'
+          ), 
+          {
+            name: "users.json"
+          }
+        );
+        return msg.reply({ files: [ attachment ] });
       }
     },
     {
@@ -153,8 +165,6 @@ class discord_bot {
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
       ],
-      shards: "auto",
-      failIfNotExists: false,
     });
   }
 
@@ -170,7 +180,7 @@ class discord_bot {
   }
 
   async add_commands() {
-    this.client.on(Events.MessageCreate, async (message: Message) => {
+    this.client.on(Events.MessageCreate, async (message: Message) => pcall(async () => {
       if(message.author.id !== this.client.user?.id) {
         let { content } = message;
         const command_args = content.split(/\s+/);
@@ -187,12 +197,11 @@ class discord_bot {
           }
         }
       }
-    });
+    }));
 
     this.client.on(Events.ClientReady, () => {
       logs.discord(`bot logged in`);
     });
-
     this.client.on(Events.Error, (err: Error) => {
       logs.discord("client error: " + err);
       console.error(err);
@@ -209,6 +218,15 @@ class discord_bot {
         console.error("error starting bot", err);
         console.error(err);
       });
+      
+    this.client.on('error', (err: Error) => {
+      logs.discord("error occured");
+      console.error(err);
+    })
+    this.client.on('uncaughtException', (err: Error) => {
+      logs.discord("uncaughtException error occured");
+      console.error(err);
+    })
   }
 }
 

@@ -1,7 +1,8 @@
 import sql, { type postgres } from "../utils/sql";
 import bbcode from "bbcode-ts";
-import { type message_type } from "../utils/message";
-import { orderby_enum, validate_orderby } from "../types/orderby";
+import { type message_type } from "../types/message";
+import ENUM from "../types/enums";
+import { validate_orderby } from "../types/orderby";
 import entity_user from "./user";
 
 class entity_feed {
@@ -24,7 +25,9 @@ class entity_feed {
     LIMIT 1`;
     if(items.length > 0) {
       let item = items[0];
-      this.user = await (new entity_user).by_id(item.creator);
+      this.user = await (new entity_user).by(entity_user.query()
+        .where(sql`id = ${ item.creator }`)
+      );
       this.data = item;
     }
     return this;
@@ -37,7 +40,9 @@ class entity_feed {
     LIMIT 1`;
     if(items.length > 0) {
       let item = items[0];
-      this.user = await (new entity_user).by_id(item.creator);
+      this.user = await (new entity_user).by(entity_user.query()
+        .where(sql`id = ${ item.creator }`)
+      );
       this.data = item;
     }
     return this;
@@ -53,7 +58,9 @@ class entity_feed {
     LIMIT 1`;
     if(items.length > 0) {
       let item = items[0];
-      this.user = await (new entity_user).by_id(item.creator);
+      this.user = await (new entity_user).by(entity_user.query()
+        .where(sql`id = ${ item.creator }`)
+      );
       this.data = item;
     }
     return this;
@@ -66,7 +73,9 @@ class entity_feed {
     LIMIT 1`;
     if(items.length > 0) {
       let item = items[0];
-      this.user = await (new entity_user).by_id(item.creator);
+      this.user = await (new entity_user).by(entity_user.query()
+        .where(sql`id = ${ item.creator }`)
+      );
       this.data = item;
     }
     return this;
@@ -77,7 +86,7 @@ class entity_feed {
     page: number = 1, 
     query: string, 
     sort: string = "createdat", 
-    order: string = orderby_enum.DESCENDING
+    order: string = ENUM.order.DESCENDING
   ): Promise<message_type> {
     const allowed_sorts = ["id", "text", "updatedat", "createdat"];
     const allowed_wheres = ["text"];

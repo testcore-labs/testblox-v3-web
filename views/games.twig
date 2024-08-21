@@ -7,7 +7,7 @@
 <div class="d-flex flex-row flex-wrap ai-center gap-3">
   <h2>{{ t.games.games }}</h2>
   <div class="d-flex flex-row flex-wrap gap-2 ms-auto w-autoto100-sm">
-  {% include '/components/pagination.twig' with {params: req.query, page: page, queries: items, totalpages: total_pages, classes: "jc-center"} %}
+  {% include '/components/pagination.twig' with {params: req.query, page: page, queries: items, totalpages: pages, classes: "jc-center"} %}
   <div class="d-flex flex-row pillify flex-grow-1">
   <input name="q" class="w-100" placeholder="{{ t.games.search }}" value="{{ req.query.q }}" onkeydown="search_onkeyup(this)" id="game-search" type="search">
   <button class="mx-1" onclick="search_onkeyup($('#game-search'), true)"><h5 class="bi bi-search"></h5></button>
@@ -18,11 +18,10 @@
       {% include '/components/query_btns.twig' with {urlparams: req.query, keyparam: "order", valueparam: "ASC", text: t.filter.order_by_ascending} %}
       {% include '/components/query_btns.twig' with {urlparams: req.query, keyparam: "order", valueparam: "DESC", text: t.filter.order_by_descending} %}
       <hr class="mt-1 mb-1">
-      {% include '/components/query_btns.twig' with {urlparams: req.query, keyparam: "sort", valueparam: "id", text: t.filter.sort_by_id} %}
-      {% include '/components/query_btns.twig' with {urlparams: req.query, keyparam: "sort", valueparam: "title", text: t.filter.sort_by_title} %}
-      {% include '/components/query_btns.twig' with {urlparams: req.query, keyparam: "sort", valueparam: "description", text: t.filter.sort_by_description} %}
-      {% include '/components/query_btns.twig' with {urlparams: req.query, keyparam: "sort", valueparam: "updatedat", text: t.filter.sort_by_updated} %}
-      {% include '/components/query_btns.twig' with {urlparams: req.query, keyparam: "sort", valueparam: "createdat", text: t.filter.sort_by_created} %}
+      {% include '/components/query_btns.twig' with {urlparams: req.query, keyparam: "sort", valueparam: "random", text: "sort by " ~ "<b>random</b>"} %}
+      {% for name, column in sorts %}
+      {% include '/components/query_btns.twig' with {urlparams: req.query, keyparam: "sort", valueparam: column, text: "sort by " ~ "<b>" ~ name ~ "</b>"} %}
+      {% endfor %}
     </div>
   </div>
   </div>

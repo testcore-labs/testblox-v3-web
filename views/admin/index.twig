@@ -27,15 +27,12 @@
 <div class="d-flex flex-row ai-center gap-3 mb-3">
   <h3 class="card card-primary px-3 py-2 flex-1">admin panel</h3>
   {% if cuser.is_owner %}
-  <a href="./env_editor" class="btn-primary d-flex flex-row gap-4 ai-center ms-auto">
-    <h3 class="bi bi-gear-wide-connected"></h3><b>ENV</b>
-  </a>
   <a href="./debug" class="btn-primary d-flex flex-row gap-4 ai-center ms-auto">
     <h3 class="bi bi-wrench"></h3><b>DEBUG</b>
   </a>
   {% endif %}
 </div>
-<div class="d-flex flex-row flex-wrap-reverse flex-shrink-1 gap-4 mb-3">
+<div class="d-flex flex-row flex-wrap-reverse flex-shrink-1 gap-3 mb-3">
   <div class="flex-1" style="flex-basis: 42.5em;">
     <div class="d-grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
       {% for a in admin_pages %}
@@ -45,20 +42,20 @@
       </a>{% endfor %}
     </div>
   </div>
-  <div class="px-1" style="flex-basis: 20em; flex-grow: 1;">
+  <div class="card" style="flex-basis: 20em; flex-grow: 1;">
     <h4>instance "{{ env.app_name }}" info:</h4>
     <hr nomargin class="mt-1 mb-2">
     <div class="d-flex flex-column gap-3">
-      {% if inited %}
+    {% if inited %}
       <span><i class="bi bi-hdd-network"></i> {{ user.name }}<span class="text-extramuted">@</span>{{ host.name }}, {{ host.ip }}</span>
       <span><i class="bi bi-cpu"></i> {{ cpu.brand }}, {{ cpu.usage }}, {{ cpu.temp }}</span>
       <span><i class="bi bi-memory"></i> {{ ram.free }}<span class="text-extramuted">/</span>{{ ram.total }}</span>
-      {% for disk_name, disk in fs %}
-      <span><i class="bi bi-hdd"></i> <abbr title="{{ disk.name }}">{{ disk_name }}</abbr> {{ disk.size }}</span>
+      {% for name, size in folders %}
+      <span><i class="bi bi-folder"></i> <span>{{ name }}</span> <span>{{ size }}</span></span>
       {% endfor %}
-      {% else %}
+    {% else %}
       data hasn't initialized yet..
-      {% endif %}
+    {% endif %}
     </div>
 </div>
 {% endblock %}

@@ -7,7 +7,7 @@
 <div class="d-flex flex-row flex-wrap ai-center gap-3">
   <h2>{{ t.users.users }}</h2>
   <div class="d-flex flex-row flex-wrap gap-2 ms-auto w-autoto100-sm">
-  {% include '/components/pagination.twig' with {params: req.query, page: page, queries: items, totalpages: total_pages, classes: "jc-center"} %}
+  {% include '/components/pagination.twig' with {params: req.query, page: page, queries: items, totalpages: pages, classes: "jc-center"} %}
   <div class="d-flex flex-row pillify flex-grow-1">
   <input name="q" class="w-100" placeholder="search for a game.." value="{{ req.query.q }}" onkeydown="search_onkeyup(this)" id="game-search" type="search">
   <button class="mx-1" onclick="search_onkeyup($('#game-search'), true)"><h5 class="bi bi-search"></h5></button>
@@ -15,14 +15,16 @@
   <div class="pos-relative">
     <button onclick="dropdownify(this, $('#filterresults'));"><h4 class="bi bi-filter"></h4></button>
     <div class="pos-absolute dropdownify mt-1 card d-flex flex-column gap-3" style="width: 14em; z-index: 2;" id="filterresults">
-      <a href="?{{ query_remove_key(req.query, "order") }}order=ASC">{{ t.filter.order_by_ascending }}</a>
-      <a href="?{{ query_remove_key(req.query, "order") }}order=DESC">{{ t.filter.order_by_descending }}</a>
+      <div class="d-flex flex-row gap-3"><h5>filter</h5>
+      </div>
       <hr class="mt-1 mb-1">
-      <a {% if req.query.sort == "id" %}%class="text-extramuted"{% endif %} href="?{{ query_remove_key(req.query, "sort") }}sort=id">{{ t.filter.sort_by_id }}</a>
-      <a href="?{{ query_remove_key(req.query, "sort") }}sort=title">{{ t.filter.sort_by_title }}</a>
-      <a href="?{{ query_remove_key(req.query, "sort") }}sort=description">{{ t.filter.sort_by_description }}</a>
-      <a href="?{{ query_remove_key(req.query, "sort") }}sort=updatedat">{{ t.filter.sort_by_updated }}</a>
-      <a href="?{{ query_remove_key(req.query, "sort") }}sort=createdat">{{ t.filter.sort_by_created }}</a>
+      {% include '/components/query_btns.twig' with {urlparams: req.query, keyparam: "order", valueparam: "ASC", text: t.filter.order_by_ascending} %}
+      {% include '/components/query_btns.twig' with {urlparams: req.query, keyparam: "order", valueparam: "DESC", text: t.filter.order_by_descending} %}
+      <hr class="mt-1 mb-1">
+      {% include '/components/query_btns.twig' with {urlparams: req.query, keyparam: "sort", valueparam: "random", text: "sort by " ~ "<b>random</b>"} %}
+      {% for name, column in sorts %}
+      {% include '/components/query_btns.twig' with {urlparams: req.query, keyparam: "sort", valueparam: column, text: "sort by " ~ "<b>" ~ name ~ "</b>"} %}
+      {% endfor %}
     </div>
   </div>
   </div>
@@ -35,13 +37,13 @@
   <small class="text-muted">heres a fried egg for you</small>
   </div>
 {% else %}
-  <div class="d-flex flex-column gap-2" style="grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));">
+  <div class="d-flex flex-column gap-3" style="grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));">
     {% set allow_hr = false %}
     {% for user in items %}
       {%- if allow_hr ?? false %}<hr class="mt-1 mb-1">{% endif -%}
         <a href="/users/{{ user.id }}/profile" class="d-flex flex-row flex-wrap gap-4 ai-center">
           <div class="pos-relative">
-          <img height=64 width=64 src="{{ user.get_headshot() }}">
+          <img class="round-4" height=84 width=84 src="{{ user.get_headshot() }}">
           {% if user.is_online %}<i class="pos-absolute icon-online bottom-0 right-0" style="transform: translate(25%, 25%);"></i>{% endif %}
           </div>
           <div class="d-flex flex-column gap-2">

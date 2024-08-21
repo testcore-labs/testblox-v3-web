@@ -75,7 +75,6 @@ class filter {
       "n+gg+r",
       "n+gga",
       "ch+nk",
-      "o",
       "j+gg+boo",
       "coon",
     ];

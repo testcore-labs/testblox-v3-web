@@ -1,4 +1,13 @@
 import { type Express, type Request, type Response, type NextFunction } from "express";
+import env from "./env";
+
+export function notloggedin_api_handler(req: Request, res: Response, next: NextFunction) {
+  if(!res.locals.isloggedin) {
+    res.json({ success: false, message: `\`${ env.session.name }\` is missing` });
+  } else {
+    next();
+  }
+}
 
 export function notloggedin_handler(req: Request, res: Response, next: NextFunction) {
   if(!res.locals.isloggedin) {

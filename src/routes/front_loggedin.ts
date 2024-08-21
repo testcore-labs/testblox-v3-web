@@ -1,11 +1,12 @@
 import express, { type Express, type Request, type Response, type NextFunction } from "express";
 const routes = express.Router();
-
+//Max Keeble's Big Move
 import { notloggedin_handler, mod_handler, admin_handler, owner_handler } from "../utils/handlers";
 import { format_bytes } from "../utils/format";
 import {asset_types} from "../types/assets"
-import type { message_type } from "../utils/message";
+import type { message_type } from "../types/message";
 import htmx_middleware from "../utils/htmx";
+import cooldown from "../utils/cooldown";
 import env, { raw_env } from "../utils/env";
 import filter from "../utils/filter";
 import entity_feed from "../db/feed";
@@ -17,6 +18,10 @@ import entity_promokey from "../db/promokey";
 import async_handler from 'express-async-handler';
 import os from "os";
 import si from "systeminformation";
+import gfs from "get-folder-size";
+import root_path from "../utils/root_path";
+import path from "path";
+import sql from "../utils/sql";
 routes.use(htmx_middleware);
 
 routes.all("/redeem", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
@@ -43,14 +48,14 @@ routes.get("/home", notloggedin_handler, async_handler(async (req: Request, res:
   }
 
   let feeds = await entity_feed.all(5, page, "", "", "");
-  let recently_played = await res.locals.cuser.recently_played(8);
+  let recently_played = await res.locals.cuser.recently_played(12);
   let friends = await res.locals.cuser.get_friends(12);
   res.render("home.twig", { friends: friends, recently_played, feeds: feeds });
 }));
 
 
 routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  const query = String(req.query?.q).toString();
+  const query = String(req.query?.q ?? "");
   let page = Number(req.query.p);
   if(String(page) == "NaN" || Number(page) <= 0) {
     page = 1;
@@ -86,27 +91,44 @@ routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Req
   }
 }));
 
+routes.get("/gamble", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  res.render("gamble.twig");
+}));
 
 routes.get("/users/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  const query = String(req.query?.q).toString();
+  const query = String(req.query?.q ?? "");
   let page = Number(req.query.p);
   if(String(page) == "NaN" || Number(page) <= 0) {
     page = 1;
   }
 
-  const order = String(req.query?.order).toString();
-  const sort = String(req.query?.sort).toString();
+  const order = String(req.query?.order);
+  const sort = String(req.query?.sort);
   const users = await entity_user.all(8, page, query, sort, order);
   res.render("users.twig", { ...users.info});
 }));
 
 routes.get("/users/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  let user = await (new entity_user).by_id(Number(req.params?.id));
+  let user = await (new entity_user).by(entity_user.query()
+  .where(sql`id = ${ Number(req.params?.id) }`)
+  );
   let option = req.params?.name ? req.params?.name : "profile";
 
   switch(option) {
     case "profile":
       res.render("user.twig", { user: user });
+      break;
+    case "avatar":
+      res.render("components/user_tabs.twig", { tab: option, user });
+      break;
+    case "games":
+      res.render("components/user_tabs.twig", { tab: option, user });
+      break;
+    case "items":
+      res.render("components/user_tabs.twig", { tab: option, user });
+      break;
+    case "groups":
+      res.render("components/user_tabs.twig", { tab: option, user });
       break;
     default:
       res.render("user.twig", { user: user });
@@ -114,19 +136,20 @@ routes.get("/users/:id/:name", notloggedin_handler, async_handler(async (req: Re
   }
 }));
 
-
 routes.get("/catalog/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  const query = String(req.query?.q).toString();
+  const query = String(req.query?.q ?? "");
   let page = Number(req.query.p);
   if(String(page) == "NaN" || Number(page) <= 0) {
     page = 1;
   }
-
+  
   const order = String(req.query?.order).toString();
   const sort = String(req.query?.sort).toString();
   const catalog = await entity_asset.all(entity_asset.catalog_types, 6, page, query, sort, order);
   res.render("catalog.twig", { ...catalog.info});
 }));
+
+
 
 const settings_tabs: {[key: string]: any} = {
   account: {
@@ -135,7 +158,6 @@ const settings_tabs: {[key: string]: any} = {
     url: "account",
   }
 }
-
 
 routes.get("/settings/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   res.render("settings.twig", settings_tabs);
@@ -176,7 +198,7 @@ let sys_info = {
     free: "0.0B", 
     total: "0.0B"
   },
-  fs: {} as { [key: string]: any }
+  folders: {} as { [key: string]: any }
 };
 
 let update_sys_info = async () => {
@@ -193,15 +215,10 @@ let update_sys_info = async () => {
       }
     })
 
-  await si.diskLayout()
-    .then(data => {
-      Object.entries(data).forEach(async ([key, info]) => {
-        sys_info.fs[info.device] = { ... info, 
-          size: format_bytes(info.size, 2),
-        };
-      });
-      return;
-    });
+  
+  sys_info.folders["assets"] = format_bytes(gfs.loose(path.join(root_path, "files", "assets")), 2);
+  sys_info.folders["logs"] = format_bytes(gfs.loose(path.join(root_path, "logs")), 2);
+  sys_info.folders["files"] = format_bytes(gfs.loose(path.join(root_path, "files")), 2);
   sys_info.cpu.temp = await si.cpuTemperature()
   // windows doesn't work lol..
     .then(data => (data.chipset ?? "0").toString() + "C°");
@@ -221,11 +238,6 @@ setInterval(update_sys_info, 30000);
 routes.get(`${admin_route_path}/`, notloggedin_handler, admin_handler, async_handler(async (req: Request, res: Response) => {
   res.render("admin/index.twig", {... sys_info });
   update_sys_info();
-}));
-
-
-routes.get(`${admin_route_path}/env_editor`, notloggedin_handler, owner_handler, async_handler(async (req: Request, res: Response) => {
-  res.render("admin/env_editor.twig", { configdotyaml: raw_env })
 }));
 
 routes.get(`${admin_route_path}/debug`, notloggedin_handler, admin_handler, async_handler(async (req: Request, res: Response) => {

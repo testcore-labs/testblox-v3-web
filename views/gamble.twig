@@ -1,0 +1,10 @@
+{% extends "html.twig" %}
+{% set title = "gamble" %}
+
+{% block content %}
+  <div>
+    {% set gamble = cuser.gamble_2x(req.query.amount) %}
+    {{ gamble|json_encode }}
+    <script>cuser.set_money_locally({{ gamble.info.left }});</script>
+  </div>
+{% endblock %}

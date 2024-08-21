@@ -9,7 +9,7 @@
     <meta property="og:site_name" content="{{ env["name"] }}">
     <meta property="og:image" content="/assets/img/logo-t_64.png" />
     <meta content="{{ title ?? pagename }}" property="og:title">
-    <meta content="nothing.." property="og:description">
+    <meta content="{{ env.desc }}" property="og:description">
     <meta name="theme-color" content="#650fde">
     <script src="/assets/js/core_legacy.js"></script>
     <script src="/assets/js/core.js"></script>
@@ -17,13 +17,13 @@
     <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
     <title>{{ title ?? req.path }} | {{ env['app_name'] }}</title>
   </head>
-  <body class="body-padding" style="box-sizing: border-box;">
+  <body class="body-padding {% if cuser.what_membership == ENUM.membership.TIER_3 %}obc-bg{% endif %} body-backdrop" style="box-sizing: border-box;">
     <div class="container round-4 pos-relative" style="padding: 0;{% if enablecontainerbg ?? true %} background: #0c0c0c;{% endif %} {{ container_styles }}">
       {% if not cuser.has_membership or cuser.settings.show_ads %}
-      <div id="ad-skyscraper-1" class="pos-absolute" style="right: calc(100% + 1em); top: 50%; transform: translate(0, -50%);">
+      <div id="ad-skyscraper-1" class="pos-absolute" style="right: calc(100% + 1.5em); top: 50%; transform: translate(0, -50%);">
         <img class="ratio-skyscraper w-100 mb-4" style="min-width: 128px;" src="/assets/img/ad-skyscraper.png">
       </div>
-      <div id="ad-skyscraper-2" class="pos-absolute" style="left: calc(100% + 1em); top: 50%; transform: translate(0, -50%);">
+      <div id="ad-skyscraper-2" class="pos-absolute" style="left: calc(100% + 1.5em); top: 50%; transform: translate(0, -50%);">
         <img class="ratio-skyscraper w-100 mb-4" style="min-width: 128px;" src="/assets/img/ad-skyscraper.png">
       </div>
       {% endif %}
@@ -46,9 +46,9 @@
 
         <div class="d-flex flex-row ai-center gap-6 ms-2 flex-1">
         {% if isloggedin %}
-        <div class="d-flex flex-row ai-center ms-auto gap-1">
-          <img style="filter: grayscale(1);" src="/assets/img/currency.svg" title="{{ cuser.money }}" width=20>
-          <b title="{{ cuser.money }}">{{ cuser.short_money }}</b>
+        <div class="d-flex flex-row ai-center ms-auto gap-1 cuser-money-div" title="{{ cuser.money }}">
+          <img style="filter: grayscale(1);" src="/assets/img/currency.svg" width=20>
+          <b class="cuser-money-amount">{{ cuser.short_money }}</b>
         </div>
         <div class="pos-relative">
           <div class="d-flex flex-row ai-center gap-3 c-pointer" onclick="dropdownify(this, $('#userdropdown'));">
@@ -60,7 +60,7 @@
           <a class="px-4 py-1" href="/users/{{ cuser.id }}/profile"><i class="bi bi-person"></i> {{ t.navbar.profile }}</a>
           <a class="px-4 py-1" href="/users/{{ cuser.id }}/inventory"><i class="bi bi-backpack"></i> {{ t.navbar.inventory }}</a>
           <a class="px-4 py-1" href="/settings/"><i class="bi bi-sliders"></i> {{ t.navbar.settings }}</a>
-          {% if cuser.is_mod or cuser.is_admin or cuser.is_owner %}<a class="px-4 py-1" href="{{ env.admin_panel.path }}/"><i class="bi bi-wrench-adjustable-circle-fill"></i> {{ t.navbar.admin }}</a>{% endif %}
+          {% if cuser.has_admin_panel %}<a class="px-4 py-1" href="{{ env.admin_panel.path }}/"><i class="bi bi-wrench-adjustable-circle-fill"></i> {{ t.navbar.admin }}</a>{% endif %}
           <hr nomargin>
           <a class="px-4 py-1" hx-post="/api/v1/user/logout?redirect=/"><i class="bi bi-box-arrow-left"></i> {{ t.navbar.logout }}</a>
           </div></div>
@@ -107,8 +107,8 @@
       </footer>{% endif %}
     </div>
 
-    <div class="d-none pos-absolute round-4 p-3" style="top: 50; left: 50; transform: translate(-50%, -50%); background: rgba(0,0,0, 0.33); backdrop-filter: blur(1em);" id="cmd_window">
-    BOO
+    <div class="d-none pos-absolute round-4 p-3" style="top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0, 0.33); backdrop-filter: blur(1em);" id="cmd_window">
+    nothing here.. (close me by typing --cmd again)
     </div>
     {% block body %}{% endblock %}
   </body>

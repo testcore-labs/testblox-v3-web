@@ -3,7 +3,7 @@
 !tmp
 !keys
 !assets
-assets/**
+!assets/*
 tmp/**
 !app/*
 app/*/**

@@ -1,7 +1,7 @@
 import express, { type Express, type Request, type Response } from "express";
 import entity_user from "../db/user";
 const routes = express.Router();
-import { type message_type } from "../utils/message";
+import { type message_type } from "../types/message";
 import async_handler from 'express-async-handler';
 import env from '../utils/env';
 import path from "path";
@@ -11,6 +11,7 @@ import { asset_types } from "../types/assets";
 import root_path from "../utils/root_path";
 import fs from "fs";
 import entity_feed from "../db/feed";
+import { notloggedin_api_handler } from "../utils/handlers";
 
 // limiters
 const msg_too_many_reqs: message_type = {success: false, status: 429, message: "too many requests, try again later."};
@@ -106,6 +107,18 @@ routes.post("/user/logout", async_handler(async (req: Request, res: Response) =>
     res.status(500);
     res.json({success: false, message: "error occured."});
   }
+}));
+
+routes.get("/user/gamble", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
+  let gamble_amount = Number(req.query?.gamble_amount)
+  let gambled = await res.locals.cuser.gamble_2x(gamble_amount);
+  res.json(gambled);
+}));
+
+routes.get("/user/gamble", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
+  let gamble_amount = Number(req.query?.gamble_amount)
+  let gambled = await res.locals.cuser.gamble_2x(gamble_amount);
+  res.json(gambled);
 }));
 
 // import { createSession, createChannel } from "better-sse";

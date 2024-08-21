@@ -10,7 +10,10 @@
 */
 
 $fonts: "Source Code Pro", monospace;
+// wide
+//$containerwidth: clamp(900px, 100vw, calc(100vw - 25em));
 $containerwidth: 900px;
+
 
 $blue: #00a2ff;
 $info: #105cff;
@@ -264,16 +267,6 @@ body > .container {
   box-sizing: border-box;
   width: 100%;
   max-width: $containerwidth;
-  animation: onload 0.7s ease 0s 1 normal forwards;
-}
-@keyframes onload {
-  0% {
-    opacity: 0;
-  }
-
-  100% {
-    opacity: 1;
-  }
 }
 
 h1,
@@ -743,30 +736,33 @@ textarea,
 }
 
 input[type="checkbox"] {
+  display: inline-block;
   all: unset;
   padding: 0;
   margin: 0;
-  width: 1em;
-  height: 1em;
+  max-width: 1em;
+  max-height: 1em;
+  min-width: 1em;
+  min-height: 1em;
   border: 0.1em solid #1f1f1f;
   background: rgba(0, 0, 0, 0.8);
   box-shadow: 1px 1px 2px 2px $shadow;
   border-radius: 0.25em;
-  cursor: pointer;
-}
-
-input[type="checkbox"]:checked {
-  border: 0.1em solid $accent-darker;
-}
-
-input[type="checkbox"]:checked::before {
-  all: unset;
-  padding: 0;
-  margin: 0;
-  line-height: 0.9em;
   font-family: "bootstrap-icons";
+  cursor: pointer;
+  &::before {
+  color: rgba(0, 0, 0, 0);
+  line-height: 0.9em;
   font-size: 1em;
   content: "\F633";
+  }
+  &:checked {
+  border: 0.1em solid $accent-darker;
+  }
+  &:checked::before {
+  color: rgb(255, 255, 255);
+  content: "\F633";
+  }
 }
 
 textarea {
@@ -1453,7 +1449,8 @@ a {
     flex-grow: 1;
   }
   .flex-autotofill {
-    flex: 100 0 100%; 
+    flex-grow: 100;
+    flex-basis: 100%; 
   }
   .w-autoto100 {
     width: 100%; 
@@ -1499,7 +1496,8 @@ a {
     width: auto; 
   }
   .flex-autotofill {
-    flex: 100 0 100%; 
+    flex-grow: 100;
+    flex-basis: 100%; 
     min-width: 100%;
   }
 }
@@ -1516,12 +1514,13 @@ a {
   }
   .searchbar-nav {
     order: 0;
-    flex-basis: 19em; 
-    flex-shrink: 5;
-    flex-grow: 0;
+    flex-basis: 12em; 
+    flex-shrink: 5 !important;
+    flex-grow: 0.4 !important;
   }
   .flex-autotofill {
-    flex: none; 
+    flex-grow: inherit;
+    flex-basis: inherit; 
     min-width: unset;
   }
   .w-autoto100 {
@@ -2087,4 +2086,11 @@ dialog {
   backdrop-filter: blur(0.75em);
   color: #fff;
   box-shadow: 2px 2px 6px 6px $shadow;
+}
+
+.obc-bg {
+  background: url("/assets/img/obc_bg.jpg");
+  background-repeat: repeat-x;
+  background-position: 0px 0px;
+  background-size: auto 100%;
 }

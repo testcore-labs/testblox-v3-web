@@ -1,4 +1,4 @@
-const enum asset_types {
+enum asset_types {
   // unfortunately roblox would like me to Name Things Like This.
   Image = 1,
   GIF = 1.5,

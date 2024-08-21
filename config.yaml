@@ -1,5 +1,5 @@
 app_name: testblox
-desc: oops..
+desc: testblox is a webclient revival aiming to recreate older versions
 domain: tstblx.win
 dsc_invite: pHPBy8FvAY
 debug: true
@@ -32,6 +32,7 @@ backup: false
 behind_proxy: false # CloudFlare Mode ACtivated
 
 admin_panel:
+  # dont add a "/" suffix, please
   path: "/admin" # change for whatever reason idk
   troll: true
   #only if troll is true you can make it redirect to whatever page
@@ -40,6 +41,10 @@ admin_panel:
 session:
   name: TESTBLO_SECURITY # if you change this, it will log people out
   expires: 31536000000 # this is in ms which is a year
+
+# defaults
+user:
+  status: "i'm new to testblox!"
 
 currency:
   name: pizza
@@ -63,14 +68,13 @@ database:
   username: "postgres"
   password: "qqqq"  
   ssl: false # useless if on the same server as webserver
+  log_queries: true
 
 discord:
   prefix: "t:"
-  token: MTI0MzE2OTQ2OTQ4ODk1OTU4OA.Gr8Pbx.sq3zZFXmLd3sgGkGQMjx2RN0xHUn6nFngG3bEY
-
+  
 rcc:
   # recommend you make this very long
-  api_key: RCC_KEY_GOES_HERE
   user_agent: "testblox/rcc; testblox/cURL; Roblox/WinInet"
 
 # http config

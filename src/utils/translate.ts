@@ -1,6 +1,6 @@
 import YAML, { parse } from "yaml";
 import logs from "./log"
-import colors from "colors";
+import colors from "../utils/colors";
 import root_path from "./root_path";
 import env from "./env";
 import path from "path";
