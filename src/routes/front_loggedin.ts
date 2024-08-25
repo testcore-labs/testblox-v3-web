@@ -71,9 +71,9 @@ routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, re
 }));
 
 routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  let game =  await (new entity_asset).by(entity_user.query()
+  let game =  await (new entity_asset).by(entity_asset.query()
   .where(sql`id = ${ Number(req.params?.id) }`)
-  .where(sql`type = ${ ENUM.assets.Place }`)
+  .where(sql`"type" = ${ ENUM.assets.Place }`)
   );
   let option = req.params?.name ? req.params?.name : game.title;
 
@@ -164,9 +164,9 @@ routes.get("/catalog/", notloggedin_handler, async_handler(async (req: Request, 
 }));
 
 routes.get("/catalog/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  let item = await (new entity_asset).by(entity_user.query()
+  let item = await (new entity_asset).by(entity_asset.query()
   .where(sql`id = ${ Number(req.params?.id) }`)
-  .where(sql`type in ${ sql(ENUM.assets_categorized.catalog) }`)
+  .where(sql`"type" in ${ sql(ENUM.assets_categorized.catalog) }`)
   );
   let option = req.params?.name ? req.params?.name : "profile";
 
