@@ -79,7 +79,7 @@ rcc:
 
 # http config
 http:
-  port: 80
+  port: 8021
 
 # use nginx noob
 #ssl: true

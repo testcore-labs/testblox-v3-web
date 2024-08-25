@@ -22,6 +22,7 @@ import gfs from "get-folder-size";
 import root_path from "../utils/root_path";
 import path from "path";
 import sql from "../utils/sql";
+import ENUM from "../types/enums";
 routes.use(htmx_middleware);
 
 routes.all("/redeem", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
@@ -195,7 +196,7 @@ let sys_info = {
     usage: "NaN%",
   }, 
   ram: { 
-    free: "0.0B", 
+    used: "0.0B",
     total: "0.0B"
   },
   folders: {} as { [key: string]: any }
@@ -203,8 +204,10 @@ let sys_info = {
 
 let update_sys_info = async () => {
   try {
-  sys_info.ram.free = format_bytes(os.freemem(), 1);
-  sys_info.ram.total = format_bytes(os.totalmem(), 1);
+  sys_info.ram.used = await si.mem()
+    .then(data => format_bytes(data.active, 1));
+  sys_info.ram.total = await si.mem()
+    .then(data => format_bytes(data.total, 1));
   sys_info.host.ip = await fetch("http://ip.me/", { headers: { "User-Agent": "curl/idklmao" } })
     .then(async (response) => {
       const ip = await response.text();
@@ -220,8 +223,7 @@ let update_sys_info = async () => {
   sys_info.folders["logs"] = format_bytes(gfs.loose(path.join(root_path, "logs")), 2);
   sys_info.folders["files"] = format_bytes(gfs.loose(path.join(root_path, "files")), 2);
   sys_info.cpu.temp = await si.cpuTemperature()
-  // windows doesn't work lol..
-    .then(data => (data.chipset ?? "0").toString() + "C°");
+    .then(data => (data.main ?? "0").toString() + "C°");
   sys_info.cpu.brand = await si.cpu()
     .then(data => data.manufacturer);
   sys_info.cpu.usage = await si.currentLoad()
@@ -255,6 +257,10 @@ routes.get(`${admin_route_path}/invite-keys`, notloggedin_handler, admin_handler
   const sort = String(req.query?.sort).toString();
   const invitekeys = await entity_invitekey.all(6, page, query, sort, order);
   res.render("admin/invite-keys.twig", { ...invitekeys.info})
+}));
+
+routes.get(`${admin_route_path}/server-management`, notloggedin_handler, owner_handler, async_handler(async (req: Request, res: Response) => {
+  res.render("admin/server-management.twig")
 }));
 
 export default routes;

@@ -1,1 +1,1 @@
-<a {% if urlparams[keyparam] == valueparam %}class="text-extramuted"{% else %}href="?{{ query_remove_key(urlparams, keyparam) }}{{keyparam}}={{valueparam}}"{% endif %}>{{ text }}</a>
+<a {% if urlparams[keyparam] == valueparam %}class="text-extramuted {{ classes }}"{% else %}class="{{ classes }}" href="?{{ query_remove_key(urlparams, keyparam) }}{{keyparam}}={{valueparam}}"{% endif %}>{{ text }}</a>

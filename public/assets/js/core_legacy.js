@@ -48,6 +48,7 @@ function setlang(locale) {
 
 function runhell() {
   javascript: (function () {
+    console.log("running harlem shake.js")
     function c() {
         var e = document.createElement("link");
         e.setAttribute("type", "text/css");
@@ -153,12 +154,12 @@ function runhell() {
     var t = 0;
     var n = 350;
     var r = 350;
-    var i = "https://s3.amazonaws.com/moovweb-marketing/playground/harlem-shake.mp3";
+    var i = "/assets/snd/runhell/harlem-shake.mp3";
     var s = "mw-harlem_shake_me";
     var o = "im_first";
     var u = ["im_drunk", "im_baked", "im_trippin", "im_blown"];
     var a = "mw-strobe_light";
-    var f = "https://s3.amazonaws.com/moovweb-marketing/playground/harlem-shake-style.css";
+    var f = "/assets/css/runhell.css";
     var l = "mw_added_css";
     var b = g();
     var w = y();
@@ -322,10 +323,10 @@ var dragger = function() {
 
 function search_onkeyup(_searchinput, clicked = false) {
   const rgx = /q=([^&]*)/;
-  const loc = window.location.href.replace(rgx, "q=" + _searchinput.value);
+  const href = String(window.location.href);
+  const loc = href.replace(rgx, "q=" + _searchinput.value);
   const newloc = window.location.href.match(rgx) ? loc : "?q=" + _searchinput.value;
   if(clicked) {
-    console.log("fdsd");
     window.location.href = newloc;
   }
   _searchinput.addEventListener("keyup", function(event) {

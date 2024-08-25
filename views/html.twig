@@ -1,5 +1,5 @@
 <!doctype html>{% import "_macros.twig" as utils %}
-<html lang="en-US">
+<html class="{% if cuser.what_membership == ENUM.membership.TIER_3 %}obc-bg{% endif %}" lang="en-US">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,8 +17,8 @@
     <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
     <title>{{ title ?? req.path }} | {{ env['app_name'] }}</title>
   </head>
-  <body class="body-padding {% if cuser.what_membership == ENUM.membership.TIER_3 %}obc-bg{% endif %} body-backdrop" style="box-sizing: border-box;">
-    <div class="container round-4 pos-relative" style="padding: 0;{% if enablecontainerbg ?? true %} background: #0c0c0c;{% endif %} {{ container_styles }}">
+  <body class="body-padding body-backdrop" style="box-sizing: border-box;">
+    <div class="container round-4 pos-relative border-light-1" style="padding: 0; {% if enablecontainerbg ?? true %} background: #0c0c0c;{% endif %} {{ container_styles }}">
       {% if not cuser.has_membership or cuser.settings.show_ads %}
       <div id="ad-skyscraper-1" class="pos-absolute" style="right: calc(100% + 1.5em); top: 50%; transform: translate(0, -50%);">
         <img class="ratio-skyscraper w-100 mb-4" style="min-width: 128px;" src="/assets/img/ad-skyscraper.png">

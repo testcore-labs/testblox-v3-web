@@ -510,6 +510,8 @@ button,
   display: inline-block;
   background: $black;
   background: linear-gradient(180deg, $primary-2 0%, $primary-1 100%);
+  border: 0.1em solid $primary-2;
+  box-sizing: border-box;
   border-radius: 0.5em;
   padding: 0.3em 0.5em;
   color: #fff;
@@ -519,7 +521,7 @@ button,
   &:hover,
   &[active] {
     background: $accent;
-    background: linear-gradient(180deg, lighten($primary-2, 15%) 0%, lighten($primary-1, 5%) 100%);
+    background: linear-gradient(180deg, lighten($primary-2, 5%) 0%, lighten($primary-1, 5%) 100%);
   }
   &:active,
   &[disabled] {
@@ -538,6 +540,8 @@ button[nostyle] {
   display: inline-block;
   background: $accent;
   background: linear-gradient(180deg, $accent 0%, $accent-darker 100%);
+  border: 0.1em solid $accent-darker;
+  box-sizing: border-box;
   border-radius: 0.5em;
   padding: 0.3em 0.5em;
   color: #fff;
@@ -1074,6 +1078,7 @@ table.border-light {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 
@@ -2089,8 +2094,62 @@ dialog {
 }
 
 .obc-bg {
-  background: url("/assets/img/obc_bg.jpg");
+  background-color: #000000;
+  background-image: url("/assets/img/obc_bg.jpg");
   background-repeat: repeat-x;
   background-position: 0px 0px;
-  background-size: auto 100%;
+  background-size: 175px auto;
+}
+
+details {
+  & summary {
+  cursor: pointer;
+  display: block;
+  transition: margin 0.15s ease-out;
+  &:not([right]):not([right-auto])::before {
+    font-family: "bootstrap-icons";
+    margin-right: 0.25em;
+    display: inline-block;
+    content: "\F231";
+    transition: 0.15s;
+  }
+  &[right]::after {
+    font-family: "bootstrap-icons";
+    margin-left: 0.25em;
+    display: inline-block;
+    content: "\F231";
+    transition: 0.15s;
+  }
+  &[right-auto] {
+    display: flex;
+    flex-direction: row;
+  }
+  &[right-auto]::after {
+    font-family: "bootstrap-icons";
+    margin-left: auto;
+    display: inline-block;
+    content: "\F231";
+    transition: 0.15s;
+  }
+  }
+
+  & > summary > content {
+    display: none;
+  }
+
+  &[open] > summary > content {
+    display: inherit;
+  }
+
+  &[open] > summary {
+    &:not([right]):not([right-auto])::before{
+      transform: rotate(90deg);
+    }
+    &[right]::after {
+      transform: rotate(90deg);
+    }
+    &[right-auto]::after {
+      transform: rotate(90deg);
+    }
+  }
 }

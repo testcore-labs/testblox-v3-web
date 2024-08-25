@@ -11,7 +11,7 @@ import { asset_types } from "../types/assets";
 import root_path from "../utils/root_path";
 import fs from "fs";
 import entity_feed from "../db/feed";
-import { notloggedin_api_handler } from "../utils/handlers";
+import { notloggedin_api_handler, owner_api_handler } from "../utils/handlers";
 
 // limiters
 const msg_too_many_reqs: message_type = {success: false, status: 429, message: "too many requests, try again later."};
@@ -211,7 +211,19 @@ routes.get("/feed/posts", async_handler(async (req, res) => {
   }
 }));
 
-routes.post("/feed/send", async_handler(async (req, res) => {
+routes.post("/feed/send", notloggedin_api_handler, async_handler(async (req, res) => {
+  let txt = req.body?.feed_text.toString();
+  let replyto = Number(req.body?.replyto ?? 0);
+
+  let sent = await entity_feed.send(txt, res.locals.cuser.id, replyto);
+  if(!req.query?.plaintext) {
+    res.send(sent.message);
+  } else {
+    res.json(sent);
+  }
+})); 
+
+routes.post("/owner/server-management", notloggedin_api_handler, owner_api_handler, async_handler(async (req, res) => {
   let txt = req.body?.feed_text.toString();
   let replyto = Number(req.body?.replyto ?? 0);
 

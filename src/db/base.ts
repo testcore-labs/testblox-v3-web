@@ -42,21 +42,17 @@ class query_builder {
     return this;
   }
 
-  search(str: string, columns: string | Array<string> = [], case_sensitive: boolean = true) {
-    const search_push = (column: string) => 
-      this.v_search.push(sql`(${sql(column)} ${ case_sensitive ? sql.unsafe(`LIKE`): sql.unsafe(`ILIKE`)} ${ str ? `%${str}%` : `` })`);
+  search(str: string, columns: string | Array<string> = [], partial_search: boolean = true) {
+    if (!str) return this;
+    const column_array = typeof columns === "string" ? [columns] : columns;
 
-    if(str) {
-      if(typeof(columns) == "string") {
-        this.v_search_columns = [columns];
-        search_push(columns);
-      } else {
-        this.v_search_columns = columns;
-        Object.values(columns).forEach((key) => {
-          search_push(key);
-        });
-      }
-    }
+    // TODO: partial_search
+    const search = `${str}:*`;
+
+    this.v_search = Object.assign(this.v_search, column_array.map(column => 
+     sql`(to_tsvector(${sql(column)}) ${ sql.unsafe(`@@`) } to_tsquery(${search}))`
+    ));
+
     return this;
   }
 

@@ -3,21 +3,31 @@
 
 {% set admin_pages = [
   { 
+    "route": "./server-management",
+    "icon": "hdd-network",
+    "name": "server management",
+    "perms": ENUM.priveleges.owner,
+    "desc": "shutdown, restart, etc"
+  },
+  { 
     "route": "./asset-creation",
     "icon": "box-seam",
     "name": "asset creation",
+    "perms": ENUM.priveleges.assetcreator,
     "desc": "create shirts, pants, hats, faces and so on"
   },
   { 
     "route": "./asset-moderation",
     "icon": "boxes",
     "name": "asset moderation",
+    "perms": ENUM.priveleges.assetmod,
     "desc": "moderate assets made by users"
   },
   { 
     "route": "./invite-keys",
     "icon": "key",
     "name": "invite keys",
+    "perms": ENUM.priveleges.admin,
     "desc": "check, make and delete invite keys"
   }
 ] %}
@@ -49,7 +59,7 @@
     {% if inited %}
       <span><i class="bi bi-hdd-network"></i> {{ user.name }}<span class="text-extramuted">@</span>{{ host.name }}, {{ host.ip }}</span>
       <span><i class="bi bi-cpu"></i> {{ cpu.brand }}, {{ cpu.usage }}, {{ cpu.temp }}</span>
-      <span><i class="bi bi-memory"></i> {{ ram.free }}<span class="text-extramuted">/</span>{{ ram.total }}</span>
+      <span><i class="bi bi-memory"></i> {{ ram.used }}<span class="text-extramuted">/</span>{{ ram.total }}</span>
       {% for name, size in folders %}
       <span><i class="bi bi-folder"></i> <span>{{ name }}</span> <span>{{ size }}</span></span>
       {% endfor %}

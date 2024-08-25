@@ -18,13 +18,14 @@ const asset_folder = path.join(root_path, "files", "assets");
 
 class entity_asset extends entity_base {
   table = "assets";
-  static catalog_types = [
+  static clothing = [
     ENUM.assets.Hat,
     ENUM.assets.TShirt,
     ENUM.assets.Shirt,
     ENUM.assets.Pants,
+  ]
+  static body_parts = [
     ENUM.assets.Face,
-    ENUM.assets.Gear,
     ENUM.assets.Head,
     ENUM.assets.Torso,
     ENUM.assets.LeftArm,
@@ -32,6 +33,8 @@ class entity_asset extends entity_base {
     ENUM.assets.LeftLeg,
     ENUM.assets.RightLeg,
     ENUM.assets.Package,
+  ]
+  static animations = [
     ENUM.assets.RunAnimation,
     ENUM.assets.FallAnimation,
     ENUM.assets.IdleAnimation,
@@ -41,6 +44,8 @@ class entity_asset extends entity_base {
     ENUM.assets.WalkAnimation,
     ENUM.assets.ClimbAnimation,
     ENUM.assets.DeathAnimation,
+  ]
+  static accessories = [ // i hate you roblox
     ENUM.assets.HairAccessory,
     ENUM.assets.FaceAccessory,
     ENUM.assets.NeckAccessory,
@@ -48,7 +53,13 @@ class entity_asset extends entity_base {
     ENUM.assets.FrontAccessory,
     ENUM.assets.BackAccessory,
     ENUM.assets.WaistAccessory,
-    ENUM.assets.DeathAnimation,
+  ]
+  static catalog_types = [
+    ...entity_asset.clothing,
+    ...entity_asset.body_parts,
+    ...entity_asset.animations,
+    ...entity_asset.accessories,
+    ENUM.assets.Gear,
   ];
   static library_types = [
     ENUM.assets.Audio,
