@@ -28,37 +28,29 @@
 </div>
 <hr class="mt-3 mb-2">
 <div class="d-flex flex-row flex-wrap gap-3">
-  <div class="p-2 border-light-1 round-4 d-flex flex-column gap-1" style="flex-basis: 8em; flex-grow: 1; flex-shrink: 1;">
-    {%- macro generate_category(category, items) %}
+  <div class="p-2 border-light-1 round-4 d-flex flex-column gap-1" style="flex-basis: 12.5em; flex-grow: 1; flex-shrink: 1;">
+    {%- macro generate_category(category, category_key) %}
     <details class="p-2">
       <summary right-auto>{{ category }}</summary>
-      <content class="d-flex flex-column gap-2">
-      {% for name, column in items %}
-        {% include '/components/query_btns.twig' with {classes: "p-2", urlparams: req.query, keyparam: "type", valueparam: column, text: name} %}
+      <content class="d-flex flex-column gap-1 mt-2">
+      {% include '/components/query_btns.twig' with {classes: "ps-5 py-2", urlparams: req.query, keyparam: "type", valueparam: category_key, text: "all " ~ category} %}
+      {% for name, column in catalog_types[category_key]|sort %}
+        {% include '/components/query_btns.twig' with {classes: "ps-5 py-2", urlparams: req.query, keyparam: "type", valueparam: column, text: name} %}
       {% endfor %}
       </content>
     </details>
     {% endmacro -%}
     {% import _self as self %} {# twig hack #}
-    {% include '/components/query_btns.twig' with {classes: "p-2", urlparams: req.query, keyparam: "type", valueparam: "", text: "all types"} %}
+    {% include '/components/query_btns.twig' with {classes: "px-2 py-2", urlparams: req.query, keyparam: "type", valueparam: "", text: "all types"} %}
     <hr class="my-2" nomargin>
-    {{ self.generate_category("clothing", types.clothing) }}
-    <details class="p-2">
-      <summary right-auto>body parts</summary>
-      <content>test</content>
-    </details>
-    {% include '/components/query_btns.twig' with {classes: "p-2", urlparams: req.query, keyparam: "type", valueparam: (ENUM.assets.Gear), text: "gear"} %}
-    <details class="p-2">
-      <summary right-auto>accessories</summary>
-      <content>test</content>
-    </details>
-    <details class="p-2">
-      <summary right-auto>animations</summary>
-      <content>test</content>
-    </details>
+    {{ self.generate_category("clothing", "clothing") }}
+    {{ self.generate_category("body parts", "body_parts") }}
+    {% include '/components/query_btns.twig' with {classes: "px-2 py-2", urlparams: req.query, keyparam: "type", valueparam: (ENUM.assets.Gear), text: "gear"} %}
+    {{ self.generate_category("accessories", "accessories") }}
+    {{ self.generate_category("animations", "animations") }}
   </div>
 
-  <div style="flex-basis: 25em; flex-grow: 5;">
+  <div style="flex-basis: 25em; flex-grow: 25; {% if items|length == 0 %}margin: auto;{% endif %}">
   {% if items|length == 0 %}
     <div class="d-flex flex-column ai-center gap-2 p-3">
     <h1 style="font-size: 4em;" class="bi bi-egg-fried"></h1>

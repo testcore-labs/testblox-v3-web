@@ -15,6 +15,7 @@ import entity_invitekey from "../db/invitekey";
 import entity_user from "../db/user";
 import entity_promokey from "../db/promokey";
 
+import { flatten } from "../utils/array"
 import async_handler from 'express-async-handler';
 import os from "os";
 import si from "systeminformation";
@@ -23,6 +24,7 @@ import root_path from "../utils/root_path";
 import path from "path";
 import sql from "../utils/sql";
 import ENUM from "../types/enums";
+import _ from "lodash";
 routes.use(htmx_middleware);
 
 routes.all("/redeem", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
@@ -143,11 +145,35 @@ routes.get("/catalog/", notloggedin_handler, async_handler(async (req: Request, 
   if(String(page) == "NaN" || Number(page) <= 0) {
     page = 1;
   }
+
+  let type = Number(req.query?.type);
   
   const order = String(req.query?.order).toString();
   const sort = String(req.query?.sort).toString();
-  const catalog = await entity_asset.all(entity_asset.catalog_types, 6, page, query, sort, order);
-  res.render("catalog.twig", { ...catalog.info});
+
+  const catalog_types: { [key: string]: number[] } = {} 
+  const array_types: number[] = [];
+
+  Object.entries(ENUM.assets_categorized.catalog).forEach(([key, value]) => { 
+    let values: number[] = [];
+    Object.entries(value).forEach(([_key, value]) => {
+      // i hate my life
+      if(!Number.isNaN(Number(value))) {
+        array_types.push(value);
+        values.push(value); 
+      }
+    });
+    catalog_types[key] = values;
+  });
+
+  let actual_type: number[];
+  if(Number.isNaN(type)) {
+    actual_type = catalog_types[String(req.query?.type)];
+  } else {
+    actual_type = [array_types[type]];
+  }
+  const catalog = await entity_asset.all(actual_type, 6, page, query, sort, order);
+  res.render("catalog.twig", { ...catalog.info, catalog_types: ENUM.assets_categorized.catalog});
 }));
 
 

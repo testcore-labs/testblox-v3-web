@@ -18,62 +18,6 @@ const asset_folder = path.join(root_path, "files", "assets");
 
 class entity_asset extends entity_base {
   table = "assets";
-  static clothing = [
-    ENUM.assets.Hat,
-    ENUM.assets.TShirt,
-    ENUM.assets.Shirt,
-    ENUM.assets.Pants,
-  ]
-  static body_parts = [
-    ENUM.assets.Face,
-    ENUM.assets.Head,
-    ENUM.assets.Torso,
-    ENUM.assets.LeftArm,
-    ENUM.assets.RightArm,
-    ENUM.assets.LeftLeg,
-    ENUM.assets.RightLeg,
-    ENUM.assets.Package,
-  ]
-  static animations = [
-    ENUM.assets.RunAnimation,
-    ENUM.assets.FallAnimation,
-    ENUM.assets.IdleAnimation,
-    ENUM.assets.JumpAnimation,
-    ENUM.assets.PoseAnimation,
-    ENUM.assets.SwimAnimation,
-    ENUM.assets.WalkAnimation,
-    ENUM.assets.ClimbAnimation,
-    ENUM.assets.DeathAnimation,
-  ]
-  static accessories = [ // i hate you roblox
-    ENUM.assets.HairAccessory,
-    ENUM.assets.FaceAccessory,
-    ENUM.assets.NeckAccessory,
-    ENUM.assets.ShoulderAccessory,
-    ENUM.assets.FrontAccessory,
-    ENUM.assets.BackAccessory,
-    ENUM.assets.WaistAccessory,
-  ]
-  static catalog_types = [
-    ...entity_asset.clothing,
-    ...entity_asset.body_parts,
-    ...entity_asset.animations,
-    ...entity_asset.accessories,
-    ENUM.assets.Gear,
-  ];
-  static library_types = [
-    ENUM.assets.Audio,
-    ENUM.assets.Mesh,
-    ENUM.assets.Lua,
-    ENUM.assets.Model,
-    ENUM.assets.Decal,
-    ENUM.assets.Badge,
-    ENUM.assets.Animation,
-    ENUM.assets.GamePass,
-    ENUM.assets.Plugin,
-    ENUM.assets.MeshPart,
-  ];
-
   user: entity_user | undefined;
 
   async by_id(id: number) {
@@ -205,13 +149,13 @@ class entity_asset extends entity_base {
   }
 
   get for_catalog() {
-    if(entity_asset.catalog_types[this.data?.type]) {
+    if(ENUM.assets[this.data?.type]) {
       return true;
     }
   }
 
   get for_library() {
-    if(entity_asset.library_types[this.data?.type]) {
+    if(ENUM.assets[this.data?.type]) {
       return true;
     }
   }

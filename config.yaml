@@ -68,7 +68,7 @@ database:
   username: "postgres"
   password: "qqqq"  
   ssl: false # useless if on the same server as webserver
-  log_queries: true
+  log_queries: false
 
 discord:
   prefix: "t:"
