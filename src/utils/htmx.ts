@@ -17,7 +17,7 @@ declare module 'express-serve-static-core' {
 function htmx_middleware(req: Request, res: Response, next: NextFunction): void {
   req.htmx = {
     ishtmx: () => {
-      return req.header("HX-Request") == "true";
+      return req.header("HX-Request") === "true";
     }
   }
   res.htmx = {

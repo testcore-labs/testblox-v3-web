@@ -33,7 +33,7 @@ try{
     const asset_version: number = Number(req.query?.version) || -1;
     if(asset_id==-1)
         return res.status(200).send('');
-    const extra_query: string = asset_version == -1 ? '&version=1' : `&version=${asset_version}`
+    const extra_query: string = asset_version === -1 ? '&version=1' : `&version=${asset_version}`
     const roblox_asset: Promise<Response> = fetch(`https://assetdelivery.roblox.com/v1/asset/?id=${asset_id}${extra_query}`);
     console.log(`https://assetdelivery.roblox.com/v1/asset/?id=${asset_id}${extra_query}`);
     // now, the asset may NOT exist, if this is the case, we need to parse the json to make sure its a valid asset,

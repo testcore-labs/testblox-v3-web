@@ -52,7 +52,7 @@ class entity_user extends entity_base {
         updated: "updatedat", 
         created: "createdat"
         })
-      .randomize(sort == "random")
+      .randomize(sort === "random")
       .direction(order)
       .limit(limit)
       .exec();
@@ -135,7 +135,7 @@ class entity_user extends entity_base {
   
         let random = Math.ceil(Math.random() * 4);
         let won_amount = -gamble_amount;
-        if(random == 3) {
+        if(random === 3) {
           won_amount = Math.floor(gamble_amount * 2);
         }
   
@@ -257,14 +257,14 @@ class entity_user extends entity_base {
   // a pointer to a publicly-accesible file
   async get_headshot() {
     let headshot = this.data?.headshot;
-    if(headshot == 0) {
+    if(headshot === 0) {
       return "/assets/img/reviewpending.png";
     }
   }
   
   async get_fullbody() {
     let headshot = this.data?.fullbody;
-    if(headshot == 0) {
+    if(headshot === 0) {
       return "/assets/img/reviewpending.png";
     }
   }
@@ -304,10 +304,10 @@ class entity_user extends entity_base {
     FROM "users" 
     WHERE "token" = ${token} 
     LIMIT 1`;
-    if(users_find.length == 0) {
+    if(users_find.length === 0) {
       return token;
     } else {
-      if(i == 1024) { // how would this even happen tho lmao, its 10^77 possible combinatifons, WHICH IS FAR MORE THAN A REVIVAL WOULD EVER NEED
+      if(i === 1024) { // how would this even happen tho lmao, its 10^77 possible combinatifons, WHICH IS FAR MORE THAN A REVIVAL WOULD EVER NEED
         console.log("can't produce a unused token.");
         return Error("can't produce a unused token.");
       }
@@ -318,9 +318,9 @@ class entity_user extends entity_base {
 
   static username_validate(username: any) {
     let rules = {
-      "username.empty": (!username || username == "" || username.length == 0),
+      "username.empty": (!username || username === "" || username.length === 0),
       "username.is_more_than_20": username.length > 20,
-      "username.is_0": username.length == 0,
+      "username.is_0": username.length === 0,
       "username.is_not_ascii": !(new RegExp(`^[A-Za-z0-9_]+$`)).test(username),
     }
 
@@ -332,7 +332,7 @@ class entity_user extends entity_base {
 
   static password_validate(password: any) {
     let rules = {
-      "password.empty": (!password || password == "" || password.length == 0),
+      "password.empty": (!password || password === "" || password.length === 0),
       "password.is_more_than_32": password.length > 32,
       "password.is_less_than_4": password.length < 4,
       "password.is_not_ascii": !(new RegExp(`^[A-Za-z0-9_#\$]+$`)).test(password),

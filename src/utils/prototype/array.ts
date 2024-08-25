@@ -1,3 +1,3 @@
 Object.defineProperty(Array.prototype, `empty`, {
-  value: function() { this.length == 0 }
+  value: function() { this.length === 0 }
 });

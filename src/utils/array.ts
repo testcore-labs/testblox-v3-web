@@ -21,7 +21,7 @@ export function flatten(array: any) {
   for (var i in array) {
       if (!array.hasOwnProperty(i)) continue;
 
-      if ((typeof array[i]) == 'object' && array[i] !== null) {
+      if ((typeof array[i]) === 'object' && array[i] !== null) {
           var flatObject = flatten(array[i]);
           for (var x in flatObject) {
               if (!flatObject.hasOwnProperty(x)) continue;

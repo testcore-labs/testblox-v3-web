@@ -344,13 +344,13 @@
     });
 
     var slidervalclass = self.bbplayer.getElementsByClassName('bb-volume-int')[0];
-    if(slidervalclass.getAttribute("bb-readable") == "") {
+    if(slidervalclass.getAttribute("bb-readable") === "") {
       slidervalclass.textContent = Math.ceil(audioElem.volume * 100);
     } else {
     slidervalclass.textContent = Math.ceil(audioElem.volume);
     }
     slider.addEventListener('input', function () {
-      if(slidervalclass.getAttribute("bb-readable") == "") {
+      if(slidervalclass.getAttribute("bb-readable") === "") {
         slidervalclass.textContent = Math.ceil(audioElem.volume * 100);
       } else {
       slidervalclass.textContent = Math.ceil(audioElem.volume);

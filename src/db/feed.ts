@@ -92,7 +92,7 @@ class entity_feed {
     const allowed_wheres = ["text"];
 
     if(!allowed_sorts.includes(sort)) sort = "createdat";
-    if(query == "undefined") query = "";;
+    if(query === "undefined") query = "";;
     order = validate_orderby(order, "DESC");
 
     const offset = (page - 1) * limit;
@@ -154,7 +154,7 @@ class entity_feed {
 
   static txt_validate(txt: any) {
     let rules = {
-      "feed_txt.empty": (!txt || txt == "" || txt.length == 0),
+      "feed_txt.empty": (!txt || txt === "" || txt.length === 0),
       "feed_txt.is_more_or_equal_200": txt.length >= 200,
       "feed_txt.is_less_than_1": txt.length < 1,
     }

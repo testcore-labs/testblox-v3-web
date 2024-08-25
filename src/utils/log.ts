@@ -40,7 +40,7 @@ class logs {
   static custom(txt: string | number, from_where: string = "") { // from_where lol 
     const message = printf(logs.format, 
       colors.white(logs.time()), 
-      colors.gray(from_where == "" ? "console" : from_where),
+      colors.gray(from_where === "" ? "console" : from_where),
       colors.white(txt.toString())
     );
     logs.push(message);

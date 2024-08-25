@@ -69,11 +69,13 @@ app.use(async_handler(async (req, res, next) => {
 // separated so cuser isnt used for assets, good for perfomance
 app.use("/assets", express.static(path.join(__dirname, "../public/assets")));
 app.use(async_handler(async (req, res, next) => {
+  translate.select(req.cookies?.locale ?? env.locale)
   res.locals.req = req;
   res.locals.res = res;
   res.locals.env = env;
   res.locals.ENUM = ENUM;
   res.locals.translations = translate.translations;
+  res.locals.translate = (text: string) => translate.text(text);
   res.locals.t = translate.translations[req.cookies?.locale ? req.cookies?.locale.toString() : env.locale];
 
   // cuser = current user

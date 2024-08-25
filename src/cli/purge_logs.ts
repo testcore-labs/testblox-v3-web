@@ -12,7 +12,7 @@ const rl = readline.createInterface({
 const dir = path.join(root_path, "logs");
 rl.question(`are you sure you want to purge `+ colors.red("ALL") +` logs?\n[Y/N]> `, answer => {
   let new_answer = answer.toLowerCase();
-  if(["yes", "ye", "y"].some(yes => new_answer == yes)) {
+  if(["yes", "ye", "y"].some(yes => new_answer === yes)) {
     console.log("purging..");
     fs.readdir(dir, (err, files) => {
       if (err) throw err;

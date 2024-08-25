@@ -29,7 +29,7 @@ class translator {
 
       let parsed = YAML.parse(data);
       const locale = parsed._locale.toString();
-      if(this.default_locale == locale) {
+      if(this.default_locale === locale) {
         this.selected_locale = this.default_locale;
       }
       this.translations[locale] = parsed;
@@ -64,16 +64,19 @@ class translator {
   }
 
   static text(key: string, locale: string = this.selected_locale): string {
+    const get_nested_val = (obj: any, path: string): any => {
+      return path.split('.').reduce((o, i) => (o ? o[i] : undefined), obj);
+    };
     if(locale) {
       let data = this.translations[locale];
 
       if(data) {
-        return data[key];
+        return get_nested_val(data, key);
       } else {
-        return "undefined";
+        return get_nested_val(this.translations[this.default_locale], key);
       }
     } else {
-      return "undefined";
+      return key;
     }
   }
 }

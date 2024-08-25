@@ -28,7 +28,7 @@ class query_builder {
   select(select: string[]) {
     this.v_selected = "";
     select.forEach((select_key) => {
-      this.v_selected += select_key + ((select.at(-1) == select_key) ? "" : ", ");
+      this.v_selected += select_key + ((select.at(-1) === select_key) ? "" : ", ");
     })
   }
 
@@ -133,7 +133,7 @@ class query_builder {
     WHERE ${ this.where_mapper(this.v_search, this.v_search_separator) } AND
     ${ this.where_mapper(this.v_conditions, this.v_condition_separator) }
     ORDER BY 
-      ${ this.v_order_by.column != "undefined" && (typeof this.v_order_by.column == "string") 
+      ${ this.v_order_by.column != "undefined" && (typeof this.v_order_by.column === "string") 
         ? sql(this.v_order_by.column) 
         : (this.v_randomize_sort 
           ? sql.unsafe(`RANDOM()`) 

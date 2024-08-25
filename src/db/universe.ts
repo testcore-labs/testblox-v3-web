@@ -69,7 +69,7 @@
 //     let new_place = await (new entity_asset).create_place(title, "placeholder text", creator, file);
 
 //     if(new_place.success) {
-//       new_universe.placeid = typeof new_place.info?.id == "number" ? new_place.info?.id : -1; // this will never happen and if it does we will know
+//       new_universe.placeid = typeof new_place.info?.id === "number" ? new_place.info?.id : -1; // this will never happen and if it does we will know
 //     } else {
 //       return new_place;
 //     }

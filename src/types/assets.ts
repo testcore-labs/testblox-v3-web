@@ -76,49 +76,65 @@ enum asset_types {
   // DynamicHead = 79
 };
 
+const catalog_categorized = {
+  clothing: {
+    TShirt: asset_types.TShirt,
+    Hat: asset_types.Hat,
+    Shirt: asset_types.Shirt,
+    Pants: asset_types.Pants,
+  },
+  body_parts: {
+    Head: asset_types.Head,
+    Face: asset_types.Face,
+    Torso: asset_types.Torso,
+    RightArm: asset_types.RightArm,
+    LeftArm: asset_types.LeftArm,
+    LeftLeg: asset_types.LeftLeg,
+    RightLeg: asset_types.RightLeg,
+    Package: asset_types.Package,
+  },
+  animations: {
+    ClimbAnimation: asset_types.ClimbAnimation,
+    DeathAnimation: asset_types.DeathAnimation,
+    FallAnimation: asset_types.FallAnimation,
+    IdleAnimation: asset_types.IdleAnimation,
+    JumpAnimation: asset_types.JumpAnimation,
+    RunAnimation: asset_types.RunAnimation,
+    SwimAnimation: asset_types.SwimAnimation,
+    WalkAnimation: asset_types.WalkAnimation,
+    PoseAnimation: asset_types.PoseAnimation,
+  },
+  accessories: {
+    HairAccessory: asset_types.HairAccessory,
+    FaceAccessory: asset_types.FaceAccessory,
+    NeckAccessory: asset_types.NeckAccessory,
+    ShoulderAccessory: asset_types.ShoulderAccessory,
+    FrontAccessory: asset_types.FrontAccessory,
+    BackAccessory: asset_types.BackAccessory,
+    WaistAccessory: asset_types.WaistAccessory,
+  },
+  gear: {
+    Gear: asset_types.Gear,
+  },
+};
+
+
+const catalog_types: { [key: string]: number[] } = {} 
+
+Object.entries(catalog_categorized).forEach(([key, value]) => { 
+  let values: number[] = [];
+  Object.entries(value).forEach(([_key, value]) => {
+    // i hate my life
+    if(!Number.isNaN(Number(value))) {
+      values.push(value); 
+    }
+  });
+  catalog_types[key] = values;
+});
 
 export const asset_types_categorized = {
-  catalog: {
-    clothing: {
-      TShirt: asset_types.TShirt,
-      Hat: asset_types.Hat,
-      Shirt: asset_types.Shirt,
-      Pants: asset_types.Pants,
-    },
-    body_parts: {
-      Head: asset_types.Head,
-      Face: asset_types.Face,
-      Torso: asset_types.Torso,
-      RightArm: asset_types.RightArm,
-      LeftArm: asset_types.LeftArm,
-      LeftLeg: asset_types.LeftLeg,
-      RightLeg: asset_types.RightLeg,
-      Package: asset_types.Package,
-    },
-    animations: {
-      ClimbAnimation: asset_types.ClimbAnimation,
-      DeathAnimation: asset_types.DeathAnimation,
-      FallAnimation: asset_types.FallAnimation,
-      IdleAnimation: asset_types.IdleAnimation,
-      JumpAnimation: asset_types.JumpAnimation,
-      RunAnimation: asset_types.RunAnimation,
-      SwimAnimation: asset_types.SwimAnimation,
-      WalkAnimation: asset_types.WalkAnimation,
-      PoseAnimation: asset_types.PoseAnimation,
-    },
-    accessories: {
-      HairAccessory: asset_types.HairAccessory,
-      FaceAccessory: asset_types.FaceAccessory,
-      NeckAccessory: asset_types.NeckAccessory,
-      ShoulderAccessory: asset_types.ShoulderAccessory,
-      FrontAccessory: asset_types.FrontAccessory,
-      BackAccessory: asset_types.BackAccessory,
-      WaistAccessory: asset_types.WaistAccessory,
-    },
-    gear: {
-      Gear: asset_types.Gear,
-    },
-  },
+  catalog_categorized: catalog_categorized,
+  catalog: catalog_types,
   library: {
     Audio: asset_types.Audio,
     Script: asset_types.Lua,
@@ -139,6 +155,20 @@ export const asset_types_categorized = {
     MeshPart: asset_types.MeshPart,
     FontFamily: asset_types.FontFamily,
   },
+}
+
+const convert_to_numberarray = (obj: {[key: string]: number|number[]}): number[] => { let t: number[] = []; Object.entries(obj).forEach(([_key, val]) => {
+  if(typeof val === "number") {
+    t.push(val);
+  } else {
+    t.push(...val) 
+  }
+}); return t; };
+
+export const asset_types_numbered = {
+  catalog: convert_to_numberarray(asset_types_categorized.catalog),
+  library: convert_to_numberarray(asset_types_categorized.library),
+  generics: convert_to_numberarray(asset_types_categorized.generics),
 }
 
 export { asset_types };

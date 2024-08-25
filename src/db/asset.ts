@@ -101,7 +101,7 @@ class entity_asset extends entity_base {
         updated: "updatedat", 
         created: "createdat"
         })
-      .randomize(sort == "random")
+      .randomize(sort === "random")
       .direction(order)
       .limit(limit);
 
@@ -127,7 +127,7 @@ class entity_asset extends entity_base {
   }
 
   get is_place() {
-    if(this.data?.type == ENUM.assets.Place) {
+    if(this.data?.type === ENUM.assets.Place) {
       return true;
     }
   }
@@ -143,7 +143,7 @@ class entity_asset extends entity_base {
   }
   
   get for_games() {
-    if(this.data?.type == ENUM.assets.Place) {
+    if(this.data?.type === ENUM.assets.Place) {
       return true;
     }
   }

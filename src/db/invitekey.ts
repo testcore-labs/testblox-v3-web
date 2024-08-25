@@ -53,7 +53,7 @@ class entity_invitekey {
     const allowed_wheres = ["code"];
 
     if(!allowed_sorts.includes(sort)) sort = "createdat";
-    if(query == "undefined") query = "";;
+    if(query === "undefined") query = "";;
     order = validate_orderby(order);
 
     const offset = (page - 1) * limit;

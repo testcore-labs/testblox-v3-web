@@ -92,13 +92,13 @@ class discord_bot {
         const new_embed = new EmbedBuilder()
 	        .setColor(0x0099FF)
 	        .setTitle(selected_user.username)
-	        .setDescription(selected_user.description.length == 0 ? " " : selected_user.description)
+	        .setDescription(selected_user.description.length === 0 ? " " : selected_user.description)
 	        // .setThumbnail('d')
 	        .addFields(
 		        { name: 'privelege', value: selected_user.what_privelege },
 	        )
 	        .setImage(`https://${env.domain}${ await selected_user.get_headshot() }`)
-	        .setFooter({ text: selected_user.status.length == 0 ? " " : selected_user.status });
+	        .setFooter({ text: selected_user.status.length === 0 ? " " : selected_user.status });
         return msg.reply({ embeds: [new_embed] });
       }
     },
@@ -192,7 +192,7 @@ class discord_bot {
 
           if(found_command !== undefined) {
             let output = await found_command?.func(message, command_args);
-            output = output == undefined ? "" : output;
+            output = output === undefined ? "" : output;
             return output;
           }
         }

@@ -41,7 +41,7 @@ const cuser = {
       // ends with .svg is a hack because firefox has a bug with svgs 
       // where they always return natural* as 0 if svg is dimensionless, still not fixed 
       window.addEventListener("load", () => {
-        if((img.naturalWidth == 0 || img.naturalHeight == 0) && !original_img.endsWith(".svg")) {
+        if((img.naturalWidth === 0 || img.naturalHeight === 0) && !original_img.endsWith(".svg")) {
           set_fallback(img, original_img);
         }
       });

@@ -3,7 +3,7 @@ const routes = express.Router();
 //Max Keeble's Big Move
 import { notloggedin_handler, mod_handler, admin_handler, owner_handler } from "../utils/handlers";
 import { format_bytes } from "../utils/format";
-import {asset_types} from "../types/assets"
+import {asset_types, asset_types_numbered} from "../types/assets"
 import type { message_type } from "../types/message";
 import htmx_middleware from "../utils/htmx";
 import cooldown from "../utils/cooldown";
@@ -46,7 +46,7 @@ routes.get("/filter/:this", notloggedin_handler, async_handler(async (req: Reque
 
 routes.get("/home", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   let page = Number(req.query.p);
-  if(String(page) == "NaN" || Number(page) <= 0) {
+  if(String(page) === "NaN" || Number(page) <= 0) {
     page = 1;
   }
 
@@ -60,7 +60,7 @@ routes.get("/home", notloggedin_handler, async_handler(async (req: Request, res:
 routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   const query = String(req.query?.q ?? "");
   let page = Number(req.query.p);
-  if(String(page) == "NaN" || Number(page) <= 0) {
+  if(String(page) === "NaN" || Number(page) <= 0) {
     page = 1;
   }
 
@@ -71,7 +71,10 @@ routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, re
 }));
 
 routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  let game = await (new entity_asset).by_id(Number(req.params?.id));
+  let game =  await (new entity_asset).by(entity_user.query()
+  .where(sql`id = ${ Number(req.params?.id) }`)
+  .where(sql`type = ${ ENUM.assets.Place }`)
+  );
   let option = req.params?.name ? req.params?.name : game.title;
 
   switch(option) {
@@ -101,7 +104,7 @@ routes.get("/gamble", notloggedin_handler, async_handler(async (req: Request, re
 routes.get("/users/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   const query = String(req.query?.q ?? "");
   let page = Number(req.query.p);
-  if(String(page) == "NaN" || Number(page) <= 0) {
+  if(String(page) === "NaN" || Number(page) <= 0) {
     page = 1;
   }
 
@@ -142,40 +145,52 @@ routes.get("/users/:id/:name", notloggedin_handler, async_handler(async (req: Re
 routes.get("/catalog/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   const query = String(req.query?.q ?? "");
   let page = Number(req.query.p);
-  if(String(page) == "NaN" || Number(page) <= 0) {
+  if(String(page) === "NaN" || Number(page) <= 0) {
     page = 1;
   }
 
-  let type = Number(req.query?.type);
-  
+  const type = Number(req.query?.type);
   const order = String(req.query?.order).toString();
   const sort = String(req.query?.sort).toString();
 
-  const catalog_types: { [key: string]: number[] } = {} 
-  const array_types: number[] = [];
-
-  Object.entries(ENUM.assets_categorized.catalog).forEach(([key, value]) => { 
-    let values: number[] = [];
-    Object.entries(value).forEach(([_key, value]) => {
-      // i hate my life
-      if(!Number.isNaN(Number(value))) {
-        array_types.push(value);
-        values.push(value); 
-      }
-    });
-    catalog_types[key] = values;
-  });
-
   let actual_type: number[];
-  if(Number.isNaN(type)) {
-    actual_type = catalog_types[String(req.query?.type)];
+  if(asset_types_numbered.catalog.includes(type)) {
+    actual_type = [type];
   } else {
-    actual_type = [array_types[type]];
+    actual_type = ENUM.assets_categorized.catalog[String(req.query?.type)];
   }
   const catalog = await entity_asset.all(actual_type, 6, page, query, sort, order);
-  res.render("catalog.twig", { ...catalog.info, catalog_types: ENUM.assets_categorized.catalog});
+  res.render("catalog.twig", { ...catalog.info, catalog_types: ENUM.assets_categorized.catalog_categorized});
 }));
 
+routes.get("/catalog/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  let item = await (new entity_asset).by(entity_user.query()
+  .where(sql`id = ${ Number(req.params?.id) }`)
+  .where(sql`type in ${ sql(ENUM.assets_categorized.catalog) }`)
+  );
+  let option = req.params?.name ? req.params?.name : "profile";
+
+  switch(option) {
+    case "profile":
+      res.render("item.twig", { item: item });
+      break;
+    case "avatar":
+      res.render("components/item_tabs.twig", { tab: option, item });
+      break;
+    case "games":
+      res.render("components/item_tabs.twig", { tab: option, item });
+      break;
+    case "items":
+      res.render("components/item_tabs.twig", { tab: option, item });
+      break;
+    case "groups":
+      res.render("components/item_tabs.twig", { tab: option, item });
+      break;
+    default:
+      res.render("item.twig", { item: item });
+      break;
+  }
+}));
 
 
 const settings_tabs: {[key: string]: any} = {
@@ -275,7 +290,7 @@ routes.get(`${admin_route_path}/debug`, notloggedin_handler, admin_handler, asyn
 routes.get(`${admin_route_path}/invite-keys`, notloggedin_handler, admin_handler, async_handler(async (req: Request, res: Response) => {
   const query = String(req.query?.q).toString();
   let page = Number(req.query.p);
-  if(String(page) == "NaN" || Number(page) <= 0) {
+  if(String(page) === "NaN" || Number(page) <= 0) {
     page = 1;
   }
 

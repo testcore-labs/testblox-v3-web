@@ -40,11 +40,11 @@ try {
 
   // try to query
   let test_query = await sql`SELECT 1`; // fails if not connected
-  if(!!test_query && test_query.length == 0) {
+  if(!!test_query && test_query.length === 0) {
     throw new postgres.PostgresError("failed to test query");
   }
 } catch(e) {
-  if(e.code == "ECONNREFUSED") {
+  if(e.code === "ECONNREFUSED") {
     logs.custom(`is your postgres server running? check what port it's running.`, "!");
     logs.custom(`if you haven't installed it, please install postgres server.`, "!");
     logs.database(`server is unreachable`);

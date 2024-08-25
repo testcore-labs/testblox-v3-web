@@ -1,0 +1,9 @@
+{% extends "html.twig" %}
+{% set title = "users" %}
+
+{% block content %}
+{% import "./_macros.twig" as utils %}
+<div class="d-flex flex-column gap-3">
+    the item in question: {{ item.title }}
+</div>
+{% endblock %}

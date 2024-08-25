@@ -185,7 +185,7 @@ routes.get("/asset/icon", async_handler(async (req, res) => {
     } else {
       res.sendFile(path.join(root_path, "/public/assets/img/unknown.png"))
     }
-  } else if(new_asset.data.type == asset_types.Image) {
+  } else if(new_asset.data.type === asset_types.Image) {
     res.sendFile(path.join(root_path, new_asset.file));
   } else {
     res.sendFile(path.join(root_path, "/public/assets/img/unknown.png"))
@@ -196,10 +196,10 @@ routes.get("/asset/icon", async_handler(async (req, res) => {
 routes.get("/feed/posts", async_handler(async (req, res) => {
   let page = Number(req.query.p);
   let limit = Number(req.query.limit);
-  if(String(page) == "NaN" || Number(page) <= 0) {
+  if(String(page) === "NaN" || Number(page) <= 0) {
     page = 1;
   }
-  if(String(limit) == "NaN" || Number(limit) <= 0) {
+  if(String(limit) === "NaN" || Number(limit) <= 0) {
     limit = 5;
   }
 

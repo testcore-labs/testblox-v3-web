@@ -312,7 +312,7 @@ var dragger = function() {
     },
     stopmoving: function(divid, container) {
       document.body.classList.remove("userselectnoneall");
-      var containerElement = (container == "next") ? divid.nextSibling : ((container == "previous") ? divid.previousSibling : document.querySelector(container));
+      var containerElement = (container === "next") ? divid.nextSibling : ((container === "previous") ? divid.previousSibling : document.querySelector(container));
       containerElement.style.cursor = 'default';
 
       document.onmousemove = null;
@@ -353,7 +353,7 @@ function search_html(input, tosearch) {
 }
 
 function htmx_tabs(elem, event) {
-  if(event.target.tagName == 'BUTTON') {
+  if(event.target.tagName === 'BUTTON') {
   var ntab = elem.querySelector('[disabled]')
   if(ntab) {
   ntab.removeAttribute('disabled');
