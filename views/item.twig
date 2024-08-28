@@ -3,46 +3,71 @@
 
 {% block content %}
 {% import "./_macros.twig" as utils %}
+<div class="d-flex flex-column gap-1">
 <div class="d-flex flex-row gap-5 flex-wrap">
   <div>
     <img class="m-auto round-4" width=300 src"{{ item.get_icon() }}">
   </div>
 
-  <div class="d-flex flex-column gap-7 flex-1" style="flex-basis: 25em;">
+  <div class="d-flex flex-column gap-3 flex-1" style="flex-basis: 25em;">
       <div class="d-flex flex-column">
       <h1>{{ item.title|e }}</h1>
       <span class="mb-3">by <a class="link-light" href="/users/{{ item.user.id }}/profile">{{ item.user.username|e }}</a></span>
       <div class="mt-2">{{ item.bb_description }}</div>
       <hr nomargin>
       </div>
-      <div class="d-flex flex-row gap-3">
+      <div class="d-flex flex-row mb-4 mt-2 gap-3">
         <div class="text-muted">price:</div> 
         <div class="d-flex flex-column flex-1 gap-3">
-          <div class="d-flex flex-row gap-3 ai-center"><img src="/assets/img/currency.svg" width="20"> <h5>{{ item.data.data.price }}</h5></div>
-          <a onclick="popupify(this, elem('#buy-prompt'))" class="d-flex jc-center ai-center flex-wrap gap-3 ai-center btn-secondary p-3 w-100">
+          <div class="d-flex flex-row gap-3 ai-center"><img src="/assets/img/currency.svg" width="20"> <h5>{{ item.data.data.price|to_formatted(0) }}</h5></div>
+          <a {% if has_item %}title="you already own this item" disabled{% else %}onclick="popupify(this, elem('#buy-prompt'))"{% endif %} class="d-flex jc-center ai-center flex-wrap gap-3 ai-center btn-secondary p-3 w-100">
             <i class="bi bi-bag-fill ms-auto" style="font-size: 1.5em; line-height: 0.65em;"></i> 
             <h5 class="me-auto">buy</h5>
           </a>
+          <small class="text-muted">{{ item.sales }} sales</small>
         </div>
       </div>
       <div class="d-flex flex-row gap-3">
         <div class="text-muted">type:</div> <div>{{ ENUM.assets[item.type] }}</div>
       </div>
+      <div class="d-flex flex-row gap-3">
+        <div class="text-muted">created at:</div> <div>{{ (item.createdat / 1000)|date("Y-m-d H:i:s") }}</div>
+      </div>
+      <div class="d-flex flex-row gap-3">
+        <div class="text-muted">updated at:</div> <div>{{ (item.updatedat / 1000)|date("Y-m-d H:i:s") }}</div>
+      </div>
   </div> 
+</div>
+<div class="d-flex flex-column mt-3 gap-3">
+<div id="tabs" hx-target="#tab-content" role="tablist" class="d-flex flex-row pillify flex-wrap mt-2"
+  hx-on:htmx-after-on-load="htmx_tabs(this, event)">
+  <button class="flex-1 text-center" role="tab" aria-controls="tab-contents" hx-get="/catalog/{{ item.id }}/owners" disabled>owners</button>
+  <button class="flex-1 text-center" role="tab" aria-controls="tab-contents" hx-get="/catalog/{{ item.id }}/comments">comments</button>
+</div>
+<hr nomargin>
+<div id="tab-content" role="tabpanel" hx-get="/catalog/{{ item.id }}/owners" hx-trigger="revealed"></div>
+</div>
 </div>
 {% endblock %}
 
 {% block body %}
-<div class="popupify" id="buy-prompt">
+<div class="popupify" id="buy-prompt" hx-ext="client-side-templates">
   <div class="d-flex flex-column" style="width: 100%; max-width: 20em; height: 100%; max-height: 10em;">
     <div class="card card-primary popupify-titlebar border-light-1 round-bx-0">
     confirm purchase
     </div>
     <div class="card d-flex flex-column gap-3 popupify-window border-light-1 round-tx-0 flex-1">
-      <div>are you sure you want to buy "{{ item.title|e }}" for <i class="ti ti-xs ti-currency" alt="currency"></i>{{ item.data.data.price }}?</div>
+      <template id="outputtemplate"><script>if({% raw %}{{ success }}{% endraw %}) setTimeout(() => window.location.reload(), 300);</script>{% raw %}{{ message }}{% endraw %}</template>
+      <div id="outputbuy">are you sure you want to buy "{{ item.title|e }}" for <i class="ti ti-xs ti-currency" alt="currency"></i>{{ item.data.data.price|to_formatted(0) }}?</div>
       <div class="d-flex flex-row gap-2 mt-auto ms-auto">
-        <button class="popup-close">cancel</button>
-        <button class="btn-secondary">buy</button>
+        <button class="popup-close px-5">cancel</button>
+        <input type="hidden" value="{{ item.id }}" name="id"> 
+        <button class="btn-secondary px-8" 
+        hx-post="/api/v1/item/buy" 
+        nunjucks-template="outputtemplate"
+        hx-include="[name='id']"
+        hx-swap="innerHTML"
+        hx-target="#outputbuy">buy</button>
       </div>
     </div>
   </div>

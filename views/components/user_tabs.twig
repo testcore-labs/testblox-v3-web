@@ -1,23 +1,29 @@
 {% if tab == "avatar" %}
   <div class="d-flex flex-wrap gap-4 flex-row">
-    <div class="d-flex flex-column gap-2 flex-1" style="flex-basis: 20em;">
+    <div class="d-flex flex-column gap-2 flex-1 p-3" style="flex-basis: 20em;">
       <h3 class="mb-2">avatar</h3>
       <div class="d-flex w-100 pos-relative">
-        <img class="mx-auto" height=256 width=256 src="{{ user.get_fullbody() }}">
+        <img class="mx-auto round-4" height=256 width=256 src="{{ user.get_fullbody() }}">
       </div>
-    <div>{{ user.description|e|length == 0 ? '<i class="text-muted">no description</i>' : user.description }}</div>
+    <div>{{ user.description|length == 0 ? '<i class="text-muted">no description</i>' : user.description|e }}</div>
     </div>
   
-    <div class="d-flex flex-column gap-2 flex-1" style="flex-basis: 20em;">
+    <div class="d-flex flex-column gap-2 flex-1 p-3 round-4" style="flex-basis: 20em;">
       <h3 class="mb-2">items</h3>
-      all of this is just a barebones preview of how it should really look like <br>
-      seriously, i just wanted to show how much ive done lol
+      <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));">
+        {% for item in user_items.items %}
+          <a href="/catalog/{{ item.id }}/view">
+            <img class="w-100 round-4" src="{{ item.get_icon }}">
+            <h5>{{ item.title }}</h5>
+          </a>
+        {% endfor %}
+      </div>
     </div>
   </div>
 {% elseif tab == "games" %}
   <h3 class="mb-2">games</h3>
-  <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));">
-    {% for game in user.get_games(16).items %}
+  <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));">
+    {% for game in user_games.items %}
       {% include '/components/game_default.twig' with {game: game} %}
     {% endfor %}
   </div>

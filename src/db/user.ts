@@ -10,9 +10,10 @@ import { pcall } from "../utils/pcall";
 import ENUM from "../types/enums";
 import type ENUM_T from "../types/enums";
 import type { membership_types } from "../types/membership";
-import entity_base from "./base";
+import entity_base, { query_builder } from "./base";
 import cooldown from "../utils/cooldown";
 import { xss_all } from "../utils/xss";
+import { asset_types_numbered } from "../types/assets";
 
 class entity_user extends entity_base {
   table = "users";
@@ -132,9 +133,45 @@ class entity_user extends entity_base {
     order: string = ENUM.order.DESCENDING,
     privacy: number = ENUM.privacy.PUBLIC,
   ) {
-    let games = await entity_asset.all([ENUM.assets.Place], limit, page, query, sort, order, privacy, [ sql`creator = ${this.id}` ])
-    console.log(games); 
+    let games = await entity_asset.all([ENUM.assets.Place], limit, page, query, sort, order, privacy, [ sql`creator = ${this.id}` ]);
     return games;
+  }
+  async get_items(
+    limit: number = 16, 
+    page: number = 1, 
+    query: string, 
+    sort: string = "createdat", 
+    order: string = ENUM.order.DESCENDING,
+    equipped_only: boolean = true,
+  ) {
+    let stmt = new query_builder()
+      .table("owned_items")
+      .limit(limit)
+      .page(page)
+      .search(query, ["title"])
+      .sort(sort)
+      .direction(order)
+      .where(sql`owner = ${this.id}`)
+      
+    if(equipped_only) {
+      stmt.where(sql`equipped = true`);
+    }
+
+    let result = await stmt.exec();
+    
+    const item_ids = result.data.map((row: any) => row.item);
+    const new_items = await Promise.all(
+      item_ids.map(async (item_id: number) => {
+        let new_item = new entity_asset;
+        return await new_item.by(entity_asset.query()
+          .where(sql`id = ${item_id}`)
+        );
+      })
+    );
+    return { success: true, message: "", info: { 
+      items: new_items,
+      ...result
+    }};
   }
 
   async recently_played(limit: 8) {
@@ -212,6 +249,71 @@ class entity_user extends entity_base {
 
   get what_membership() {
     return (Date.now() < this.data?.membership_valid) ? this.data?.membership : 0;
+  }
+
+  async has_item(item_id: number) {
+    let count = await sql`SELECT COUNT(*) as count FROM "owned_items" WHERE item = ${item_id} AND owner = ${this.id}`;
+    return (count[0].count >= 1 ? true : false);
+  }
+
+  async buy_item(item_id: number): Promise<message_type> {
+    if(Number.isNaN(item_id)) return { success: false, message: "item.invalid_item" };
+    const item = await (new entity_asset).by(entity_asset.query()
+      .where(sql`id = ${item_id}`)
+      .where(sql`type IN ${ sql(asset_types_numbered.catalog) }`)
+    ); 
+    if(item.exists) {
+      let price = item.data.data.price;
+      if(await this.has_item(item.id)) {
+        return { success: false, message: "item.already_bought" };
+      }
+      // safety
+      if(price >= 0) {
+        if(this.money >= price) {
+          const time = Date.now();
+          const params = {
+            owner: this.id,
+            item: item.id,
+            price: price,
+            createdat: time,
+            updatedat: time,
+          }
+
+          const [count, item_info, money_left, message] = await sql.begin(async sql => {
+            const [count] = await sql`SELECT COUNT(*) AS count FROM "owned_items" WHERE "item" = ${params.item}`;
+            let message = null;
+            // TODO: !HAVENT TESTED IF THE LIM+AVAIL WORKS!!!!!!
+            if((count >= item.data.data.availibility ?? 0) && (item.data.data.limited ?? false)) {
+              message = "item.sold_out";
+              return [count, null, null, message];
+            } else {
+
+            const [item_info] = await sql`INSERT INTO "owned_items" ${sql(params)}
+            RETURNING *`;
+
+            // the db should also check just for safety
+            const [money_left] = await sql`UPDATE "users" SET currency = currency - ${params.price} WHERE currency >= ${params.price} RETURNING currency`;
+            return [count, item_info, money_left, message];
+            }
+          })
+          if(message) {
+            return { success: false, message: message }; 
+          } else {
+            return { success: true, message: "item.bought", info: {
+              item: item_info?.id,
+              price: item_info?.price,
+              money_left: money_left?.currency,
+            }};
+          }
+        } else {
+          return { success: false, message: "item.not_enough_money" }
+        }
+      } else {
+        return { success: false, message: "item.not_for_sale" };
+      }
+    } else {
+      return { success: false, message: "item.does_not_exist" };
+    }
   }
 
   async set_money(amount: number) {

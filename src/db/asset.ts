@@ -23,6 +23,7 @@ class entity_asset extends entity_base {
   table = "assets";
   user: entity_user | undefined;
   bbcode_strict: bbcode;
+  sales: number;
 
   constructor() {
     super();
@@ -30,6 +31,7 @@ class entity_asset extends entity_base {
     this.bbcode_strict.tags.a.func = (txt, params) => 
       `<a class="link" href="/redirect?url=${encodeURI(params["url"])}">${txt}</a>`;
     this.bbcode_strict.allowed_tags = ["b", "i", "d", "u", "a", "c"]; 
+    this.sales = 0;
   }
   async by_id(id: number) {
     let assets = await sql`SELECT * 
@@ -67,9 +69,16 @@ class entity_asset extends entity_base {
       .exec();
 
     this.data = data;
+    if(this.exists) {
     this.user = await (new entity_user).by(entity_user.query()
       .where(sql`id = ${ data.creator }`)
     );
+
+    if(Object.assign(asset_types_numbered.catalog, asset_types_numbered.library).includes(data.type)) {
+      const sales_stmt = await sql`SELECT COUNT(*) AS count FROM "owned_items" WHERE "item" = ${data.id}`;
+      this.sales = sales_stmt[0].count;
+    }
+    }
     return this;
   }
 
@@ -95,6 +104,12 @@ class entity_asset extends entity_base {
   }
   get type() {
     return this.data?.type;
+  }
+  get updatedat() {
+    return this.data?.updatedat;
+  }
+  get createdat() {
+    return this.data?.createdat;
   }
 
   async get_icon_image() {
@@ -140,12 +155,13 @@ class entity_asset extends entity_base {
       
     let result = await stmt.exec();
 
-
     const item_ids = result.data.map((row: any) => row.id);
     const new_items = await Promise.all(
       item_ids.map(async (item_id: number) => {
         let new_item = new entity_asset;
-        return await new_item.by_id(item_id);
+        return await new_item.by(this.query()
+          .where(sql`id = ${item_id}`)
+        );
       })
     );
 
@@ -166,11 +182,11 @@ class entity_asset extends entity_base {
   }
 
   get for_catalog() {
-    return asset_types_numbered.catalog[this.data?.type];
+    return asset_types_numbered.catalog.includes(this.data?.type);
   }
 
   get for_library() {
-    return ENUM.assets[this.data?.type];
+    return asset_types_numbered.library.includes(this.data?.type);
   }
 
   //s 

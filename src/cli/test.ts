@@ -1,11 +1,16 @@
 // for testing things in cli obv
-import entity_user from "../db/user";
+import entity_base, { query_builder } from "../db/base";
 import sql from "../utils/sql";
 
-let output = new entity_user;
+let games = await new query_builder()
+.table("owned_items")
+.limit(1)
+.page(1)
+.search("", ["title"])
+.sort("createdat")
+.direction("desc")
+.where(sql`owner = ${23}`)
+.exec();
 
-await output.by(entity_user.query()
-.where(sql`username = ${`qzip`}`)
-)
 
-console.log(output.gender);
+console.log(games);

@@ -253,6 +253,10 @@ h1,
   color: lighten($accent, 15%);
 }
 
+.text-laccent-2 {
+  color: lighten($accent, 25%);
+}
+
 body {
   display: flex;
   flex-direction: column;
@@ -333,7 +337,7 @@ h6 {
 
 .pillify {
   // this motha fucka
-  & *:not(:first-child):not(:last-child) {
+  & > *:not(:first-child):not(:last-child) {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     border-top-right-radius: 0;
@@ -342,12 +346,12 @@ h6 {
     border-left: none;
     border-right: none;
   }
-  & *:first-child {
+  & > *:first-child {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     border-right: none;
   }
-  & *:last-child {
+  & > *:last-child {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     border-left: none;
@@ -355,19 +359,19 @@ h6 {
 }
 .pillify-box {
   // this motha fucka
-  & *:not(:first-child):not(:last-child) {
+  & > *:not(:first-child):not(:last-child) {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }
-  & *:first-child {
+  & > *:first-child {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }
-  & *:last-child {
+  & > *:last-child {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     border-top-right-radius: 0;
@@ -866,6 +870,12 @@ a.link-light:active {
 .purple-bg {
   background: $accent;
 }
+.purple-bg-light {
+  background: lighten($accent, 15%);
+}
+.purple-bg-dark {
+  background: $accent-darker;
+}
 
 .sgreen-bg {
   background: $shrekgreen;
@@ -1348,7 +1358,7 @@ a {
   }
 }
 
-.game-card {
+.game-card, .item-card {
   & .more-info {
     opacity: 0;
     backdrop-filter: blur(0.1em);
@@ -1416,6 +1426,7 @@ a {
     width: 100vw;
     height: 100vh;
     background-color: rgba(0,0,0,0.5);
+    backdrop-filter: blur(0.25em);
     transition: visibility 0.2s, opacity 0.2s ease;
     z-index: 1;
     &[open] {

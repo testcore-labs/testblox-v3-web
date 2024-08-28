@@ -22,6 +22,16 @@ twig.extendFilter("timeago", function(timestamp: number): any {
   return timeago(timestamp);
 });
 
+twig.extendFilter("to_fixed", function(nmb: number, params: any): any {
+  return nmb.toFixed(params[0] ?? 0);
+});
+twig.extendFilter("to_formatted", function(nmb: number, params: any): any {
+  var value = (Number(nmb)).toLocaleString(
+    env.locale,
+    { minimumFractionDigits: params[0] ?? 0 }
+  );
+  return value;
+});
 
 twig.extendFilter("t", function(txt: string, args: any): any {
   return translate.text(txt, args[0]);

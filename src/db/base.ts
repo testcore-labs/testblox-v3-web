@@ -42,7 +42,7 @@ class query_builder {
     return this;
   }
 
-  search(str: string, columns: string | Array<string> = [], partial_search: boolean = true) {
+  search(str: string, columns: string | Array<string> = [], partial_search: boolean = false) {
     if (!str) return this;
     const column_array = typeof columns === "string" ? [columns] : columns;
 

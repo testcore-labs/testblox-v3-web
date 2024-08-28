@@ -115,10 +115,9 @@ routes.get("/user/gamble", notloggedin_api_handler, async_handler(async (req: Re
   res.json(gambled);
 }));
 
-routes.get("/user/gamble", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
-  let gamble_amount = Number(req.query?.gamble_amount)
-  let gambled = await res.locals.cuser.gamble_2x(gamble_amount);
-  res.json(gambled);
+routes.post("/item/buy", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
+  let item_id = Number(req.body?.id);
+  res.json(await res.locals.cuser.buy_item(item_id));
 }));
 
 // import { createSession, createChannel } from "better-sse";

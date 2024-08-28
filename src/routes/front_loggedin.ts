@@ -47,7 +47,7 @@ routes.get("/filter/:this", notloggedin_handler, async_handler(async (req: Reque
 
 routes.get("/home", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   let page = Number(req.query.p);
-  if(String(page) === "NaN" || Number(page) <= 0) {
+  if(Number.isNaN(page) || Number(page) <= 0) {
     page = 1;
   }
 
@@ -60,9 +60,8 @@ routes.get("/home", notloggedin_handler, async_handler(async (req: Request, res:
 
 routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   const query = xss_all(String(req.query?.q ?? ""));
-  console.log(query);
   let page = Number(req.query.p);
-  if(String(page) === "NaN" || Number(page) <= 0) {
+  if(Number.isNaN(page) || Number(page) <= 0) {
     page = 1;
   }
 
@@ -111,7 +110,7 @@ routes.get("/gamble", notloggedin_handler, async_handler(async (req: Request, re
 routes.get("/users/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   const query = xss_all(String(req.query?.q ?? ""));
   let page = Number(req.query.p);
-  if(String(page) === "NaN" || Number(page) <= 0) {
+  if(Number.isNaN(page) || Number(page) <= 0) {
     page = 1;
   }
 
@@ -132,18 +131,27 @@ routes.get("/users/:id/:name", notloggedin_handler, async_handler(async (req: Re
     return res.render("error.twig");
   }
 
+  const query = xss_all(String(req.query?.q ?? ""));
+  let page = Number(req.query.p);
+  if(Number.isNaN(page) || Number(page) <= 0) {
+    page = 1;
+  }
+  let user_items;
   switch(option) {
     case "profile":
       res.render("user.twig", { user: user });
       break;
     case "avatar":
-      res.render("components/user_tabs.twig", { tab: option, user });
+      user_items = await user.get_items(16, page, query);
+      res.render("components/user_tabs.twig", { tab: option, user, user_items: user_items?.info });
       break;
     case "games":
-      res.render("components/user_tabs.twig", { tab: option, user });
+      let user_games = await user.get_games(16, page, query);
+      res.render("components/user_tabs.twig", { tab: option, user, user_games: user_games?.info });
       break;
     case "items":
-      res.render("components/user_tabs.twig", { tab: option, user });
+      user_items = await user.get_items(16, page, query);
+      res.render("components/user_tabs.twig", { tab: option, user, user_items: user_items?.info });
       break;
     case "groups":
       res.render("components/user_tabs.twig", { tab: option, user });
@@ -157,7 +165,7 @@ routes.get("/users/:id/:name", notloggedin_handler, async_handler(async (req: Re
 routes.get("/catalog/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   const query = xss_all(String(req.query?.q ?? ""));
   let page = Number(req.query.p);
-  if(String(page) === "NaN" || Number(page) <= 0) {
+  if(Number.isNaN(page) || Number(page) <= 0) {
     page = 1;
   }
 
@@ -177,7 +185,7 @@ routes.get("/catalog/", notloggedin_handler, async_handler(async (req: Request, 
   min_price >= 0 ? sql`CAST(data->>'price' AS numeric) <= ${max_price}` : sql`true`,
   max_price >= 0 ? sql`CAST(data->>'price' AS numeric) >= ${min_price}` : sql`true`
   ]);
-  res.render("catalog.twig", { ...catalog.info, catalog_types: ENUM.assets_categorized.catalog_categorized});
+  res.render("catalog.twig", { ...catalog.info, catalog_types: ENUM.assets_categorized.catalog_categorized });
 }));
 
 routes.get("/catalog/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
@@ -192,24 +200,19 @@ routes.get("/catalog/:id/:name", notloggedin_handler, async_handler(async (req: 
     return res.render("error.twig");
   }
 
+  let has_item = await res.locals.cuser.has_item(item.id);
   switch(option) {
-    case "profile":
-      res.render("item.twig", { item: item });
+    case "view":
+      res.render("item.twig", { item: item, has_item: has_item });
       break;
-    case "avatar":
-      res.render("components/item_tabs.twig", { tab: option, item });
+    case "owners":
+      res.render("components/item_tabs.twig", { tab: option, item: item });
       break;
-    case "games":
-      res.render("components/item_tabs.twig", { tab: option, item });
-      break;
-    case "items":
-      res.render("components/item_tabs.twig", { tab: option, item });
-      break;
-    case "groups":
-      res.render("components/item_tabs.twig", { tab: option, item });
+    case "comments":
+      res.render("components/item_tabs.twig", { tab: option, item: item });
       break;
     default:
-      res.render("item.twig", { item: item });
+      res.render("item.twig", { item: item, has_item: has_item });
       break;
   }
 }));
@@ -312,7 +315,7 @@ routes.get(`${admin_route_path}/debug`, notloggedin_handler, admin_handler, asyn
 routes.get(`${admin_route_path}/invite-keys`, notloggedin_handler, admin_handler, async_handler(async (req: Request, res: Response) => {
   const query = String(req.query?.q).toString();
   let page = Number(req.query.p);
-  if(String(page) === "NaN" || Number(page) <= 0) {
+  if(Number.isNaN(page) || Number(page) <= 0) {
     page = 1;
   }
 
