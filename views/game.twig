@@ -5,8 +5,8 @@
 <div class="d-flex flex-row gap-5 flex-wrap">
   <div class="flex-1" style="flex-basis: 32em; flex-shrink: 1;"><img src="/assets/img/crossroads16x9.png" class="img-fluid" style="height: 100%; width: 100%; object-fit: contain; aspect-ratio: 16/9;"></div>
   <div class="flex-1 d-flex flex-column gap-1" style="flex-basis: 12em; flex-grow: 2;">
-    <h1>{{ game.title }}</h1>
-    <span class="mb-3">by <a class="link-light" href="/users/{{ game.user.id }}/profile">{{ game.user.username }}</a></span>
+    <h1>{{ game.title|e }}</h1>
+    <span class="mb-3">by <a class="link-light" href="/users/{{ game.user.id }}/profile">{{ game.user.username|e }}</a></span>
     <a href="/game/{{ game.id }}/play" class="d-flex jc-center ai-center btn-play p-1 mt-auto"><i class="bi bi-play-fill m-auto" style="font-size: 2.5em; line-height: 0.65em;"></i></a>
   </div>
 </div>

@@ -1,9 +1,9 @@
-import { shuffle } from "../utils/array";
-import env from '../utils/env';
-import { timeago } from '../utils/time';
-import { pcall_msg } from '../utils/pcall';
+import { shuffle } from "./array";
+import env from './env';
+import { timeago } from './time';
+import { pcall_msg } from './pcall';
 import twig from "twig";
-import translate from "../utils/translate";
+import translate from "./translate";
 
 twig.extendFilter("shuffle", function(array: any): any {
   const shuffled = pcall_msg(() => shuffle(array));

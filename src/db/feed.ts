@@ -4,6 +4,9 @@ import { type message_type } from "../types/message";
 import ENUM from "../types/enums";
 import { validate_orderby } from "../types/orderby";
 import entity_user from "./user";
+import xss from "xss";
+import { xss_all } from "../utils/xss";
+import cooldown from "../utils/cooldown";
 
 class entity_feed {
   data: { [key: string]: any };
@@ -143,7 +146,7 @@ class entity_feed {
     return this.data?.text;
   }
   get bb_text() {
-    return this.bbcode_strict.parse(this.data?.text);
+    return this.bbcode_strict.parse(xss_all(this.data?.text));
   }
   get createdat() {
     return this.data?.createdat;
@@ -166,18 +169,6 @@ class entity_feed {
   }
 
   static wait_cooldown = 15;
-  static async check_if_recently_posted(userid: number) {
-    let st = await sql`SELECT * FROM "feed"
-    WHERE creator = ${userid}
-    ORDER BY updatedat DESC`;
-    if(st.length > 0) {
-      const updatedat = st[0].updatedat;
-      return [((Date.now() - updatedat) <= this.wait_cooldown * 1000), 
-      (this.wait_cooldown - Math.round((Date.now() - updatedat) / 100) / 10)];
-    } else {
-      return [false, 0];
-    }
-  }
 
   static async send(txt: any, userid: number, replyto: number): Promise<message_type> {
     txt = txt.toString();
@@ -197,9 +188,13 @@ class entity_feed {
       createdat: time
     }
 
-    const [hasposted, timetowait] = await this.check_if_recently_posted(userid);
-    if(hasposted) {
-      return {success: true, message: `wait ${timetowait} second(s)`}; 
+
+    let [can_do, wait_amount] = cooldown.apply(`feedpost-${userid}`, (15 * 1000));
+    if(!can_do) {
+      let s = (wait_amount / 1000);
+      return { success: false, message: `feed.wait(${s})`, info: {
+        wait: s
+      }} 
     }
 
     let st = await sql`

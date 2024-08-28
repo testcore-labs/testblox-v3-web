@@ -11,15 +11,26 @@ import root_path from "../utils/root_path";
 import env from "../utils/env";
 import { validate_orderby } from "../types/orderby";
 import { validate_privacy } from "../types/privacy";
-import entity_base from "./base";
+import entity_base, { query_builder } from "./base";
 import type { asset_data_types } from "../types/assets_data"; 
+import { asset_types_numbered } from "../types/assets";
+import bbcode from "bbcode-ts";
+import { xss_all } from "../utils/xss";
 
 const asset_folder = path.join(root_path, "files", "assets");
 
 class entity_asset extends entity_base {
   table = "assets";
   user: entity_user | undefined;
+  bbcode_strict: bbcode;
 
+  constructor() {
+    super();
+    this.bbcode_strict = new bbcode;
+    this.bbcode_strict.tags.a.func = (txt, params) => 
+      `<a class="link" href="/redirect?url=${encodeURI(params["url"])}">${txt}</a>`;
+    this.bbcode_strict.allowed_tags = ["b", "i", "d", "u", "a", "c"]; 
+  }
   async by_id(id: number) {
     let assets = await sql`SELECT * 
     FROM "assets" 
@@ -50,6 +61,18 @@ class entity_asset extends entity_base {
     return this;
   }
 
+  async by(query: query_builder) {
+    const data = await query
+      .single()
+      .exec();
+
+    this.data = data;
+    this.user = await (new entity_user).by(entity_user.query()
+      .where(sql`id = ${ data.creator }`)
+    );
+    return this;
+  }
+
   get exists() {
     return Object.keys(this.data ?? {}).length !== 0;
   }
@@ -64,11 +87,17 @@ class entity_asset extends entity_base {
   get description() {
     return this.data?.description;
   }
+  get bb_description() {
+    return this.bbcode_strict.parse(xss_all(this.description));
+  }
   get file() {
     return this.data?.file;
   }
+  get type() {
+    return this.data?.type;
+  }
 
-  async get_image() {
+  async get_icon_image() {
     return await (new entity_asset).by_id(this.data.icon);
   }
   
@@ -131,33 +160,17 @@ class entity_asset extends entity_base {
       return true;
     }
   }
-
-  place() {
-    let funcs: { [key: string]: () => any } = {};
-
-    funcs["bc_only"] = () => {
-      return this.data?.data?.bc_only ?? false;
-    }
-
-    return funcs; 
-  }
   
   get for_games() {
-    if(this.data?.type === ENUM.assets.Place) {
-      return true;
-    }
+    return this.data?.type === ENUM.assets.Place;
   }
 
   get for_catalog() {
-    if(ENUM.assets[this.data?.type]) {
-      return true;
-    }
+    return asset_types_numbered.catalog[this.data?.type];
   }
 
   get for_library() {
-    if(ENUM.assets[this.data?.type]) {
-      return true;
-    }
+    return ENUM.assets[this.data?.type];
   }
 
   //s 

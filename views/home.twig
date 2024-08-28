@@ -14,7 +14,7 @@
         <img class="round-4" height=96 width=96 src="{{ cuser.get_headshot() }}">
         {% if cuser.is_online %}<i class="pos-absolute icon-online bottom-0 right-0 p-2" style="transform: translate(25%, 25%);"></i>{% endif %}
       </div>
-    <h2>{{ randomhi }}, {{ cuser.username }}</h2>
+    <h2>{{ randomhi }}, {{ cuser.username|e }}</h2>
     </div>
     <hr class="my-2">  
     <div class="d-flex flex-row gap-5"><h3>{{ t.home.friends }} ({{ friends|length }})</h3> <a class="btn-primary ms-auto as-baseline">{{ t.home.see_all }}</a></div>

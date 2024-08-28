@@ -1403,6 +1403,31 @@ a {
   }
 }
 
+.popupify {
+  & {
+    display: flex;
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.5);
+    transition: visibility 0.2s, opacity 0.2s ease;
+    z-index: 1;
+    &[open] {
+      opacity: 1;
+      visibility: visible;
+    }
+    &:not([open]) {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+}
 
 @media (min-width: 1px) {
   .body-padding {
@@ -2151,5 +2176,18 @@ details {
     &[right-auto]::after {
       transform: rotate(90deg);
     }
+  }
+}
+
+.ti {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  &.ti-xs {
+    width: 12px;
+    height: 12px;
+  }
+  &.ti-currency {
+    background-image: url("/assets/img/currency.svg");
   }
 }

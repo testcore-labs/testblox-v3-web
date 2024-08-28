@@ -3,7 +3,7 @@ import type _ENUM from "../types/enums";
 import ENUM from "../types/enums"; 
 import { validate_orderby } from "../types/orderby"; 
 import _ from "lodash"; 
-import type { Helper, PendingQuery, Row, Sql } from "postgres";
+import type { PendingQuery, Row } from "postgres";
 
 class query_builder {
   v_selected: string = "*";
@@ -50,7 +50,7 @@ class query_builder {
     const search = `${str}:*`;
 
     this.v_search = Object.assign(this.v_search, column_array.map(column => 
-     sql`(to_tsvector(${sql(column)}) ${ sql.unsafe(`@@`) } to_tsquery(${search}))`
+     sql`(to_tsvector(${sql(column)}) ${ sql.unsafe(`@@`) } phraseto_tsquery(${search}))`
     ));
 
     return this;
@@ -167,7 +167,6 @@ class query_builder {
 class entity_base {
   table: string = "";
   data: { [key: string]: any };
-  [getter: string]: any;
 
   constructor() {
     this.data = {}
@@ -179,21 +178,6 @@ class entity_base {
 
   get exists() {
     return Object.keys(this.data ?? {}).length !== 0;
-  }
-
-  protected create_getters() {
-    if(!this.exists) return;
-
-    Object.entries(this.data).forEach(([key, val]) => {
-      const getter_exists = Object.getOwnPropertyDescriptor(this, key);
-      if(!getter_exists) {
-        Object.defineProperty(this, key, {
-          get: () => val,
-          enumerable: true,
-          configurable: true,
-        });
-      }
-    })
   }
 
   static query() {
@@ -228,7 +212,6 @@ class entity_base {
       .exec();
 
     this.data = data;
-    this.create_getters();
     return this;
   }
 }

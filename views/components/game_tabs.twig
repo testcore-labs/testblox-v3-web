@@ -1,6 +1,6 @@
 {% if tab == "about" %}
   <h3 class="mb-2">description</h3>
-  <div>{{ game.description }}</div>
+  <div>{{ game.description|e }}</div>
 {% elseif tab == "store" %}
   <h3 class="mb-2">store</h3>
   <div>nothing in the store</div>

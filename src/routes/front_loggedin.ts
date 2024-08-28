@@ -25,6 +25,7 @@ import path from "path";
 import sql from "../utils/sql";
 import ENUM from "../types/enums";
 import _ from "lodash";
+import { xss_all } from "../utils/xss";
 routes.use(htmx_middleware);
 
 routes.all("/redeem", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
@@ -58,7 +59,8 @@ routes.get("/home", notloggedin_handler, async_handler(async (req: Request, res:
 
 
 routes.get("/games/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  const query = String(req.query?.q ?? "");
+  const query = xss_all(String(req.query?.q ?? ""));
+  console.log(query);
   let page = Number(req.query.p);
   if(String(page) === "NaN" || Number(page) <= 0) {
     page = 1;
@@ -76,6 +78,11 @@ routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Req
   .where(sql`"type" = ${ ENUM.assets.Place }`)
   );
   let option = req.params?.name ? req.params?.name : game.title;
+
+  if(!game.exists) {
+    res.statusCode = 400;
+    return res.render("error.twig");
+  }
 
   switch(option) {
     case "about":
@@ -102,7 +109,7 @@ routes.get("/gamble", notloggedin_handler, async_handler(async (req: Request, re
 }));
 
 routes.get("/users/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  const query = String(req.query?.q ?? "");
+  const query = xss_all(String(req.query?.q ?? ""));
   let page = Number(req.query.p);
   if(String(page) === "NaN" || Number(page) <= 0) {
     page = 1;
@@ -119,6 +126,11 @@ routes.get("/users/:id/:name", notloggedin_handler, async_handler(async (req: Re
   .where(sql`id = ${ Number(req.params?.id) }`)
   );
   let option = req.params?.name ? req.params?.name : "profile";
+
+  if(!user.exists) {
+    res.statusCode = 400;
+    return res.render("error.twig");
+  }
 
   switch(option) {
     case "profile":
@@ -143,7 +155,7 @@ routes.get("/users/:id/:name", notloggedin_handler, async_handler(async (req: Re
 }));
 
 routes.get("/catalog/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  const query = String(req.query?.q ?? "");
+  const query = xss_all(String(req.query?.q ?? ""));
   let page = Number(req.query.p);
   if(String(page) === "NaN" || Number(page) <= 0) {
     page = 1;
@@ -152,23 +164,33 @@ routes.get("/catalog/", notloggedin_handler, async_handler(async (req: Request, 
   const type = Number(req.query?.type);
   const order = String(req.query?.order).toString();
   const sort = String(req.query?.sort).toString();
+  const min_price = Number(req.query?.min_price) ?? 0;
+  const max_price = Number(req.query?.max_price) ?? 0;
 
-  let actual_type: number[];
+  let actual_type: number[] = asset_types_numbered.catalog;
   if(asset_types_numbered.catalog.includes(type)) {
     actual_type = [type];
-  } else {
+  } else if(String(req.query?.type) === undefined) {
     actual_type = ENUM.assets_categorized.catalog[String(req.query?.type)];
   }
-  const catalog = await entity_asset.all(actual_type, 6, page, query, sort, order);
+  const catalog = await entity_asset.all(actual_type, 6, page, query, sort, order, ENUM.privacy.PUBLIC, [
+  min_price >= 0 ? sql`CAST(data->>'price' AS numeric) <= ${max_price}` : sql`true`,
+  max_price >= 0 ? sql`CAST(data->>'price' AS numeric) >= ${min_price}` : sql`true`
+  ]);
   res.render("catalog.twig", { ...catalog.info, catalog_types: ENUM.assets_categorized.catalog_categorized});
 }));
 
 routes.get("/catalog/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   let item = await (new entity_asset).by(entity_asset.query()
   .where(sql`id = ${ Number(req.params?.id) }`)
-  .where(sql`"type" in ${ sql(ENUM.assets_categorized.catalog) }`)
+  .where(sql`"type" IN ${ sql(asset_types_numbered.catalog) }`)
   );
   let option = req.params?.name ? req.params?.name : "profile";
+
+  if(!item.exists) {
+    res.statusCode = 400;
+    return res.render("error.twig");
+  }
 
   switch(option) {
     case "profile":
@@ -260,9 +282,9 @@ let update_sys_info = async () => {
     })
 
   
-  sys_info.folders["assets"] = format_bytes(gfs.loose(path.join(root_path, "files", "assets")), 2);
-  sys_info.folders["logs"] = format_bytes(gfs.loose(path.join(root_path, "logs")), 2);
-  sys_info.folders["files"] = format_bytes(gfs.loose(path.join(root_path, "files")), 2);
+  sys_info.folders["assets"] = format_bytes(await gfs.loose(path.join(root_path, "files", "assets")), 2);
+  sys_info.folders["logs"] = format_bytes(await gfs.loose(path.join(root_path, "logs")), 2);
+  sys_info.folders["files"] = format_bytes(await gfs.loose(path.join(root_path, "files")), 2);
   sys_info.cpu.temp = await si.cpuTemperature()
     .then(data => (data.main ?? "0").toString() + "C°");
   sys_info.cpu.brand = await si.cpu()

@@ -179,7 +179,7 @@ routes.get("/asset/icon", async_handler(async (req, res) => {
   let asset_id = Number(req.query.id);
   let new_asset = await (new entity_asset).by_id(asset_id);
   if(new_asset.is_place) {
-    let file = await new_asset.get_image();
+    let file = await new_asset.get_icon_image();
     if(file.exists) {
       res.sendFile(path.join(root_path, file.file));
     } else {

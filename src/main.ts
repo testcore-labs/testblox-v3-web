@@ -43,6 +43,7 @@ app.set("views", "views");
 app.set("view engine", twig);
 app.set("twig options", {
   allowAsync: true,
+  autoescape: false, // retarded
   strict_variables: false,
 });
 app.use(express.urlencoded({

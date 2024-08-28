@@ -15,8 +15,8 @@
       {% if user.is_online %}<i class="pos-absolute icon-online bottom-0 right-0 p-2" style="transform: translate(25%, 25%);"></i>{% endif %}
     </div>
     <div class="d-flex flex-column gap-2">
-      <h2 class="user-username">{{ user.username }}</h2>
-      <div class="text-muted user-status"><b>"</b>{{ user.status }}<b>"</b></div>
+      <h2 class="user-username">{{ user.username|e }}</h2>
+      <div class="text-muted user-status"><b>"</b>{{ user.status|e }}<b>"</b></div>
       <div class="d-flex flex-row gap-4 mt-auto p-1 user-information">
         <div class="d-flex flex-column ai-center user-friend-counter">
           <h5 class="text-muted title">friends</h5>

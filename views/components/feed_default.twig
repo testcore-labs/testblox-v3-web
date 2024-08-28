@@ -1,11 +1,11 @@
 <div class="d-flex flex-row gap-4"> 
-  <a href="/users/{{ feed.user.id }}/profile" class="pos-relative">
+  <a href="/users/{{ feed.user.id }}/profile" class="as-baseline pos-relative">
     <img class="round-4" src="{{ feed.user.get_headshot() }}" height=64 width=64>
     {% if feed.user.is_online %}<i class="pos-absolute icon-online bottom-0 right-0" style="transform: translate(25%, 25%);"></i>{% endif %}
   </a>
   <div class="d-flex flex-column gap-2">
     <div class="d-flex flex-row ai-center gap-3"> 
-      <b>{{ feed.user.username }}</b>
+      <b>{{ feed.user.username|e }}</b>
     </div>
     <div>
       {{ feed.bb_text }}

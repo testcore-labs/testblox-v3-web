@@ -12,6 +12,7 @@ import type ENUM_T from "../types/enums";
 import type { membership_types } from "../types/membership";
 import entity_base from "./base";
 import cooldown from "../utils/cooldown";
+import { xss_all } from "../utils/xss";
 
 class entity_user extends entity_base {
   table = "users";
@@ -77,6 +78,42 @@ class entity_user extends entity_base {
     return Number(this.data?.id);
   }
 
+  get username() {
+    return String(this.data?.username);
+  }
+
+  get password() {
+    return String(this.data?.password);
+  }
+
+  get token() {
+    return String(this.data?.token);
+  }
+
+  get status() {
+    return String(this.data?.status);
+  }
+
+  get currency() {
+    return String(this.data?.description);
+  }
+  
+  get description() {
+    return String(this.data?.description);
+  }
+  
+  get money() {
+    return Number(this.data?.currency);
+  }
+
+  get gender() {
+    return String(this.data?.gender);
+  }
+  
+  get settings() {
+    return this.data?.settings;
+  }
+
   // if you're returning db values, please make sure you dont xss yourself,
   // i don't see a reason to do it BEFORE inserting as its better to be safe than sorry
   
@@ -84,7 +121,7 @@ class entity_user extends entity_base {
   // 1. you might wanna lock the username change behind a currency paywall (not irl money lol)
 
   get bb_description() {
-    return this.bbcode_strict.parse(this.description);
+    return this.bbcode_strict.parse(xss_all(this.description));
   }
 
   async get_games(
@@ -116,11 +153,7 @@ class entity_user extends entity_base {
     );
     return new_items;
   }
-
-  get money(): number {
-    return Number(this.data?.currency);
-  }
-
+  
   async gamble_2x(gamble_amount: number = 0): Promise<message_type> {
     if(Number.isNaN(gamble_amount)) {
       return { success: false, message: "gamble.no_amount_given" }
@@ -256,15 +289,23 @@ class entity_user extends entity_base {
 
   // a pointer to a publicly-accesible file
   async get_headshot() {
-    let headshot = this.data?.headshot;
-    if(headshot === 0) {
+    let headshot = await (new entity_asset).by(entity_asset.query()
+      .where(sql`id = ${this.data?.headshot} AND type = ${ENUM.assets.Thumbnail}`)
+    );
+    if(headshot.exists) {
+      return headshot.file;
+    } else {
       return "/assets/img/reviewpending.png";
     }
   }
   
   async get_fullbody() {
-    let headshot = this.data?.fullbody;
-    if(headshot === 0) {
+    let fullbody = await (new entity_asset).by(entity_asset.query()
+      .where(sql`id = ${this.data?.fullbody} AND type = ${ENUM.assets.Thumbnail}`)
+    );
+    if(fullbody.exists) {
+      return fullbody.file;
+    } else {
       return "/assets/img/reviewpending.png";
     }
   }

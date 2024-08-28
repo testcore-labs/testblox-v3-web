@@ -57,7 +57,7 @@
     "sql-highlight": "^6.0.0",
     "systeminformation": "^5.23.4",
     "timeago.js": "^4.0.2",
-    "twig": "https://github.com/testcore-labs/twiggle.git",
+    "twig": "https://github.com/testcore-labs/twiggle",
     "xss": "^1.0.15",
     "yaml": "^2.5.0"
   }

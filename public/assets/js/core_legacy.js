@@ -240,6 +240,43 @@ function dropdownify(calledfrom, forelem) {
   }
 }
 
+function popupify(calledfrom, forelem) {
+  let close_btns = forelem.querySelectorAll(".popup-close");
+  function close() {
+    forelem.removeAttribute("open");
+    document.removeEventListener("keydown", escpress);
+    document.removeEventListener("click", clickoutside);
+    document.removeEventListener("click", clickoutside);
+    close_btns.forEach((close_btn) => {
+      close_btn.removeEventListener("click", close);
+    });
+  }
+
+  function escpress(event) {
+    if(event.code === "Escape") {
+      close();
+    }
+  }
+
+  function clickoutside(event) {
+    if(!forelem.contains(event.target) && !calledfrom.contains(event.target)) {
+      close();
+    }
+  }
+
+
+  if(!forelem.getAttribute("open")) {
+    forelem.setAttribute("open", true);
+    close_btns.forEach((close_btn) => {
+      close_btn.addEventListener("click", close);
+    });
+    document.addEventListener("keydown", escpress);
+    document.addEventListener("click", clickoutside);
+  } else {
+    close();
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function() {
 
 const searchinput = document.getElementById("navbar-search");

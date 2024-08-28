@@ -5,7 +5,7 @@
       <div class="d-flex w-100 pos-relative">
         <img class="mx-auto" height=256 width=256 src="{{ user.get_fullbody() }}">
       </div>
-    <div>{{ user.description|length == 0 ? '<i class="text-muted">no description</i>' : user.description }}</div>
+    <div>{{ user.description|e|length == 0 ? '<i class="text-muted">no description</i>' : user.description }}</div>
     </div>
   
     <div class="d-flex flex-column gap-2 flex-1" style="flex-basis: 20em;">
