@@ -4,6 +4,9 @@ import { timeago } from './time';
 import { pcall_msg } from './pcall';
 import twig from "twig";
 import translate from "./translate";
+import fs from "fs";
+import path from "path";
+import root_path from "./root_path";
 
 twig.extendFilter("shuffle", function(array: any): any {
   const shuffled = pcall_msg(() => shuffle(array));
@@ -41,6 +44,11 @@ twig.extendFilter("nr2br", function(txt: string, args: any): any {
 });
 twig.extendFunction("transcompletion", function(locale: string): any {
   return translate.completion(locale);
+});
+twig.extendFunction("file_read", function(file_name: string): any {
+  const views_folder = path.join(root_path, env.views.folder);
+  const path_to_file = path.join(views_folder, file_name);
+  return fs.readFileSync(path_to_file);
 });
 
 twig.extendFunction("query_remove_key", function(query: {[key: string]: any}, remove: string) {

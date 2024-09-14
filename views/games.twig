@@ -8,9 +8,9 @@
   <h2>{{ t.games.games }}</h2>
   <div class="d-flex flex-row flex-wrap gap-2 ms-auto w-autoto100-sm">
   {% include '/components/pagination.twig' with {params: req.query, page: page, queries: items, totalpages: pages, classes: "jc-center"} %}
-  <div class="d-flex flex-row pillify flex-grow-1">
-  <input name="q" class="w-100" placeholder="{{ t.games.search }}" value="{{ req.query.q|e }}" onkeydown="search_onkeyup(this)" id="game-search" type="search">
-  <button class="mx-1" onclick="search_onkeyup($('#game-search'), true)"><h5 class="bi bi-search"></h5></button>
+  <div class="d-flex flex-row pillify flex-grow-1 shadow-1">
+  <input name="q" class="w-100 shadowless" placeholder="{{ t.games.search }}" value="{{ req.query.q|e }}" onkeydown="search_onkeyup(this)" id="game-search" type="search">
+  <button class="shadowless" onclick="search_onkeyup($('#game-search'), true)"><h5 class="bi bi-search"></h5></button>
   </div>
   <div class="pos-relative">
     <button onclick="dropdownify(this, $('#filterresults'));"><h4 class="bi bi-filter"></h4></button>

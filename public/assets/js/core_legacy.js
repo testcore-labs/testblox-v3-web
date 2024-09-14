@@ -39,10 +39,14 @@ async function retypeforeach(elements, index) {
   }
 }
 
+document.addEventListener("DOMContentLoaded", () => {
 retypeforeach(Array.from(document.getElementsByClassName('retype')), 0);
+});
 
 function setlang(locale) {
-  document.cookie = "locale=" +  locale + "; expires=Fri, 31 Dec 9999 23:59:59 GMT;";
+  let cookie = "locale=" +  locale + `;expires=Fri, 31 Dec 9999 23:59:59 GMT;path=/;SameSite=Lax;`;
+  document.cookie = cookie;
+  //console.log(cookie);
   location.reload();
 }
 

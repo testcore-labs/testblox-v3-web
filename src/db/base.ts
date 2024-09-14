@@ -47,8 +47,10 @@ class query_builder {
     const column_array = typeof columns === "string" ? [columns] : columns;
 
     // TODO: partial_search
-    const search = `${str}:*`;
+    str = str.trimStart().trimEnd()
+    if(str.length == 0) return this;
 
+    const search = `${str}:*`;
     this.v_search = Object.assign(this.v_search, column_array.map(column => 
      sql`(to_tsvector(${sql(column)}) ${ sql.unsafe(`@@`) } phraseto_tsquery(${search}))`
     ));
@@ -130,8 +132,8 @@ class query_builder {
   async exec() {
     let select_stmt = sql`SELECT *
     FROM ${ sql(this.v_table) }
-    WHERE ${ this.where_mapper(this.v_search, this.v_search_separator) } AND
-    ${ this.where_mapper(this.v_conditions, this.v_condition_separator) }
+    WHERE (${ this.where_mapper(this.v_search, this.v_search_separator) }) AND
+    (${ this.where_mapper(this.v_conditions, this.v_condition_separator) })
     ORDER BY 
       ${ this.v_order_by.column != "undefined" && (typeof this.v_order_by.column === "string") 
         ? sql(this.v_order_by.column) 

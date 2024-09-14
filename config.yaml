@@ -73,6 +73,9 @@ database:
 discord:
   prefix: "t:"
   
+views:
+  folder: "views"
+
 rcc:
   # recommend you make this very long
   user_agent: "testblox/rcc; testblox/cURL; Roblox/WinInet"

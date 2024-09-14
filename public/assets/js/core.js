@@ -10,6 +10,46 @@ const loaded = new Promise((resolve) => {
   document.addEventListener("DOMContentLoaded", resolve);
 });
 
+const utils = {
+  get_cookie: (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if(parts.length === 2) return parts.pop().split(';').shift();
+  },
+
+  set_input_value: (value, input) => {
+    input.value = value;
+  }
+}
+
+let translate = {
+  translation: {},
+
+  set_lang: async (set_lang = null) => {
+    if(!set_lang) set_lang = get_cookie("locale");
+    let req = await fetch(`${api_endpoint.v1}/translation/get_all?locale=${set_lang}`);
+    if(response.ok) {
+      translate.translation = await req.json();
+    }
+  } 
+}
+
+const templater = {
+  renderstr_elem: async (element, template, args = {}) => {
+    if(translate.translation.length == 0) {
+      await translate.set_lang();
+    }
+    element.innerHTML = nunjucks.renderString(
+      template, { t: translate.translation, ...args });
+  },
+  render_elem: async (element, template, args = {}) => {
+    if(translate.translation.length == 0) {
+      await translate.set_lang();
+    }
+    element.innerHTML = nunjucks.render(
+      template, { t: translate.translation, ...args });
+  }
+}
 
 const cuser = {
   set_money_locally: async (amount) => {

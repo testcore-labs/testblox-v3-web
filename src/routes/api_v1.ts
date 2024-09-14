@@ -12,6 +12,7 @@ import root_path from "../utils/root_path";
 import fs from "fs";
 import entity_feed from "../db/feed";
 import { notloggedin_api_handler, owner_api_handler } from "../utils/handlers";
+import translate from "../utils/translate";
 
 // limiters
 const msg_too_many_reqs: message_type = {success: false, status: 429, message: "too many requests, try again later."};
@@ -174,6 +175,42 @@ routes.get("/searchbar", async_handler(async (req, res) => {
   }
 }));
 
+let clientside_templates: {[key: string]: any} = {};
+let clientside_dir = path.join(root_path, env.views.folder, "clientside");
+fs.readdir(clientside_dir, (err, filenames) => {
+  if(err) {
+    console.log("what the flip");
+    return;
+  }
+  filenames.forEach((filename) => {
+    if(!filename.endsWith(".njk")) {
+      return;
+    }
+    fs.readFile(path.join(clientside_dir, filename), "utf-8", (err, content) => {
+      if(err) {
+        return;
+      }
+      clientside_templates[filename] = content;
+    });
+  });
+});
+
+routes.get("/client-side/:template", async_handler(async (req, res) => {
+  let template = String(req.params?.template);
+  let template_txt = clientside_templates[(template + (template.endsWith(".njk") ? "" : ".njk"))];
+  if(template_txt) { 
+    res.json({ success: true, message: "OK", info: { template: template_txt }});
+  } else {
+    res.json({ success: false, message: `cannot find template \`${template}\`` });
+  }
+}));
+
+routes.get("/translation/get_all", async_handler(async (req, res) => {
+  let locale = String(req.query?.locale);
+  let translations = translate.translations[locale ? locale.toString() : env.locale];
+  res.json(translations);
+}));
+
 routes.get("/asset/icon", async_handler(async (req, res) => {
   let asset_id = Number(req.query.id);
   let new_asset = await (new entity_asset).by_id(asset_id);
@@ -191,7 +228,6 @@ routes.get("/asset/icon", async_handler(async (req, res) => {
   }
 }));
 
-
 routes.get("/feed/posts", async_handler(async (req, res) => {
   let page = Number(req.query.p);
   let limit = Number(req.query.limit);
@@ -203,7 +239,7 @@ routes.get("/feed/posts", async_handler(async (req, res) => {
   }
 
   let feeds = await entity_feed.all(limit, page, "", "", "");
-  if(!req.query?.html) {
+  if(req.query?.html != undefined) {
     res.render("components/feeds.twig", { feeds: feeds?.info?.items });
   } else {
     res.json(feeds);

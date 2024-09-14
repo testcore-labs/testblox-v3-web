@@ -8,6 +8,7 @@ import entity_user from "./db/user";
 import { param } from "express-validator";
 import { pcall } from "./utils/pcall";
 import ENUM from "./types/enums";
+import sql from "./utils/sql";
 
 const bot_token = env.discord.token || "";
 
@@ -70,7 +71,7 @@ class discord_bot {
       category: "fun",
       description: "yells a slur at u",
       func: (msg) => { 
-        const shuffled = shuffle(["faggot", "fag"]);
+        const shuffled = shuffle(["faggot", "fag", "nigga", "nigger", "chink", "coon"]);
         return msg.reply(Object.values(shuffled).at(0));
       }
     },
@@ -88,7 +89,9 @@ class discord_bot {
       description: "gets users raw data",
       func: async (msg, params) => { 
         let userid = Number.isNaN(params[1]) ? 1 : Number(params[1]);
-        const selected_user = await (new entity_user).by_id(userid);
+        const selected_user = await (new entity_user).by(entity_user.query()
+          .where(sql`id = ${userid}`)
+        );
         const new_embed = new EmbedBuilder()
 	        .setColor(0x0099FF)
 	        .setTitle(selected_user.username)

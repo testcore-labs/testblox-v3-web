@@ -35,7 +35,9 @@ class entity_promokey {
 
   async redeem(usedby: number): Promise<message_type> {
     let user = new entity_user();
-    await user.by_id(usedby);
+    await user.by(entity_user.query()
+      .where(sql`id = ${usedby}`)
+    );
     if(!user.exists) {
       return { success: false, message: "redeem.invalid_user" };
     }

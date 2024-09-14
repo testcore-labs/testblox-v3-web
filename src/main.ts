@@ -5,6 +5,7 @@ import async_handler from 'express-async-handler';
 import cookie_parser from "cookie-parser";
 import { queryParser as query_parser} from "express-query-parser";
 import cors from "cors";
+import _ from "lodash";
 import discord_bot from "./bot";
 
 import env from "./utils/env";
@@ -25,13 +26,15 @@ import api_roblox_routes from "./routes/rbx/api";
 import api_rcc_roblox_routes from "./routes/rbx/rcc";
 import ENUM from "./types/enums";
 import sql from "./utils/sql";
+import root_path from "./utils/root_path";
+import { proxy_obj } from "./utils/proxy_obj";
 
 
 const dsc_bot = new discord_bot;
 await pcall(async () => await dsc_bot.start_bot());
-
-new arbiter();
 translate.init();
+
+arbiter.init();
 
 logs.http(`starting...`);
 const app: Express = express();
@@ -39,7 +42,7 @@ const app: Express = express();
 app.use(cookie_parser());
 app.use(cors());
 app.set('trust proxy', env.behind_proxy)
-app.set("views", "views");
+app.set("views", path.join(root_path, env.views.folder));
 app.set("view engine", twig);
 app.set("twig options", {
   allowAsync: true,
@@ -64,7 +67,13 @@ app.use(async_handler(async (req, res, next) => {
   app.disable("x-powered-by");
   res.set("X-Powered-By", "PHP/5.6.40"); // get fucking trolled
 
-  logs.request(req.method.toString(), req.originalUrl.toString(), req.ip?.toString() ?? "127.0.0.1", req.get('user-agent')?.toString() ?? "")
+  let user_agent = req.get('user-agent')?.toString() ?? "";
+  logs.request(
+    req.method.toString(), 
+    req.originalUrl.toString(), 
+    req.ip?.toString() ?? "0.0.0.0", 
+    user_agent
+  );
   next();
 }));
 // separated so cuser isnt used for assets, good for perfomance
@@ -77,8 +86,12 @@ app.use(async_handler(async (req, res, next) => {
   res.locals.ENUM = ENUM;
   res.locals.translations = translate.translations;
   res.locals.translate = (text: string) => translate.text(text);
-  res.locals.t = translate.translations[req.cookies?.locale ? req.cookies?.locale.toString() : env.locale];
-
+  const selected_translation = translate.translations[req.cookies?.locale ? req.cookies?.locale.toString() : env.locale];
+  res.locals.t = proxy_obj(selected_translation, 
+    (_, prop) => {
+      return "undefined";
+    }
+  );
   // cuser = current user
   let cuser = new entity_user();
   await cuser.by(entity_user.query()

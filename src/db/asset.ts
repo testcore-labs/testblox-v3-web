@@ -129,7 +129,7 @@ class entity_asset extends entity_base {
     sort: string = "createdat", 
     order: string = ENUM.order.DESCENDING,
     privacy: number = ENUM.privacy.PUBLIC,
-    custom_wheres: Array<postgres.PendingQuery<postgres.Row[]>> = [],
+    custom_wheres: Array<postgres.PendingQuery<postgres.Row[]>> = []
   ): Promise<message_type> {
 
     let stmt = this.query()

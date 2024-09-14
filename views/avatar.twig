@@ -1,0 +1,19 @@
+{% extends "html.twig" %}
+{% set title = "avatar customization" %}
+
+{% block content %}
+<div class="d-flex flex-row gap-2 flex-wrap">
+  <div class="d-flex flex-column">
+    <div class="pos-relative as-baseline">
+      <div class="pos-absolute p-2" style="top: 0; right: 0;">
+        <button class="py-1 px-2"><h3 class="bi bi-arrow-clockwise"></h3></button>
+      </div>
+      <img class="round-4" width=256 src="{{ cuser.get_fullbody() }}">
+    </div>
+  </div>
+
+  <div>
+
+  </div>
+</div>
+{% endblock %}

@@ -29,8 +29,8 @@ $yellow-2-warning: #c27400;
 $accent-darker: #2a0064;
 $accent: #6a00ff;
 $black: #000000;
-$primary-1: #111111;
-$primary-2: #202020;
+$primary-1: #121212;
+$primary-2: #242424;
 $shadow: rgba(0, 0, 0, 0.5);
 
 $hr-dark: #272727;
@@ -194,42 +194,54 @@ h6,
   &:not([nobold]) {
     font-weight: 600;
   }
-  font-size: 1.1em;
+  & {
+    font-size: 1.1em;
+  }
 }
 h5,
 .h5 {
   &:not([nobold]) {
     font-weight: 600;
   }
-  font-size: 1.2em;
+  & {
+    font-size: 1.2em;
+  }
 }
 h4,
 .h4 {
   &:not([nobold]) {
     font-weight: 600;
   }
-  font-size: 1.25em;
+  & {
+    font-size: 1.25em;
+  }
 }
 h3,
 .h3 {
   &:not([nobold]) {
     font-weight: 600;
   }
-  font-size: 1.5em;
+  & {
+    font-size: 1.5em;
+  }
 }
 h2,
 .h2 {
   &:not([nobold]) {
     font-weight: 600;
   }
-  font-size: 2em;
+  & {
+    font-size: 2em;
+  }
 }
 h1,
 .h1 {
   &:not([nobold]) {
     font-weight: 600;
   }
-  font-size: 2.5em;
+  & {
+    font-size: 2.5em;
+  }
 }
 
 :-moz-loading {
@@ -284,7 +296,9 @@ h6 {
   &:not([nobold]) {
     font-weight: 600;
   }
-  color: #ffffff;
+  & {
+    color: #ffffff;
+  }
 }
 
 .ratio {
@@ -453,15 +467,17 @@ hr {
 }
 
 .card {
-  box-sizing: border-box;
-  background: #0e0e0e;
-  background: linear-gradient(180deg, #0e0e0e 0%, #080808 100%);
   &[solidcolor] {
     background: #0e0e0e;
   }
-  border-radius: 0.5em;
-  padding: 0.5em;
-  box-shadow: 1px 1px 2px 2px $shadow;
+  & {
+    box-sizing: border-box;
+    background: #0e0e0e;
+    background: linear-gradient(180deg, #0e0e0e 0%, #080808 100%);
+    border-radius: 0.5em;
+    padding: 0.5em;
+    box-shadow: 1px 1px 2px 2px $shadow;
+  }
   &.card-dark-primary {
     background: linear-gradient(180deg, darken($primary-2, 2.5%) 0%, darken($primary-1, 2.5%) 100%);
   }
@@ -482,6 +498,10 @@ hr {
   border: 0.1em solid #1f1f1f;
   box-shadow: 1px 1px 2px 2px $shadow;
   border-radius: 0.25em;
+}
+
+.border-none {
+  border: none !important;
 }
 
 .border-box {
@@ -875,6 +895,9 @@ a.link-light:active {
 }
 .purple-bg-dark {
   background: $accent-darker;
+}
+.avatar-items-bg {
+  background: #5c3297;
 }
 
 .sgreen-bg {
@@ -1555,9 +1578,9 @@ a {
   }
   .searchbar-nav {
     order: 0;
-    flex-basis: 12em; 
+    flex-basis: 8em;
     flex-shrink: 5 !important;
-    flex-grow: 0.4 !important;
+    flex-grow: 0.25 !important;
   }
   .flex-autotofill {
     flex-grow: inherit;
@@ -1970,14 +1993,16 @@ animation: loadingbaranim 2.5s ease infinite alternate;
 }
 
 .bb-play {
-  font-family: "bootstrap-icons";
   &:before {
-  content: "\F4C4";
+    content: "\F4C4";
   }
-  display: inline-block;
-  vertical-align: middle;
-  font-size: 2em;
-  cursor: pointer;
+  & {
+    font-family: "bootstrap-icons";
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 2em;
+    cursor: pointer;
+  }
 }
 
 .bb-playing {
@@ -2107,15 +2132,6 @@ animation: loadingbaranim 2.5s ease infinite alternate;
 dialog {
   all: unset;
   transition: visibility 0.2s, opacity 0.2s ease;
-  &[open] {
-    opacity: 1;
-    visibility: visible;
-  }
-  &:not([open]) {
-    opacity: 0;
-    visibility: hidden;
-  }
-
   position: fixed;
   top: 50%;
   left: 50%;
@@ -2127,6 +2143,14 @@ dialog {
   backdrop-filter: blur(0.75em);
   color: #fff;
   box-shadow: 2px 2px 6px 6px $shadow;
+  &[open] {
+    opacity: 1;
+    visibility: visible;
+  }
+  &:not([open]) {
+    opacity: 0;
+    visibility: hidden;
+  }
 }
 
 .obc-bg {

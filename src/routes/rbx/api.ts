@@ -1,58 +1,62 @@
 // No :)
+import path from "path";
+import fs from "fs";
 import express from "express";
 import async_handler from 'express-async-handler';
 import { rateLimit } from 'express-rate-limit';
+import entity_asset from "../../db/asset";
+import sql from "../../utils/sql";
+import root_path from "../../utils/root_path";
+import { pcall } from "../../utils/pcall";
 
 const routes = express.Router();
 
-// fix the types on req and res -qzip
-// @ts-expect-error
-routes.get(['/asset', '/Asset', '/asset/', '/Asset/', '/v1/asset/'], async_handler(async(req, res) => {
-    if((req.query?.id)?.toString()?.startsWith("../")) {
-        res.set("content-type", "text/plain")
-        // snowys TERRIBLE code
-        return res.send(`<?php
-define('DB_SERVER', 'localhost');
-define('DB_USERNAME', 'Snowy');
-define('DB_PASSWORD', 'databaseacesn');
-define('DB_NAME', 'm34180_ProjACEDB');
- 
-/* Attempt to connect to MySQL database */
-try{
-    $pdo = new PDO("mysql:host=" . DB_SERVER . ";dbname=" . DB_NAME, DB_USERNAME, DB_PASSWORD);
-    // Set the PDO error mode to exception
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch(PDOException $e){
-    die("ERROR: Could not connect. " . $e->getMessage());
-}
-?>`);
+routes.get(["/asset/", "/asset", "/Asset/", "/Asset"], async_handler(async(req, res) => {
+  const id = Number(req.query?.id)
+  if(String(req.query?.id)?.startsWith("../")) {
+    res.render("bftobanner.twig");
+    return;
+  }
+
+  let asset = await (new entity_asset).by(entity_asset.query()
+    .where(sql`id = ${id ?? 0}`)
+  );
+  if(!asset.exists) {
+    res.status(404).json({success: false, message: "asset could not be found."});
+  }
+
+  const is_url = (string: string) => {
+    let url;
+    try { url = new URL(string); } catch (_) { return false; }
+
+    return url.protocol === "http:" || url.protocol === "https:";
+  };
+
+  let asset_data;
+  if(is_url(asset.file)) {
+    let asset_fetch = await fetch(asset.file)
+      .then(async response => await response.arrayBuffer());
+    asset_data = Buffer.from(asset_fetch);
+  } else {
+    if(asset.file.length > 0) {
+      let asset_file_path = path.join(root_path, asset.file);
+      let [asset_err, asset_file] = await pcall(() => {fs.readFileSync(asset_file_path)});
+      if(asset_err instanceof Error) {
+        res.status(404).json({success: false, message: "asset's file could not be fetched/read."});
+        return;
+      } else {
+        asset_data = asset_file;
+      }
     }
-    
-    // soon to be deprecated
-    const asset_id: number = Number(req.query?.id) || -1;
-    const asset_version: number = Number(req.query?.version) || -1;
-    if(asset_id==-1)
-        return res.status(200).send('');
-    const extra_query: string = asset_version === -1 ? '&version=1' : `&version=${asset_version}`
-    const roblox_asset: Promise<Response> = fetch(`https://assetdelivery.roblox.com/v1/asset/?id=${asset_id}${extra_query}`);
-    console.log(`https://assetdelivery.roblox.com/v1/asset/?id=${asset_id}${extra_query}`);
-    // now, the asset may NOT exist, if this is the case, we need to parse the json to make sure its a valid asset,
-    // if it's not, we throw an empty 200 to remain in compatibility with the client.
-    roblox_asset.then((data) => {
-        data.text().then((response_data) => {
-            let is_json = false;
-            try {
-                JSON.parse(response_data);
-                is_json = true;
-            } catch (e) {
-                is_json = false;
-            }
-            if(is_json)
-              res.status(200).send('');
-            else
-              res.status(200).send(response_data);
-        })
-    });
+  }
+  res.set("content-type", "application/octet-stream");
+  if(asset_data) {
+    res.send(asset_data);
+    return;
+  } else {
+    res.status(404).json({success: false, message: "asset's file could not be fetched/read."});
+    return;
+  }
 }));
 
 export default routes

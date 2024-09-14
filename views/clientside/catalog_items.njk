@@ -1,0 +1,13 @@
+  {% if items|length == 0 %}
+    <div class="d-flex flex-column ai-center gap-2 p-3">
+    <h1 style="font-size: 4em;" class="bi bi-egg-fried"></h1>
+    <h4>no items found</h4>
+    <small class="text-muted">heres a fried egg for you</small>
+    </div>
+  {% else %}
+    <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));">
+      {% for item in items %}
+        {% include '/components/item_default.twig' with {item: item} %}
+      {% endfor %}
+    </div>
+  {% endif %}

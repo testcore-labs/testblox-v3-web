@@ -8,6 +8,7 @@ import path from "path";
 
 const directory = path.join(root_path, "logs", `${Date.now()}.log`) // for logs
 class logs {
+  static debug_format = ` ${colors.gray("|")} ${colors.green("debug")}`;
   static colors: typeof colors;
   static logs: { [key: string]: any; };
   static format: string;
@@ -37,77 +38,84 @@ class logs {
     return log_time(Date.now());
   }
 
-  static custom(txt: string | number, from_where: string = "") { // from_where lol 
+  static custom(txt: string | number, from_where: string = "", debug = false) { // from_where lol 
     const message = printf(logs.format, 
       colors.white(logs.time()), 
-      colors.gray(from_where === "" ? "console" : from_where),
+      colors.gray(from_where === "" ? "console" : from_where) + (debug ? logs.debug_format : ``),
       colors.white(txt.toString())
     );
     logs.push(message);
     logs.print(message);
+    return message;
   }
 
 
-  static debug(txt: string | number) {
+  static debug(txt: string | number, debug = false) {
     if(env.debug) {
       const message = printf(logs.format, 
         colors.white(logs.time()), 
-        colors.green(`debug`),
+        colors.green(`debug`) + (debug ? logs.debug_format : ``),
         colors.white(txt.toString())
       );
       logs.push(message);
       logs.print(message);
+      return message;
     } // else no output cuz debug ONLY...
   }
 
   
 
-  static request(method: string, path: string, ip: string, ua: string) {
+  static request(method: string, path: string, ip: string, ua: string, debug = false) {
+    let tr_ua = ua.toString().substring(0, 16).trimEnd(); // trim so truncate looks Nicer And Neater
     if(env.debug) {
       const message = printf(logs.format, 
         colors.white(logs.time()), 
-        colors.cyan("request") + `, ${colors.gray(method)}`,
-        colors.white(colors.white(path.toString()) + `, ${colors.magenta(ip.toString())}, ${colors.red(ua.toString())}`)
+        colors.cyan(method) + (debug ? logs.debug_format : ``),
+        colors.white(colors.white(path.toString()) + `, ${colors.magenta(ip.toString())}, ${colors.red(tr_ua.toString() + (ua.length > 16 ? "…" : "")) }`)
       );
       // use nginx :3
       //logs.push(message);
       // this is for debugging when ur not using nginx
       logs.print(message);
+      return message;
     } // requests are gonna be annoying on non debug so..
   }
 
-  static http(txt: string | number) {
+  static http(txt: string | number, debug = false) {
     const message = printf(logs.format, 
       colors.white(logs.time()), 
-      colors.cyan("http"),
+      colors.cyan("http") + (debug ? logs.debug_format : ``),
       colors.white(txt.toString())
     );
     logs.push(message);
     logs.print(message);
+    return message;
   }
-  static database(txt: string | number) {
+  static database(txt: string | number, debug = false) {
     const message = printf(logs.format, 
       colors.white(logs.time()), 
-      colors.red("database"),
+      colors.red("database") + (debug ? logs.debug_format : ``),
       colors.white(txt.toString())
     );
     logs.push(message);
     logs.print(message);
+    return message;
   }
   
-  static arbiter(txt: string | number) {
+  static arbiter(txt: string | number, debug = false) {
     const message = printf(logs.format, 
       colors.white(logs.time()), 
-      colors.magenta("arbiter"),
+      colors.magenta("arbiter") + (debug ? logs.debug_format : ``),
       colors.white(txt.toString())
     );
     logs.push(message);
     logs.print(message);
+    return message;
   }
-  static discord(txt: string | number) {
+  static discord(txt: string | number, debug = false) {
     const message = printf(logs.format, 
       colors.white(logs.time()), 
-      colors.blue("discord"),
+      colors.blue("discord" + ((debug ? logs.debug_format : ``))),
       colors.white(txt.toString())
     );
     logs.push(message);

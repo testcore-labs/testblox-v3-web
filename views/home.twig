@@ -6,7 +6,7 @@
 "hello", "hola", "bonjour", "hallo", "ciao", "olá", "hallo", "здравствуйте", "你好", "こんにちは", "안녕하세요", "مرحباً", "नमस्ते", "jambo", "merhaba", "γειά σας", "שלום", "hej", "hei", "hei", "hej", "cześć", "helló", "xin chào", "สวัสดี", "سلام", "salut", "ahoj", "নমস্কার", "привіт", "kumusta", "hai", "dia dhuit", "halò", "halló", "labas", "tere", "bok", "здравейте", "здраво", "hello", "ahoj", "sveiki", "გამარჯობა", "नमस्ते", "բարև", "ہیلو", "bawo ni", "sawubona", "helo",
 ] %}
 {% set randomhi = randomhis|shuffle[0] %}
-<div class="d-flex flex-row flex-wrap gap-5" style="align-content: flex-start;">
+<div class="d-flex flex-row-reverse flex-wrap gap-5" style="align-content: flex-start;">
 
   <div class="d-flex flex-column gap-3" style="flex-shrink: 3; flex-grow: 1; flex-basis: 24em;">
     <div class="d-flex flex-row gap-6 ai-center">
@@ -16,7 +16,16 @@
       </div>
     <h2>{{ randomhi }}, {{ cuser.username|e }}</h2>
     </div>
-    <hr class="my-2">  
+    <hr class="my-2">
+    <div class="tablet-hide">
+      <h3>news</h3>
+      nothing rn
+      <hr class="mb-2 mt-4">
+    </div>
+  </div>
+
+
+  <div class="d-flex flex-column" style="flex-grow: 5; flex-basis: 30em;">
     <div class="d-flex flex-row gap-5"><h3>{{ t.home.friends }} ({{ friends|length }})</h3> <a class="btn-primary ms-auto as-baseline">{{ t.home.see_all }}</a></div>
       {% if friends|length == 0 %}
       <div class="d-flex flex-column ai-center gap-2 p-2">
@@ -25,7 +34,7 @@
         <small class="text-muted">heres a fried egg for you</small>
       </div>
     {% else %}
-      <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));">
+      <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));">
       {% for friend in friends %}
         <a href="/users/{{ friend.id }}/profile" class="d-flex flex-column" style="align-items: center; padding: 0; margin-top: 0.3em;">
           <div class="img-fluid pos-relative">
@@ -38,16 +47,8 @@
       {% endfor %}
       </div>
     {% endif %}
-    <hr class="my-2">
-    <div class="tablet-hide">
-      <h3>changelog</h3>
-      nothing rn
-      <hr class="mb-2 mt-4">
-    </div>
-  </div>
 
-
-  <div class="d-flex flex-column" style="flex-grow: 5; flex-basis: 30em;">
+    <hr class="my-3">  
     <div class="d-flex flex-row gap-5"><h3>{{ t.home.recently_played }}</h3> <a class="btn-primary ms-auto as-baseline">{{ t.home.see_all }}</a></div>
     {% if recently_played|length == 0 %}
       <div class="d-flex flex-column ai-center gap-2 p-2">
@@ -94,5 +95,6 @@
     </div>
   </div>
   </div>
+
 </div>
 {% endblock %}

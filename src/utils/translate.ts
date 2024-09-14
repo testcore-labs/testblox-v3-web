@@ -24,7 +24,7 @@ class translator {
     for(const file of files) {
       let data = fs.readFileSync(path.join(this.log_dir, file), 'utf8');
       if(env.debug) {
-        logs.custom("loading " + file, this.log_name + " | " + colors.green("debug"));
+        logs.custom("loading " + file, this.log_name, true);
       }
 
       let parsed = YAML.parse(data);

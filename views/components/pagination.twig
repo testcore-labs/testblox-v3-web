@@ -1,25 +1,27 @@
 {% if queries|length != 0 %}
 {% set urlparams = query_remove_key(params, "p") ?? "" %}
 {% set max_btns = (max_btns ?? 4) / 2 %}
+{% set input_id = input_id ?? "input_pagination" %}
 {% set dotset = false %}
-<div class="d-flex flex-row {{ style_classes ?? "pillify shadow-1 round-4" }} {{classes}}">
-  <a class="btn-primary shadowless" 
+<div class="d-flex flex-row {{ style_classes ?? "border-light-1 border-box round-4 overflow-hidden shadow-1 p-0" }} {{classes}}">
+  <input id="{{ input_id }}" value="{{ page }}" type="hidden">
+  <a class="btn-primary round-0 border-none h-100 shadowless d-flex jc-center ai-center" 
   {% if page == 1 %}disabled
-  {% else %}href="?{{ urlparams }}p={{ (1 <= page - 1) and (page - 1 <= totalpages) ? page - 1 : 1 }}"{% endif %}><</a>
+  {% else %}onclick="set_input_value(elem('#{{input_id}}'), {{page}});" href="?{{ urlparams }}p={{ (1 <= page - 1) and (page - 1 <= totalpages) ? page - 1 : 1 }}"{% endif %}><</a>
   {% for _page in (1 .. (totalpages)) %}
     {% if _page > max_btns and _page <= totalpages - max_btns and _page != page %}
       {% if not dotset %} {% set dotset = true %}
-        <a class="btn-primary shadowless" disabled>…</a>
+        <a class="btn-primary round-0 border-none h-100 shadowless d-flex jc-center ai-center" disabled>…</a>
       {% endif %} 
     {% else %}
-      <a class="btn-primary shadowless" 
+      <a class="btn-primary round-0 border-none h-100 shadowless d-flex jc-center ai-center" 
         {% if page == _page %}disabled
-        {% else %}href="?{{ urlparams }}p={{ _page }}"{% endif %}>{{ _page }}</a>
+        {% else %} onclick="set_input_value(elem('#{{input_id}}'), {{page}});" href="?{{ urlparams }}p={{ _page }}"{% endif %}>{{ _page }}</a>
     {% endif %}
   {% endfor %}
-  <a class="btn-primary shadowless" 
+  <a class="btn-primary round-0 border-none h-100 shadowless d-flex jc-center ai-center" 
     {% if page == totalpages %}disabled
-    {% else %}href="?{{ urlparams }}p={{ (1 <= page + 1) and (page + 1 <= totalpages) ? page + 1 : totalpages }}"{% endif %} 
+    {% else %}onclick="set_input_value(elem('#{{input_id}}'), {{page}});" href="?{{ urlparams }}p={{ (1 <= page + 1) and (page + 1 <= totalpages) ? page + 1 : totalpages }}"{% endif %} 
     {% if page == totalpages %}disabled{% endif %}>></a>
 </div>
 {% endif %}
