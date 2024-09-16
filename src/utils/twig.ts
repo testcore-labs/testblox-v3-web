@@ -1,7 +1,7 @@
 import { shuffle } from "./array";
 import env from './env';
-import { timeago } from './time';
-import { pcall_msg } from './pcall';
+import { info_time, timeago } from './time';
+import { pcall, pcall_msg, pcall_sync } from './pcall';
 import twig from "twig";
 import translate from "./translate";
 import fs from "fs";
@@ -41,6 +41,14 @@ twig.extendFilter("t", function(txt: string, args: any): any {
 });
 twig.extendFilter("nr2br", function(txt: string, args: any): any {
   return txt.replaceAll(/\n\r?/g, '&#13;&#10;');
+});
+twig.extendFilter("info_time", function(txt: number, args: any): any {
+  let [_, out] = pcall_sync(() => info_time(txt));
+  if(_ instanceof Error) {
+    return info_time(txt / 1000);
+  } else {
+    return out;
+  }
 });
 twig.extendFunction("transcompletion", function(locale: string): any {
   return translate.completion(locale);

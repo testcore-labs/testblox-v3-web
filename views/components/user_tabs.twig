@@ -10,6 +10,7 @@
   
     <div class="d-flex flex-column gap-2 flex-1 p-3 px-4 card shadowless card-primary" style="border-radius: 0; flex-basis: 20em;">
       <h3 class="mb-2">items</h3>
+      {% if user_equipped_items.items|length != 0 %}
       <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));">
         {% for item in user_equipped_items.items %}
           <a href="/catalog/{{ item.id }}/view">
@@ -17,22 +18,45 @@
           </a>
         {% endfor %}
       </div>
+      {% else %}
+      <div class="d-flex flex-column ai-center my-auto gap-2 p-3">
+        <h1 style="font-size: 4em;" class="bi bi-egg-fried"></h1>
+        <h4>no items equipped</h4>
+        <small class="text-muted">they're naked!</small>
+      </div>
+      {% endif %}
     </div>
   </div>
 {% elseif tab == "games" %}
   <h3 class="mb-2">games</h3>
+  {% if user_games.items|length != 0 %}
   <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));">
     {% for game in user_games.items %}
       {% include '/components/game_default.twig' with {game: game} %}
     {% endfor %}
   </div>
+  {% else %}
+  <div class="d-flex flex-column ai-center gap-2 p-3">
+    <h1 style="font-size: 4em;" class="bi bi-egg-fried"></h1>
+    <h4>no games found</h4>
+    <small class="text-muted">you could make your own game!</small>
+  </div>
+  {% endif %}
 {% elseif tab == "items" %}
   <h3 class="mb-2">items</h3>
+  {% if user_items.items|length != 0 %}
   <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));">
     {% for item in user_items.items %}
       {% include '/components/item_default.twig' with {item: item} %}
     {% endfor %}
   </div>
+  {% else %}
+  <div class="d-flex flex-column ai-center gap-2 p-3">
+    <h1 style="font-size: 4em;" class="bi bi-egg-fried"></h1>
+    <h4>no items found</h4>
+    <small class="text-muted">pooron.. jk</small>
+  </div>
+  {% endif %}
 {% elseif tab == "groups" %}
   <h3 class="mb-2">groups</h3>
   <div>no implementation</div>
@@ -46,6 +70,21 @@
     <h1 style="font-size: 4em;" class="bi bi-egg-fried"></h1>
     <h4>no CSS for u</h4>
     <small class="text-muted">terrible day to be a skid..</small>
+  </div>
+  {% endif %}
+{% elseif tab == "bans" %}
+  <h3 class="mb-2">bans</h3>
+  {% if bans.info.items|length != 0 %}
+  <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+  {% for ban in bans.info.items %}
+    <div class="card border-light-1">{{ ban.reason }}</div>
+  {% endfor %}
+  </div>
+  {% else %}
+  <div class="d-flex flex-column ai-center gap-2 p-3">
+    <h1 style="font-size: 4em;" class="bi bi-egg-fried"></h1>
+    <h4>no history found</h4>
+    <small class="text-muted">good.</small>
   </div>
   {% endif %}
 {% endif %}

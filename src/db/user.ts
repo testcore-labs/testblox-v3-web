@@ -14,6 +14,7 @@ import entity_base, { query_builder } from "./base";
 import cooldown from "../utils/cooldown";
 import { xss_all } from "../utils/xss";
 import { asset_types_numbered } from "../types/assets";
+import entity_ban from "./ban";
 
 class entity_user extends entity_base {
   table = "users";
@@ -27,13 +28,30 @@ class entity_user extends entity_base {
     log_logins: true // discord poll said they want it on default
   }
   bbcode_strict: bbcode;
+  ban: entity_ban|undefined;
 
   constructor() {
     super();
+
     this.bbcode_strict = new bbcode;
     this.bbcode_strict.tags.a.func = (txt, params) => 
       `<a class="link" href="/redirect?url=${encodeURI(params["url"])}">${txt}</a>`;
     this.bbcode_strict.allowed_tags = ["b", "i", "d", "u", "a", "c"]; 
+  }
+
+  async by(query: query_builder) {
+    const data = await query
+      .single()
+      .exec();
+
+    this.data = data;
+    if(this.exists) {
+    this.ban = await (new entity_ban).by(entity_ban.query()
+      .where(sql`userid = ${this.data.id}`)
+      .order("createdat", ENUM.order.DESCENDING)
+    );
+    }
+    return this;
   }
 
   static async all(

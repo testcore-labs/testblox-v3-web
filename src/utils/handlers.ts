@@ -5,6 +5,15 @@ export function notloggedin_api_handler(req: Request, res: Response, next: NextF
   if(!res.locals.isloggedin) {
     res.json({ success: false, message: `\`${ env.session.name }\` is missing` });
   } else {
+    if((res.locals.cuser.ban.is_banned ?? false)) {
+      res.json({ success: false, message: `you are currently banned`, info: { 
+        length: res.locals.cuser.ban.length, 
+        createdat: res.locals.cuser.ban.createdat,  
+        reason: res.locals.cuser.ban.reason, 
+        moderator_note: res.locals.cuser.ban.moderator_note, 
+        items: res.locals.cuser.ban.moderator_nsote, 
+      }});
+    }
     next();
   }
 }
@@ -20,6 +29,9 @@ export function notloggedin_handler(req: Request, res: Response, next: NextFunct
   if(!res.locals.isloggedin) {
     res.htmx.redirect("/");
   } else {
+    if((res.locals.cuser.ban.is_banned ?? false) && req.path !== "/banned") {
+      res.htmx.redirect("/banned");
+    }
     next();
   }
 }

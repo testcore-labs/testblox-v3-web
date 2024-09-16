@@ -21,3 +21,11 @@ export async function pcall<T>(fn: () => T | void) {
     return [ error, undefined ];
   }
 }
+export function pcall_sync<T>(fn: () => T | void) {
+  try {
+    const value = fn();
+    return [ true, value ];
+  } catch (error) {
+    return [ error, undefined ];
+  }
+}

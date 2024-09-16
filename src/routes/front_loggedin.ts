@@ -27,6 +27,7 @@ import ENUM from "../types/enums";
 import _ from "lodash";
 import { xss_all } from "../utils/xss";
 import search_tags from "../utils/search_tags";
+import entity_ban from "../db/ban";
 routes.use(htmx_middleware);
 
 routes.all("/redeem", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
@@ -133,10 +134,7 @@ routes.get("/users/:id/:name", notloggedin_handler, async_handler(async (req: Re
   }
 
   const query = xss_all(String(req.query?.q ?? ""));
-  let page = Number(req.query.p);
-  if(Number.isNaN(page) || Number(page) <= 0) {
-    page = 1;
-  }
+  const page = (Number(req.query.p) <= 0 && Number.isNaN(req.query.p)) ? Number(req.query.p) : 1;
   switch(option) {
     case "profile":
       res.render("user.twig", { user: user });
@@ -146,11 +144,11 @@ routes.get("/users/:id/:name", notloggedin_handler, async_handler(async (req: Re
       res.render("components/user_tabs.twig", { tab: option, user, user_equipped_items: user_equipped_items?.info });
       break;
     case "games":
-      let user_games = await user.get_games(16, page, query);
+      let user_games = await user.get_games(6, page, query);
       res.render("components/user_tabs.twig", { tab: option, user, user_games: user_games?.info });
       break;
     case "items":
-      let user_items = await user.get_items(16, page, query, undefined, undefined, false);
+      let user_items = await user.get_items(6, page, query, undefined, undefined, false);
       res.render("components/user_tabs.twig", { tab: option, user, user_items: user_items?.info });
       break;
     case "groups":
@@ -158,6 +156,12 @@ routes.get("/users/:id/:name", notloggedin_handler, async_handler(async (req: Re
       break;
     case "css":
       res.render("components/user_tabs.twig", { tab: option, user });
+      break;
+    case "bans":
+      let bans = await entity_ban.all(4, page, query, undefined, undefined, [
+        sql`userid = ${ user.id }`
+      ])
+      res.render("components/user_tabs.twig", { tab: option, user, bans });
       break;
     default:
       res.render("user.twig", { user: user });
@@ -253,6 +257,16 @@ const settings_tabs: {[key: string]: any} = {
 
 routes.get("/avatar/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   res.render("avatar.twig");
+}));
+
+routes.get("/banned", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  if(res.locals.cuser.ban.is_banned) {
+    let off_items = await res.locals.cuser.ban.get_items();
+    console.log(off_items)
+    res.render("banned.twig", { ban_off_items: off_items });
+  } else {
+    res.htmx.redirect("/");
+  }
 }));
 
 routes.get("/settings/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {

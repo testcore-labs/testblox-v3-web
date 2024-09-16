@@ -30,6 +30,7 @@ class query_builder {
     select.forEach((select_key) => {
       this.v_selected += select_key + ((select.at(-1) === select_key) ? "" : ", ");
     })
+    return this;
   }
 
   table(table: string) {

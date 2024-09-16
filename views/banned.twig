@@ -2,5 +2,54 @@
 {% set title = "banned" %}
 
 {% block content %}
-u been beamed by api method
+  <div class="d-flex flex-column gap-2">
+    <h1>banned</h1>
+    <div class="mb-2">our moderators have decided that your behavior has been in violation of our terms of use.</div>
+    <div class="d-flex flex-row">
+      <b class="text-muted">reviewed</b>
+      <span>: {{ cuser.ban.createdat|info_time }}</span>
+    </div>
+    <div class="d-flex flex-row">
+      <b class="text-muted">ban length</b>
+      <span>: {{ cuser.ban.length|info_time }}</span>
+    </div>
+    <fieldset class="round-4 border-light-1 p-3 m-0">
+    <legend>offensive items</legend>
+      <div class="d-flex flex-column gap-8">
+      {% for reason, item in ban_off_items %}
+        <div class="d-flex flex-column gap-2">
+          <div class="d-flex flex-row">
+            <b class="text-muted">reason</b>
+            <span>: {{ reason|e }}</span>
+          </div>
+          <div class="d-flex flex-row">
+            <b class="text-muted">offensive item</b>
+            <span>: </span>
+          </div>
+          <div class="ms-4 d-flex flex-column">
+            <div class="d-flex flex-row">
+              <b class="text-muted">id</b>
+              <span>: {{ item.id|e }}</span>
+            </div>
+            <div class="d-flex flex-row">
+              <b class="text-muted">title</b>
+              <span>: {{ item.title|e }}</span>
+            </div>
+            <div class="d-flex flex-row">
+              <b class="text-muted">description</b>
+              <span>: {{ item.description|e }}</span>
+            </div>
+            <div>
+            <img height=155 src="{{ item.get_icon() }}">
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+      </div>
+    </fieldset>
+    <small class="text-muted">will be unbanned {{ cuser.ban.length|timeago }}</small>
+    <div class="d-flex flex-row gap-3 mx-auto">
+      <a class="btn-primary" {% if item.length == -1 %}href="/api/v1/ban/agree"{% else %}disabled{% endif %}>agree</a>
+    </div>
+  </div>
 {% endblock %}

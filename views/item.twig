@@ -31,10 +31,10 @@
         <div class="text-muted">type:</div> <div>{{ ENUM.assets[item.type] }}</div>
       </div>
       <div class="d-flex flex-row gap-3">
-        <div class="text-muted">created at:</div> <div>{{ (item.createdat / 1000)|date("Y-m-d H:i:s") }}</div>
+        <div class="text-muted">created at:</div> <div>{{ item.createdat|info_time }}</div>
       </div>
       <div class="d-flex flex-row gap-3">
-        <div class="text-muted">updated at:</div> <div>{{ (item.updatedat / 1000)|date("Y-m-d H:i:s") }}</div>
+        <div class="text-muted">updated at:</div> <div>{{ item.updatedat|info_time }}</div>
       </div>
   </div> 
 </div>
