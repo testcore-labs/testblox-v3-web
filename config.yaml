@@ -47,7 +47,7 @@ user:
   status: "i'm new to testblox!"
 
 currency:
-  name: pizza
+  name: gems
   starter: 80
 
 # what else do i call these

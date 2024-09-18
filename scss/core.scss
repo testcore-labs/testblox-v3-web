@@ -1437,6 +1437,30 @@ a {
   }
 }
 
+
+.openify {
+  transition: visibility 0.2s, opacity 0.2s ease;
+  &[open] {
+  opacity: 1;
+  visibility: visible;
+  }
+  &:not([open]) {
+  opacity: 0;
+  visibility: hidden;
+  }
+}
+
+.openify-height {
+  transition: height var(--transition-time, 0.25s) ease;
+  &[open] {
+    height: var(--to-height);
+  }
+  &:not([open]) {
+    height: 0;
+  }
+}
+
+
 .popupify {
   & {
     display: flex;

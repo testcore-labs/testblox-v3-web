@@ -214,6 +214,17 @@ stars.forEach((star, index) => {
         });
     });
 });
+function openify(calledfrom, forelem) {
+  function close() {
+    forelem.removeAttribute("open");
+  }
+
+  if(!forelem.getAttribute("open")) {
+    forelem.setAttribute("open", true);
+  } else {
+    close();
+  }
+}
 
 function dropdownify(calledfrom, forelem) {
 

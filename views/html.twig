@@ -109,6 +109,26 @@
       </footer>{% endif %}
     </div>
 
+    <div class="d-flex flex-column pos-fixed me-3 border-light-1 round-4" style="bottom: 0; right: 0; max-width: 18em; width: 100%;">
+      <div onclick="openify(this, elem('#chat-contents'))" class="card card-primary d-flex flex-row round-bx-0">
+        <span>chat</span> <span class="red-bg d-inline-flex ai-center jc-center round-3 ms-auto" style="color: #fff; padding: 0px 4px;">1</span>
+      </div>
+      <div class="openify-height" id="chat-contents" style="overflow-y: scroll; --to-height: 22em; --transition-time: 0.3s; background: rgba(0,0,0, 0.75); backdrop-filter: blur(0.45em);">
+      <div class="round-0 border-box p-3">
+        <div class="d-flex flex-column gap-4">
+          {% for i in (0..2) %}
+          <div class="d-flex flex-row gap-3">
+            <img class="round-4" height=46 width=46 src="{{ cuser.get_headshot() }}">
+            <div class="d-flex flex-column w-100 gap-1 overflow-hidden">
+              <b class="text-truncate">saddsaadadadsasdsaads</b>
+              <small class="text-muted text-truncate-l2">Nope Nope Nope adfdddf dafdaik whats coherency never heard of it </small>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      </div>
+    </div>
     <div class="d-none pos-absolute round-4 p-3" style="top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0, 0.33); backdrop-filter: blur(1em);" id="cmd_window">
     nothing here.. (close me by typing --cmd again)
     </div>

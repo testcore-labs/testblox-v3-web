@@ -63,38 +63,7 @@
       {% endfor %}
       </div>
     {% endif %}
-    
-    
-  <hr class="my-3">
-  <div class="d-flex flex-column">
-    <div class="d-flex flex-row gap-5"><h3>feed</h3></div>
-    <div class="d-flex flex-column gap-3 mt-2">
-    <div class="d-flex flex-row card card-dark-primary hide-if-no-text" id="result"></div>
-      <form hx-post="/api/v1/feed/send?plaintext" hx-on::after-request="document.body.dispatchEvent(new Event('refresh'));" id="feedsend" hx-target="#result" hx-swap="innerHTML" class="d-flex flex-row gap-3">
-        <div class="d-flex flex-row pillify shadow-1 round-4 flex-1">
-          <input class="shadowless w-100 flex-1" placeholder="how are y'all?" name="feed_text" type="text">
-          <button class="shadowless" type="submit" id="feedsendbtn"><h5 class="bi bi-send"></h5></button>
-        </div>
-        <div class="d-flex flex-row">
-          {% include '/components/pagination.twig' with {params: req.query, max_btns: 4, page: feeds.info.page, queries: feeds.info.items, totalpages: feeds.info.total_pages, classes: "jc-center mx-auto"} %}
-        </div>
-      </form>
-      <div hx-get="/api/v1/feed/posts?p={{page}}&html" id="feed_posts" hx-trigger="every 30s, refresh from:body" class="d-flex flex-column gap-4">
-      {% if feeds.info.items|length != 0 %}
-      {% for feed in feeds.info.items %}
-        {% include '/components/feed_default.twig' with { feed } %}
-      {% endfor %}
-      {% else %}
-      <div class="d-flex flex-column ai-center gap-2 p-2">
-      <h1 style="font-size: 4em;" class="bi bi-egg-fried"></h1>
-      <h4>no messages</h4>
-      <small class="text-muted">you could be the first one to send a message!</small>
-      </div>
-      {% endif %}
-      </div>
     </div>
-  </div>
-  </div>
 
 </div>
 {% endblock %}
