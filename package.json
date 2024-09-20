@@ -4,13 +4,14 @@
   "type": "module",
   "scripts": {
     "test": "bun src/cli/test.ts",
-    "purge-logs": "bun src/cli/purge_logs.ts",
     "dev:bun:watch": "bun --watch src/main.ts # anything but .ts doesnt work",
     "dev:bun:hot": "bun --hot src/main.ts # anything but .ts doesnt work",
     "dev:watch": "nodemon -e ts,twig,yaml --exec 'bun src/main.ts'",
     "web": "bun src/main.ts",
     "build-css:watch": "bun nodemon --watch scss/*.scss -x \"bun run build-css\" -e scss",
-    "build-css": "sass scss/core.scss scss/core.pcss && postcss scss/core.pcss --use autoprefixer -o public/assets/css/core.css"
+    "build-css": "sass scss/core.scss scss/core.pcss && postcss scss/core.pcss --use autoprefixer -o public/assets/css/core.css",
+    "cli:purge-logs": "bun src/cli/purge_logs.ts",
+    "cli:user:edit": "bun src/cli/user/edit.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -34,6 +35,7 @@
     "body-parser": "^1.20.2",
     "bootstrap": "^5.3.3",
     "cbor": "^9.0.2",
+    "cli-select": "^1.1.2",
     "cloudflare-express": "^0.0.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",

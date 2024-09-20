@@ -382,28 +382,44 @@ class entity_user extends entity_base {
     return user_friends;
   }
 
-  get what_privelege(): string {
-    return ENUM.priveleges[this.data?.privelege];
+  get what_privilege(): string {
+    return ENUM.privileges[this.data?.privilege];
   }
 
   get is_member(): boolean {
-    return this.data?.privelege === ENUM.priveleges.member;
+    return this.data?.privilege === ENUM.privileges.member;
   }
 
   get is_mod(): boolean {
-    return this.data?.privelege === ENUM.priveleges.mod;
+    return this.data?.privilege === ENUM.privileges.mod;
   }
 
   get is_admin(): boolean {
-    return this.data?.privelege === ENUM.priveleges.admin;
+    return this.data?.privilege === ENUM.privileges.admin;
   }
 
   get is_owner(): boolean {
-    return this.data?.privelege === ENUM.priveleges.owner;
+    return this.data?.privilege === ENUM.privileges.owner;
   }
   
   get has_admin_panel(): boolean {
-    return this.data?.privelege >= ENUM.priveleges.mod;
+    return this.data?.privilege >= ENUM.privileges.mod;
+  }
+
+  async set_member() {
+    return await sql`UPDATE ${sql(this.table)} SET privilege = ${ENUM.privileges.member} WHERE id = ${this.id}`;
+  }
+
+  async set_mod() {
+    return await sql`UPDATE ${sql(this.table)} SET privilege = ${ENUM.privileges.mod} WHERE id = ${this.id}`;
+  }
+
+  async set_admin() {
+    return await sql`UPDATE ${sql(this.table)} SET privilege = ${ENUM.privileges.admin} WHERE id = ${this.id}`;
+  }
+
+  async set_owner() {
+    return await sql`UPDATE ${sql(this.table)} SET privilege = ${ENUM.privileges.owner} WHERE id = ${this.id}`;
   }
 
 
@@ -545,7 +561,7 @@ class entity_user extends entity_base {
       username: username,
       password: hash, 
       token: token,
-      privelege: 1,
+      privilege: 1,
       status: env.user.status,
       currency: env.currency.starter, 
       gender: ENUM.gender.NONE, 

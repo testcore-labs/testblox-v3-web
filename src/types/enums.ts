@@ -5,7 +5,7 @@ import { membership_perks, membership_types } from "./membership";
 import { moderation_status_types } from "./moderation";
 import { orderby_enum } from "./orderby";
 import { privacy_types } from "./privacy";
-import { privelege_types } from "./priveleges";
+import { privilege_types } from "./privileges";
 
 
 // cant do "enum";
@@ -18,7 +18,7 @@ const ENUM = Object.freeze({
   moderation: moderation_status_types,
   order: orderby_enum,
   privacy: privacy_types,
-  priveleges: privelege_types,
+  privileges: privilege_types,
 });
 
 export default ENUM;

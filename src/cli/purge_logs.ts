@@ -5,6 +5,8 @@ import path from 'path';
 import root_path from '../utils/root_path';
 
 const rl = readline.createInterface({
+  // flimsy type system
+  //@ts-ignore
   input: process.stdin,
   output: process.stdout,
 });

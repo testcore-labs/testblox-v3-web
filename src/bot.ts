@@ -98,7 +98,7 @@ class discord_bot {
 	        .setDescription(selected_user.description.length === 0 ? " " : selected_user.description)
 	        // .setThumbnail('d')
 	        .addFields(
-		        { name: 'privelege', value: selected_user.what_privelege },
+		        { name: 'privilege', value: selected_user.what_privilege },
 	        )
 	        .setImage(`https://${env.domain}${ await selected_user.get_headshot() }`)
 	        .setFooter({ text: selected_user.status.length === 0 ? " " : selected_user.status });
