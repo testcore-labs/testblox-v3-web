@@ -1,0 +1,18 @@
+{% extends "chat/skeleton.twig" %}
+
+{% block content %}
+  <div class="d-flex flex-column gap-4 p-3">
+    {% for i in (0..2) %}
+    <div class="d-flex flex-row gap-3">
+      <img class="round-4" height=46 width=46 src="{{ cuser.get_headshot() }}">
+      <a 
+        hx-get="/chat/conversation?user_id=i"
+        hx-trigger="click"
+        class="d-flex flex-column w-100 gap-1 overflow-hidden">
+        <b class="text-truncate">saddsaadadadsasdsaads</b>
+        <small class="text-muted text-truncate-l2">Nope Nope Nope adfdddf dafdaik whats coherency never heard of it </small>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+{% endblock %}

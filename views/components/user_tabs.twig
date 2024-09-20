@@ -73,11 +73,17 @@
   </div>
   {% endif %}
 {% elseif tab == "bans" %}
-  <h3 class="mb-2">bans</h3>
+  <h3 class="mb-2">bans [WIP]</h3>
   {% if bans.info.items|length != 0 %}
   <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
   {% for ban in bans.info.items %}
-    <div class="card border-light-1">{{ ban.reason }}</div>
+    <div class="d-flex flex-column gap-2 card border-light-1">
+      <div class="d-flex flex-row gap-2">
+        {% if not ban.is_banned %}<h3 class="bi bi-check-lg"></h3>{% endif %}
+        <h3>{% if item.length == -1 %}warning{% else %}banned{% endif %}</h3>
+      </div>
+      <div>{{ ban.reason }}</div>
+    </div>
   {% endfor %}
   </div>
   {% else %}

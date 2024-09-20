@@ -47,6 +47,13 @@ routes.get("/filter/:this", notloggedin_handler, async_handler(async (req: Reque
   res.send(filter.text_all(req.params.this))
 }));
 
+routes.get("/chat/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  res.render("chat/index.twig", { show_skeleton: !req.htmx.ishtmx() });
+}));
+routes.get("/chat/conversation", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  res.render("chat/conversation.twig", { show_skeleton: !req.htmx.ishtmx() });
+}));
+
 routes.get("/home", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   let page = Number(req.query.p);
   if(Number.isNaN(page) || Number(page) <= 0) {
@@ -204,6 +211,9 @@ routes.get("/catalog/", notloggedin_handler, async_handler(async (req: Request, 
         let sign = valid_signs.find(s => tag.value.startsWith(s));
         sign = sign !== undefined ? sign : valid_signs[0];
         sql_tags.push(sql`CAST(data->>'price' AS numeric) ${sql.unsafe(sign)} ${Number(tag.value.replace(sign, ""))}`);
+        break;
+      case "faggot": 
+        res.htmx.redirect("https://x.com/")
         break;
       case "offsale":
         sql_tags.push(sql`data->>'offsale' = ${String(tag.value).toLowerCase() == "true" ? "true" : "false"}`)

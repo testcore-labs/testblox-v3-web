@@ -41,7 +41,7 @@
         <div class="pos-relative flex-autotofill searchbar-nav">
           <div class="d-flex flex-row pillify shadow-1 round-4" style="height: 2.4em;">
             <input type="search" class="shadowless flex-1" style="box-shadow: unset; width: 100%;" id="navbar-search" placeholder="search.." name="qnavbar" hx-get="/api/v1/searchbar" hx-trigger="keyup delay:250ms changed" hx-target="#navbar-search-results" hx-on:htmx:config-request="document.getElementById('navbar-search-results').classList.remove('d-none');">
-            <button type="submit" class="shadowless border-light-1 px-4" style="background: #000;"><h5 class="bi bi-search text-muted"></h5></button>
+            <button type="submit" class="shadowless border-light-1 px-4" style="border-left: none !important; background: #000;"><h5 class="bi bi-search text-muted"></h5></button>
           </div>
           <div id="navbar-search-results" class="d-flex flex-column gap-4 pos-absolute card black-bg mt-1 round-4 d-none" style="top: 100%; width: 100%; z-index: 5;"></div>
         </div>
@@ -90,7 +90,7 @@
     #ffb101 40px
     );">site under construction!!!</center>{% endif %}
       <div class="{% if paddingforcontent ?? true %}m-3{% endif %}"{% if content_styles %} style="{{ content_styles }}"{% endif %}>{% block content %}{% endblock %}</div>
-      {% if enablefooter ?? true %}<footer class="d-flex flex-row flex-wrap gap-3 card border-dark-t-1 round-tx-0 shadowless py-3 px-4 mt-2 text-exextramuted" style="border-top: 1px solid #202020; background: #121212;">
+      {% if enablefooter ?? true %}<footer class="d-flex flex-row flex-wrap gap-3 card round-tx-0 shadowless py-3 px-4 mt-2 text-exextramuted" style="border-top: 1px solid #202020; background: #121212;">
         <div class="pos-relative">
           <select class="btn btn-transparent pos-absolute" style="color: #aaaaaa; width: 100%; height: 100%; opacity: 0; z-index: 5; -webkit-border-radius: 55px;" onchange="setlang(this.value);">
           {% for lang in translations %}
@@ -109,25 +109,8 @@
       </footer>{% endif %}
     </div>
 
-    <div class="d-flex flex-column pos-fixed me-3 border-light-1 round-4" style="bottom: 0; right: 0; max-width: 18em; width: 100%;">
-      <div onclick="openify(this, elem('#chat-contents'))" class="card card-primary d-flex flex-row round-bx-0">
-        <span>chat</span> <span class="red-bg d-inline-flex ai-center jc-center round-3 ms-auto" style="color: #fff; padding: 0px 4px;">1</span>
-      </div>
-      <div class="openify-height" id="chat-contents" style="overflow-y: scroll; --to-height: 22em; --transition-time: 0.3s; background: rgba(0,0,0, 0.75); backdrop-filter: blur(0.45em);">
-      <div class="round-0 border-box p-3">
-        <div class="d-flex flex-column gap-4">
-          {% for i in (0..2) %}
-          <div class="d-flex flex-row gap-3">
-            <img class="round-4" height=46 width=46 src="{{ cuser.get_headshot() }}">
-            <div class="d-flex flex-column w-100 gap-1 overflow-hidden">
-              <b class="text-truncate">saddsaadadadsasdsaads</b>
-              <small class="text-muted text-truncate-l2">Nope Nope Nope adfdddf dafdaik whats coherency never heard of it </small>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-      </div>
+    <div class="d-flex flex-column pos-fixed me-3" style="bottom: 0; right: 0; max-width: 20em; width: 100%;">
+      {% include "chat/index.twig" %}
     </div>
     <div class="d-none pos-absolute round-4 p-3" style="top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0, 0.33); backdrop-filter: blur(1em);" id="cmd_window">
     nothing here.. (close me by typing --cmd again)

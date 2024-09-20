@@ -888,6 +888,11 @@ a.link-light:active {
 .blue-bg {
   background: $blue;
 }
+
+.blue-bg-dark {
+  background: darken($blue, 5%);
+}
+
 .purple-bg {
   background: $accent;
 }
@@ -907,6 +912,9 @@ a.link-light:active {
 
 .black-bg {
 background: #000;
+}
+.gray-bg {
+background: #1a1a1a;
 }
 .red-bg {
   background: $red-1-danger;
@@ -1182,15 +1190,15 @@ $sides: (
     $side-keywithdash: if($side-key == '', '', -#{$side-key});
 
     .border-light#{$side-keywithdash}-#{$space-key} {
-      border#{$property}: #{$space-value} solid $primary-2;
+      border#{$property}: #{$space-value} solid $primary-2 !important;
     }
 
     .border-dark#{$side-keywithdash}-#{$space-key} {
-      border#{$property}: #{$space-value} solid $primary-1;
+      border#{$property}: #{$space-value} solid $primary-1 !important;
     }
 
     .border-black#{$side-keywithdash}-#{$space-key} {
-      border#{$property}: #{$space-value} solid #000000;
+      border#{$property}: #{$space-value} solid #000000 !important;
     }
   }
 }
@@ -1207,18 +1215,18 @@ $sides: (
   }
 
   .border-light-y-#{$space-key} {
-    border-top: #{$space-value} solid $primary-2;
-    border-bottom: #{$space-value} solid $primary-2;
+    border-top: #{$space-value} solid $primary-2 !important;
+    border-bottom: #{$space-value} solid $primary-2 !important;
   }
 
   .border-dark-y-#{$space-key} {
-    border-top: #{$space-value} solid $primary-1;
-    border-bottom: #{$space-value} solid $primary-1;
+    border-top: #{$space-value} solid $primary-1 !important;
+    border-bottom: #{$space-value} solid $primary-1 !important;
   }
 
   .border-black-y-#{$space-key} {
-    border-top: #{$space-value} solid #000000;
-    border-bottom: #{$space-value} solid #000000;
+    border-top: #{$space-value} solid #000000 !important;
+    border-bottom: #{$space-value} solid #000000 !important;
   }
 }
 
@@ -1234,18 +1242,18 @@ $sides: (
   }
   
   .border-light-x-#{$space-key} {
-    border-left: #{$space-value} solid $hr-light;
-    border-right: #{$space-value} solid $hr-light;
+    border-left: #{$space-value} solid $hr-light !important;
+    border-right: #{$space-value} solid $hr-light !important;
   }
 
   .border-dark-x-#{$space-key} {
-    border-left: #{$space-value} solid $hr-dark;
-    border-right: #{$space-value} solid $hr-dark;
+    border-left: #{$space-value} solid $hr-dark !important;
+    border-right: #{$space-value} solid $hr-dark !important;
   }
   
   .border-black-x-#{$space-key} {
-    border-left: #{$space-value} solid #000000;
-    border-right: #{$space-value} solid #000000;
+    border-left: #{$space-value} solid #000000 !important;
+    border-right: #{$space-value} solid #000000 !important;
   }
 }
 
@@ -1765,7 +1773,7 @@ img {
   align-items: center;
 }
 .jc-center {
-  align-items: center;
+  justify-content: center;
 }
 .as-baseline {
   align-self: baseline;
@@ -2250,4 +2258,14 @@ details {
   &.ti-currency {
     background-image: url("/assets/img/currency.svg");
   }
+}
+
+.htmx-indicator{
+  display:none;
+}
+.htmx-request .htmx-indicator{
+  display: inherit;
+}
+.htmx-request.htmx-indicator{
+  display: inherit;
 }
