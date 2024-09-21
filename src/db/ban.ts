@@ -1,4 +1,4 @@
-import sql, { type postgres } from "../utils/sql";
+import sql, { type postgres } from "../sql";
 import entity_asset from "./asset";
 import entity_base, { query_builder } from "./base";
 import type { message_type } from "../types/message";

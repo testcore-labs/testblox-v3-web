@@ -3,7 +3,7 @@ import env from './env';
 import { info_time, timeago } from './time';
 import { pcall, pcall_msg, pcall_sync } from './pcall';
 import twig from "twig";
-import translate from "./translate";
+import translate from "../translate";
 import fs from "fs";
 import path from "path";
 import root_path from "./root_path";

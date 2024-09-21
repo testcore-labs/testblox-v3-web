@@ -1,4 +1,4 @@
-import sql, { type postgres } from "../utils/sql";
+import sql, { type postgres } from "../sql";
 import bbcode from "bbcode-ts";
 import { type message_type } from "../types/message";
 import ENUM from "../types/enums";

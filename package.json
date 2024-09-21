@@ -3,18 +3,20 @@
   "module": "src/main.ts",
   "type": "module",
   "scripts": {
-    "test": "bun src/cli/test.ts",
-    "dev:bun:watch": "bun --watch src/main.ts # anything but .ts doesnt work",
-    "dev:bun:hot": "bun --hot src/main.ts # anything but .ts doesnt work",
-    "dev:watch": "nodemon -e ts,twig,yaml --exec 'bun src/main.ts'",
-    "web": "bun src/main.ts",
-    "build-css:watch": "bun nodemon --watch scss/*.scss -x \"bun run build-css\" -e scss",
-    "build-css": "sass scss/core.scss scss/core.pcss && postcss scss/core.pcss --use autoprefixer -o public/assets/css/core.css",
-    "cli:purge-logs": "bun src/cli/purge_logs.ts",
-    "cli:user:edit": "bun src/cli/user/edit.ts"
+    "tools:test": "bun src/cli/test.ts",
+    "tools:purge-logs": "bun src/cli/purge_logs.ts",
+    "tools:user:edit": "bun src/cli/user/edit.ts",
+
+    "discord:start": "bun src/discord_bot.ts",
+    "web:serve": "bun src/main.ts",
+    "dev:serve": "nodemon -e ts,twig,yaml --exec 'bun src/main.ts'",
+
+    "css:watch": "bun nodemon --watch scss/*.scss -x \"bun run build-css\" -e scss",
+    "css:build": "sass scss/core.scss scss/core.pcss && postcss scss/core.pcss --use autoprefixer -o public/assets/css/core.css"
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/express-ws": "^3.0.5",
     "@types/multer": "^1.4.11"
   },
   "peerDependencies": {

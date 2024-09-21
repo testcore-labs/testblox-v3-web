@@ -1,8 +1,8 @@
 import postgres from "postgres"
 import { highlight } from "sql-highlight"
-import colors, { createColors } from "../utils/colors"
-import logs from "./log"
-import env from "./env"
+import colors, { createColors } from "./utils/colors"
+import logs from "./utils/log"
+import env from "./utils/env"
 
 // cool thing about this library is that it sanitizes user input FOR you
 

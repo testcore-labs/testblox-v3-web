@@ -1,4 +1,4 @@
-import sql, { type postgres } from "../utils/sql";
+import sql, { type postgres } from "../sql";
 import path from "path";
 import entity_user from "./user";
 import root_path from "../utils/root_path";
@@ -21,8 +21,12 @@ class entity_invitekey {
     LIMIT 1`;
     if(promokeys.length > 0) {
       let promokey = promokeys[0];
-      this.usedby = await (new entity_user).by_id(promokey.usedby);
-      this.createdby = await (new entity_user).by_id(promokey.createdby);
+      this.usedby = await (new entity_user).by(entity_user.query()
+        .where(sql`id = ${promokey.usedby}`)
+      );
+      this.createdby = await (new entity_user).by(entity_user.query()
+        .where(sql`id = ${promokey.createdby}`)
+      );
       this.data = promokey;
     }
     return this;
@@ -35,8 +39,12 @@ class entity_invitekey {
     LIMIT 1`;
     if(promokeys.length > 0) {
       let promokey = promokeys[0];
-      this.usedby = await (new entity_user).by_id(promokey.usedby);
-      this.createdby = await (new entity_user).by_id(promokey.createdby);
+      this.usedby = await (new entity_user).by(entity_user.query()
+        .where(sql`id = ${promokey.usedby}`)
+      );
+      this.createdby = await (new entity_user).by(entity_user.query()
+        .where(sql`id = ${promokey.createdby}`)
+      );
       this.data = promokey;
     }
     return this;
@@ -112,7 +120,10 @@ class entity_invitekey {
 
   async redeem(usedby: number): Promise<message_type> {
     let usr = new entity_user();
-    await usr.by_id(usedby);
+    await usr.by(entity_user.query()
+      .where(sql`id = ${usedby}`)
+    );
+
     if(!usr.exists) {
       return { success: false, message: "redeem.invalid_user" };
     }

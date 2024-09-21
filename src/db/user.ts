@@ -1,4 +1,4 @@
-import sql, { type postgres } from "../utils/sql";
+import sql, { type postgres } from "../sql";
 import xss from "xss";
 import argon2 from "argon2";
 import bbcode from "bbcode-ts";

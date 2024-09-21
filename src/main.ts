@@ -6,38 +6,34 @@ import cookie_parser from "cookie-parser";
 import { queryParser as query_parser} from "express-query-parser";
 import cors from "cors";
 import _ from "lodash";
-import discord_bot from "./bot";
 
 import env from "./utils/env";
 process.env.TZ = env.timezone;
 import entity_user from "./db/user";
-import './utils/sql';
+import './sql';
 import twig from "./utils/twig";
 import logs from "./utils/log";
 import { pcall } from "./utils/pcall";
 
-import translate from "./utils/translate";
+import translate from "./translate";
 import arbiter from "./arbiter";
 
 import front_routes from "./routes/front";
 import front_loggedin_routes from "./routes/front_loggedin";
-import api_v1_routes from "./routes/api_v1";
+import api_v1_routes, { init_ws } from "./routes/api_v1";
 import api_roblox_routes from "./routes/rbx/api";
 import api_rcc_roblox_routes from "./routes/rbx/rcc";
 import ENUM from "./types/enums";
-import sql from "./utils/sql";
+import sql from "./sql";
 import root_path from "./utils/root_path";
 import { proxy_obj } from "./utils/proxy_obj";
 
-
-const dsc_bot = new discord_bot;
-await pcall(async () => await dsc_bot.start_bot());
 translate.init();
 
 arbiter.init();
 
 logs.http(`starting...`);
-const app: Express = express();
+const app = express();
 
 app.use(cookie_parser());
 app.use(cors());
@@ -128,6 +124,7 @@ app.use((err: any, req: any, res: any, next: any) => {
     console.error(err);
   }
 });
+
 let server = app.listen(env.http.port, () => {
   logs.http(`running at :${env.http.port}`);
 });

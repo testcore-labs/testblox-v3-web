@@ -1,4 +1,4 @@
-import sql, { type postgres } from "../utils/sql";
+import sql, { type postgres } from "../sql";
 import xss from "xss";
 import fs from "fs";
 import path from "path";

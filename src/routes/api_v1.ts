@@ -1,6 +1,6 @@
 import express, { type Express, type Request, type Response } from "express";
 import entity_user from "../db/user";
-const routes = express.Router();
+const routes = express.Router() as express_ws.Router;
 import { type message_type } from "../types/message";
 import async_handler from 'express-async-handler';
 import env from '../utils/env';
@@ -12,7 +12,8 @@ import root_path from "../utils/root_path";
 import fs from "fs";
 import entity_feed from "../db/feed";
 import { notloggedin_api_handler, owner_api_handler } from "../utils/handlers";
-import translate from "../utils/translate";
+import translate from "../translate";
+import type express_ws from "express-ws";
 
 // limiters
 const msg_too_many_reqs: message_type = {success: false, status: 429, message: "too many requests, try again later."};
@@ -27,6 +28,16 @@ const creation_and_login_limiter = rateLimit({
     return req.ip; 
   }
 });
+
+export const init_ws = () => {
+
+routes.ws('/echo', async (ws, req) => {
+  ws.on('message', (msg: String) => {
+      ws.send(msg);
+  });
+});
+
+};
 
 routes.post("/user/create", creation_and_login_limiter, async_handler(async (req: Request, res: Response) => {
   try {

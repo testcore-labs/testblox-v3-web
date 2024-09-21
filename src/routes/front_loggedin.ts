@@ -22,7 +22,7 @@ import si from "systeminformation";
 import gfs from "get-folder-size";
 import root_path from "../utils/root_path";
 import path from "path";
-import sql, { postgres } from "../utils/sql";
+import sql, { postgres } from "../sql";
 import ENUM from "../types/enums";
 import _ from "lodash";
 import { xss_all } from "../utils/xss";

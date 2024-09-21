@@ -1,10 +1,10 @@
 import YAML, { parse } from "yaml";
-import logs from "./log"
-import colors from "../utils/colors";
-import root_path from "./root_path";
-import env from "./env";
+import logs from "./utils/log"
+import colors from "./utils/colors";
+import root_path from "./utils/root_path";
+import env from "./utils/env";
 import path from "path";
-import { flatten } from "./array";
+import { flatten } from "./utils/array";
 import fs from 'fs'
 
 class translator {

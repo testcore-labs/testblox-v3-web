@@ -1,4 +1,4 @@
-import sql, { type postgres } from "../utils/sql";
+import sql, { type postgres } from "../sql";
 import type _ENUM from "../types/enums"; 
 import ENUM from "../types/enums"; 
 import { validate_orderby } from "../types/orderby"; 

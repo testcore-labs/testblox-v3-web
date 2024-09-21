@@ -3,7 +3,7 @@ import readline from 'node:readline';
 import cli_select from 'cli-select';
 import fs from 'fs';
 import path from 'path';
-import sql from '../../utils/sql';
+import sql from '../../sql';
 import entity_user from "../../db/user";
 
 const rl = readline.createInterface({

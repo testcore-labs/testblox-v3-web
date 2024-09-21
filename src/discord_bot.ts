@@ -8,7 +8,7 @@ import entity_user from "./db/user";
 import { param } from "express-validator";
 import { pcall } from "./utils/pcall";
 import ENUM from "./types/enums";
-import sql from "./utils/sql";
+import sql from "./sql";
 
 const bot_token = env.discord.token || "";
 
@@ -233,4 +233,5 @@ class discord_bot {
   }
 }
 
-export default discord_bot;
+const bot = new discord_bot;
+bot.start_bot();

@@ -1,4 +1,4 @@
-// import db from "../utils/sql";
+// import db from "../sql";
 // import xss from "xss";
 // import argon2 from "argon2";
 // import { type message_type } from "../types/message";
@@ -89,7 +89,7 @@
 // export default entity_universe;
 
 
-import sql, { type postgres } from "../utils/sql";
+import sql, { type postgres } from "../sql";
 import xss from "xss";
 import argon2 from "argon2";
 import bbcode from "bbcode-ts";

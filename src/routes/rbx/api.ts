@@ -5,7 +5,7 @@ import express from "express";
 import async_handler from 'express-async-handler';
 import { rateLimit } from 'express-rate-limit';
 import entity_asset from "../../db/asset";
-import sql from "../../utils/sql";
+import sql from "../../sql";
 import root_path from "../../utils/root_path";
 import { pcall } from "../../utils/pcall";
 
