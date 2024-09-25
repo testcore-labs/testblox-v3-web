@@ -214,15 +214,18 @@ stars.forEach((star, index) => {
         });
     });
 });
-function openify(calledfrom, forelem) {
-  function close() {
-    forelem.removeAttribute("open");
+function openify(calledfrom, forelem, hide_elems) {
+  function close(elem) {
+    elem.removeAttribute("open");
   }
 
   if(!forelem.getAttribute("open")) {
+    hide_elems.forEach(elem => {
+      close(elem);
+    });
     forelem.setAttribute("open", true);
   } else {
-    close();
+    close(forelem);
   }
 }
 
@@ -297,6 +300,7 @@ document.addEventListener("DOMContentLoaded", function() {
 const searchinput = document.getElementById("navbar-search");
 const searchresults = document.getElementById("navbar-search-results");
 
+if(searchinput && searchresults) {
 searchinput.addEventListener("focus", () => {
   if(searchresults.classList.contains("d-none")) {
     searchresults.classList.remove("d-none");
@@ -316,6 +320,7 @@ document.addEventListener("keydown", (event) => {
     searchresults.classList.add("d-none");
   }
 });
+}
 });
 
 var dragger = function() {
@@ -393,13 +398,16 @@ function search_html(input, tosearch) {
   const filter = input.value.toUpperCase();
   let tosearch_elems = tosearch.children; // if i swapped elems with children it would sound weird
   for(var i = 0, ii = tosearch_elems.length; i < ii; i++) {
-    let div = tosearch_elems[i]
+    let div = tosearch_elems[i];
+    let excluded = div.getAttribute("exclude-search-html") !== null;
+    if(!excluded) {
     if(div && div !== input) {
       if(!(div.textContent.toString().toUpperCase()).includes(filter)) {
         div.style.display = "none";
       } else {
         div.style.display = "";
       }
+    }
     }
   };
 }

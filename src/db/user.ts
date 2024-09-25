@@ -456,7 +456,7 @@ class entity_user extends entity_base {
   }
 
   get is_online() {
-    return ((Date.now() - (this.data?.online || 0)) < 60 * 1000);
+    return ((Date.now() - (this.data?.online || 0)) < 15 * 1000);
   }
 
   get updatedat() {

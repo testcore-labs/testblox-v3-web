@@ -119,7 +119,7 @@ const catalog_categorized = {
 };
 
 
-const catalog_types: { [key: string]: number[] } = {} 
+let catalog_types: { [key: string]: number[] } = {} 
 
 Object.entries(catalog_categorized).forEach(([key, value]) => { 
   let values: number[] = [];
@@ -157,13 +157,11 @@ export const asset_types_categorized = {
   },
 }
 
-const convert_to_numberarray = (obj: {[key: string]: number|number[]}): number[] => { let t: number[] = []; Object.entries(obj).forEach(([_key, val]) => {
-  if(typeof val === "number") {
-    t.push(val);
-  } else {
-    t.push(...val) 
-  }
-}); return t; };
+const convert_to_numberarray = (obj: {[key: string]: number|number[]}): number[] => {
+  return Object.values(obj).flatMap(objj => 
+    Object.values(objj).filter(value => typeof value === 'number')
+  );
+};
 
 export const asset_types_numbered = {
   catalog: convert_to_numberarray(asset_types_categorized.catalog),

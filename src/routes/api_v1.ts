@@ -1,6 +1,6 @@
 import express, { type Express, type Request, type Response } from "express";
 import entity_user from "../db/user";
-const routes = express.Router() as express_ws.Router;
+const routes = express.Router();
 import { type message_type } from "../types/message";
 import async_handler from 'express-async-handler';
 import env from '../utils/env';
@@ -13,7 +13,7 @@ import fs from "fs";
 import entity_feed from "../db/feed";
 import { notloggedin_api_handler, owner_api_handler } from "../utils/handlers";
 import translate from "../translate";
-import type express_ws from "express-ws";
+import websockets from "../websockets";
 
 // limiters
 const msg_too_many_reqs: message_type = {success: false, status: 429, message: "too many requests, try again later."};
@@ -29,15 +29,17 @@ const creation_and_login_limiter = rateLimit({
   }
 });
 
-export const init_ws = () => {
-
-routes.ws('/echo', async (ws, req) => {
-  ws.on('message', (msg: String) => {
-      ws.send(msg);
+websockets.on("connection", (socket) => {
+  console.log(socket.handshake.auth.token);
+  const send_msg = () => socket.emit("test ass", {
+      
   });
+  socket.on("disconnect", (reason, details) => {
+    console.log(reason, details)
+  });
+  socket.on('reconnect', () => send_msg())
+  setInterval(send_msg, 1000);
 });
-
-};
 
 routes.post("/user/create", creation_and_login_limiter, async_handler(async (req: Request, res: Response) => {
   try {

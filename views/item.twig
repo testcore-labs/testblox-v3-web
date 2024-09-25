@@ -19,7 +19,7 @@
       <div class="d-flex flex-row mb-4 mt-2 gap-3">
         <div class="text-muted">price:</div> 
         <div class="d-flex flex-column flex-1 gap-3">
-          <div class="d-flex flex-row gap-3 ai-center"><img src="/assets/img/currency.svg" width="20"> <h5>{{ item.data.data.price|to_formatted(0) }}</h5></div>
+          <div class="d-flex flex-row gap-3 ai-center"><img src="/assets/img/currency.svg" width="20"> <h5>{{ item.data.data.price == 0 ? "FREE" : item.data.data.price|to_formatted(0) }}</h5></div>
           <a {% if has_item %}title="you already own this item" disabled{% else %}onclick="popupify(this, elem('#buy-prompt'))"{% endif %} class="d-flex jc-center ai-center flex-wrap gap-3 ai-center btn-secondary p-3 w-100">
             <i class="bi bi-bag-fill ms-auto" style="font-size: 1.5em; line-height: 0.65em;"></i> 
             <h5 class="me-auto">buy</h5>

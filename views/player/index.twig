@@ -1,0 +1,19 @@
+{% extends "./window.twig" %}
+
+{% block content %}
+  <div id="click2load">
+  <h3>click anywhere to start</h3>
+  </div>
+  <iframe id="player" style="display: none; width: 100vw; height: 100vh;" frameborder=0 src="about:blank"></iframe>
+
+  <script>
+    let player = elem("#player");
+    let click2load = elem("#click2load");
+    document.addEventListener("click", () => {
+      click2load.style.display = "none";
+      player.style.display = "initial";
+      player.setAttribute("src", "./sm64");
+      //player.load();
+    }, {once : true});
+  </script>
+{% endblock %}

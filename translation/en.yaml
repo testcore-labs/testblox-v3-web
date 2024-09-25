@@ -34,6 +34,47 @@ games:
 catalog:
   catalog: catalog
   search: search for an item..
+  types:
+    all_types: all types
+    clothing:
+      clothing: clothing
+      all: all clothing
+      TShirt: t-shirt
+      Hat: hat
+      Shirt: shirt
+      Pants: pants
+    body_parts:
+      body_parts: body parts
+      all: all body parts
+      Head: head
+      Face: face
+      Torso: torso
+      RightArm: right arm
+      LeftArm: left arm
+      LeftLeg: left leg
+      RightLeg: right leg
+      Package: package
+    gear: gear
+    accessories:
+      all: all clothing
+      HairAccessory: hair accessory
+      FaceAccessory: face accessory
+      NeckAccessory: neck accessory
+      ShoulderAccessory: shoulder accessory
+      FrontAccessory: front accessory
+      BackAccessory: back accessory
+      WaistAccessory: waist accessory
+    animations:
+      all: all clothing
+      ClimbAnimation: climb animation
+      DeathAnimation: death animation
+      FallAnimation: fall animation
+      IdleAnimation: idle animation
+      JumpAnimation: jump animation
+      RunAnimation: run animation
+      SwimAnimation: swim animation
+      WalkAnimation: walk animation
+      PoseAnimation: pose animation
 
 # please dont remove the html aka <b> and </b>, dont modify the tags aswell
 filter:

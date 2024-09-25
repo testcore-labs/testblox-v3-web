@@ -5,7 +5,7 @@ import { notloggedin_handler, mod_handler, admin_handler, owner_handler } from "
 import { format_bytes } from "../utils/format";
 import {asset_types, asset_types_numbered} from "../types/assets"
 import type { message_type } from "../types/message";
-import htmx_middleware from "../utils/htmx";
+import htmx_middleware from "../utils/express-extend";
 import cooldown from "../utils/cooldown";
 import env, { raw_env } from "../utils/env";
 import filter from "../utils/filter";
@@ -15,7 +15,6 @@ import entity_invitekey from "../db/invitekey";
 import entity_user from "../db/user";
 import entity_promokey from "../db/promokey";
 
-import { flatten } from "../utils/array"
 import async_handler from 'express-async-handler';
 import os from "os";
 import si from "systeminformation";
@@ -103,8 +102,10 @@ routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Req
       res.render("components/game_tabs.twig", { tab: option, game });
       break;
     case "play":
-      res.send("doesn't work rn");
-      //res.render("player/window.twig");
+      res.render("player/index.twig");
+      break;
+    case "sm64":
+      res.render("player/sm64.twig");
       break;
     default:
       res.render("game.twig", { game: game });
@@ -183,22 +184,23 @@ routes.get("/catalog/", notloggedin_handler, async_handler(async (req: Request, 
     page = 1;
   }
 
-  const type = Number(req.query?.type);
+  const type = String(req.query?.type);
   const order = String(req.query?.order).toString();
   const sort = String(req.query?.sort).toString();
 
-  let actual_type: number[] = asset_types_numbered.catalog;
-  if(asset_types_numbered.catalog.includes(type)) {
-    actual_type = [type];
-  } else if(String(req.query?.type) === undefined) {
-    actual_type = ENUM.assets_categorized.catalog[String(req.query?.type)];
-  }
+  let actual_type: number[] = asset_types_numbered.catalog.includes(Number(type)) 
+    ? [Number(type)]
+    : type !== undefined
+      ? ENUM.assets_categorized.catalog[type]
+      : asset_types_numbered.catalog;
 
   let sql_tags: Array<postgres.PendingQuery<postgres.Row[]>> = [];
   let matched_tags = search_tags.match_all(query);
   let query_without_tags = query;
+
   Object.values(matched_tags).forEach((tag) => {
     query_without_tags = query_without_tags.replace(tag.full, "");
+
     switch(String(tag.key).trim().toLowerCase()) {
       case "min_price":
         sql_tags.push(sql`CAST(data->>'price' AS numeric) >= ${Number(tag.value)}`)
@@ -213,7 +215,7 @@ routes.get("/catalog/", notloggedin_handler, async_handler(async (req: Request, 
         sql_tags.push(sql`CAST(data->>'price' AS numeric) ${sql.unsafe(sign)} ${Number(tag.value.replace(sign, ""))}`);
         break;
       case "faggot": 
-        res.htmx.redirect("https://x.com/")
+        res.htmx.redirect(`https://x.com/${tag.value}`)
         break;
       case "offsale":
         sql_tags.push(sql`data->>'offsale' = ${String(tag.value).toLowerCase() == "true" ? "true" : "false"}`)
@@ -222,7 +224,7 @@ routes.get("/catalog/", notloggedin_handler, async_handler(async (req: Request, 
   });
 
   const catalog = await entity_asset.all(actual_type, 6, page, query_without_tags, sort, order, ENUM.privacy.PUBLIC, [
-    ...sql_tags
+    ...sql_tags,
   ]);
   res.render("catalog.twig", { ...catalog.info, catalog_types: ENUM.assets_categorized.catalog_categorized });
 }));

@@ -31,15 +31,18 @@
   <div class="d-flex flex-column gap-2" style="flex-basis: 12.5em; flex-grow: 1; flex-shrink: 1;">
   <div class="p-2 border-light-1 round-4 d-flex flex-column gap-1">
     {%- macro generate_category(category, category_key) %}
-    <details class="p-2">
-      <summary right-auto>{{ category }}</summary>
-      <content class="d-flex flex-column gap-1 mt-2">
-      {% include '/components/query_btns.twig' with {classes: "ps-5 py-2", urlparams: req.query, keyparam: "type", valueparam: category_key, text: "all " ~ category} %}
+    <div class="pos-relative">
+      <div onclick="openify(this, elem('#catalog-content-{{ category_key }}'), elems('[id^=\'catalog-content-\']'))" class="c-pointer d-flex flex-row px-2 py-2">
+        <span>{{ category }}</span>
+        <i class="bi bi-caret-right-fill ms-auto"></i>
+      </div>
+      <div style="left: 100%; top: 0; overflow : auto; z-index: 2; width: 12em;" id="catalog-content-{{ category_key }}" class="openify card pos-absolute d-flex flex-column gap-1">
+      {% include '/components/query_btns.twig' with {classes: "py-2", urlparams: req.query, keyparam: "type", valueparam: category_key, text: "all " ~ category} %}
       {% for name, column in catalog_types[category_key]|sort %}
-        {% include '/components/query_btns.twig' with {classes: "ps-5 py-2", urlparams: req.query, keyparam: "type", valueparam: column, text: name} %}
+        {% include '/components/query_btns.twig' with {classes: "py-2", urlparams: req.query, keyparam: "type", valueparam: column, text: t.catalog.types[category_key][name]} %}
       {% endfor %}
-      </content>
-    </details>
+      </div>
+    </div>
     {% endmacro -%}
     {% import _self as self %} {# twig hack #}
     {% include '/components/query_btns.twig' with {classes: "px-2 py-2", urlparams: req.query, keyparam: "type", valueparam: "", text: "all types"} %}

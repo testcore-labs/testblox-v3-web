@@ -82,10 +82,8 @@ rcc:
 
 # http config
 http:
-  # use nginx noob
-  #ssl: true # this wont work dont bother
   port: 8021
 
-# websocket (Socket.io + µWebSockets.js)
+# websocket (Socket.io)
 ws:
   port: 8022

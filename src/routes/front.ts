@@ -2,7 +2,7 @@ import express, { type Express, type Request, type Response, type NextFunction }
 const routes = express.Router();
 import async_handler from 'express-async-handler';
 import env from '../utils/env';
-import htmx_middleware from "../utils/htmx";
+import htmx_middleware from "../utils/express-extend";
 
 routes.use(htmx_middleware);
 

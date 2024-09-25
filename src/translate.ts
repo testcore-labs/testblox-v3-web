@@ -20,22 +20,37 @@ class translator {
       return;
     }
     logs.custom("starting...", this.log_name);
-    const files = fs.readdirSync(this.log_dir)
+    const files = fs.readdirSync(this.log_dir);
+    let later_files = [];
     for(const file of files) {
-      let data = fs.readFileSync(path.join(this.log_dir, file), 'utf8');
-      if(env.debug) {
-        logs.custom("loading " + file, this.log_name, true);
+      if(file == this.default_locale) {
+        this.load_file(file);
+      } else {
+        later_files.push(file);
       }
-
-      let parsed = YAML.parse(data);
-      const locale = parsed._locale.toString();
-      if(this.default_locale === locale) {
-        this.selected_locale = this.default_locale;
-      }
-      this.translations[locale] = parsed;
+    }
+    for(const file of later_files) {
+      this.load_file(file);
     }
     logs.custom("started", this.log_name);
     this.initialized = true;
+  }
+
+  static load_file(file: string) {
+    let data = fs.readFileSync(path.join(this.log_dir, file), 'utf8');
+    if(env.debug) {
+      logs.custom("loading " + file, this.log_name, true);
+    }
+
+    let parsed = YAML.parse(data);
+    const locale = parsed._locale.toString();
+    if(this.default_locale === locale) {
+      this.selected_locale = this.default_locale;
+    }
+
+    let default_parsed = this.translations[this.default_locale];
+    this.translations[locale] = Object.assign(default_parsed ?? {}, parsed);
+
   }
 
   static select(locale: string) {

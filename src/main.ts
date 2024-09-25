@@ -6,6 +6,7 @@ import cookie_parser from "cookie-parser";
 import { queryParser as query_parser} from "express-query-parser";
 import cors from "cors";
 import _ from "lodash";
+import websockets from "./websockets";
 
 import env from "./utils/env";
 process.env.TZ = env.timezone;
@@ -20,13 +21,12 @@ import arbiter from "./arbiter";
 
 import front_routes from "./routes/front";
 import front_loggedin_routes from "./routes/front_loggedin";
-import api_v1_routes, { init_ws } from "./routes/api_v1";
+import api_v1_routes from "./routes/api_v1";
 import api_roblox_routes from "./routes/rbx/api";
 import api_rcc_roblox_routes from "./routes/rbx/rcc";
 import ENUM from "./types/enums";
 import sql from "./sql";
 import root_path from "./utils/root_path";
-import { proxy_obj } from "./utils/proxy_obj";
 
 translate.init();
 
@@ -83,11 +83,7 @@ app.use(async_handler(async (req, res, next) => {
   res.locals.translations = translate.translations;
   res.locals.translate = (text: string) => translate.text(text);
   const selected_translation = translate.translations[req.cookies?.locale ? req.cookies?.locale.toString() : env.locale];
-  res.locals.t = proxy_obj(selected_translation, 
-    (_, prop) => {
-      return "undefined";
-    }
-  );
+  res.locals.t = selected_translation;
   // cuser = current user
   let cuser = new entity_user();
   await cuser.by(entity_user.query()

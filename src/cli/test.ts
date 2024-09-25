@@ -1,5 +1,7 @@
 // for testing things in cli obv
-import search_tags from "../utils/search_tags";
-let search_matches =search_tags.match_all(`(price:       22)`);
+import translator from "../translate";
 
-console.log(search_matches);
+translator.init();
+
+console.log("mmm:", translator.translations["lt-lt"].catalog);
+console.log("ew:", translator.translations["lt-lt"].catalog.catalog);
