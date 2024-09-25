@@ -56,7 +56,8 @@ catalog:
       Package: package
     gear: gear
     accessories:
-      all: all clothing
+      accessories: accessories
+      all: all accessories
       HairAccessory: hair accessory
       FaceAccessory: face accessory
       NeckAccessory: neck accessory
@@ -65,7 +66,8 @@ catalog:
       BackAccessory: back accessory
       WaistAccessory: waist accessory
     animations:
-      all: all clothing
+      animations: animations
+      all: all animations
       ClimbAnimation: climb animation
       DeathAnimation: death animation
       FallAnimation: fall animation

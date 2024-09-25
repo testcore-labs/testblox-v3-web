@@ -33,11 +33,11 @@
     {%- macro generate_category(category, category_key) %}
     <div class="pos-relative">
       <div onclick="openify(this, elem('#catalog-content-{{ category_key }}'), elems('[id^=\'catalog-content-\']'))" class="c-pointer d-flex flex-row px-2 py-2">
-        <span>{{ category }}</span>
+        <span>{{ t.catalog.types[category_key][category_key] }}</span>
         <i class="bi bi-caret-right-fill ms-auto"></i>
       </div>
-      <div style="left: 100%; top: 0; overflow : auto; z-index: 2; width: 12em;" id="catalog-content-{{ category_key }}" class="openify card pos-absolute d-flex flex-column gap-1">
-      {% include '/components/query_btns.twig' with {classes: "py-2", urlparams: req.query, keyparam: "type", valueparam: category_key, text: "all " ~ category} %}
+      <div style="left: 100%; top: 0; overflow : auto; z-index: 2; width: 14em;" id="catalog-content-{{ category_key }}" class="openify card pos-absolute d-flex flex-column gap-1">
+      {% include '/components/query_btns.twig' with {classes: "py-2", urlparams: req.query, keyparam: "type", valueparam: category_key, text: t.catalog.types[category_key].all} %}
       {% for name, column in catalog_types[category_key]|sort %}
         {% include '/components/query_btns.twig' with {classes: "py-2", urlparams: req.query, keyparam: "type", valueparam: column, text: t.catalog.types[category_key][name]} %}
       {% endfor %}
@@ -45,11 +45,11 @@
     </div>
     {% endmacro -%}
     {% import _self as self %} {# twig hack #}
-    {% include '/components/query_btns.twig' with {classes: "px-2 py-2", urlparams: req.query, keyparam: "type", valueparam: "", text: "all types"} %}
+    {% include '/components/query_btns.twig' with {classes: "px-2 py-2", urlparams: req.query, keyparam: "type", valueparam: "", text: t.catalog.types.all_types} %}
     <hr class="my-2" nomargin>
     {{ self.generate_category("clothing", "clothing") }}
     {{ self.generate_category("body parts", "body_parts") }}
-    {% include '/components/query_btns.twig' with {classes: "px-2 py-2", urlparams: req.query, keyparam: "type", valueparam: (ENUM.assets.Gear), text: "gear"} %}
+    {% include '/components/query_btns.twig' with {classes: "px-2 py-2", urlparams: req.query, keyparam: "type", valueparam: (ENUM.assets.Gear), text: t.catalog.types.gear} %}
     {{ self.generate_category("accessories", "accessories") }}
     {{ self.generate_category("animations", "animations") }}
   </div>

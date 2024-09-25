@@ -23,10 +23,11 @@ class translator {
     const files = fs.readdirSync(this.log_dir);
     let later_files = [];
     for(const file of files) {
-      if(file == this.default_locale) {
+      if(file === this.default_locale) {
         this.load_file(file);
       } else {
-        later_files.push(file);
+        console.log(later_files);
+        if(file !== this.default_locale) later_files.push(file);
       }
     }
     for(const file of later_files) {
@@ -49,8 +50,7 @@ class translator {
     }
 
     let default_parsed = this.translations[this.default_locale];
-    this.translations[locale] = Object.assign(default_parsed ?? {}, parsed);
-
+    this.translations[locale] = Object.assign(Object.assign({}, default_parsed ?? {}), parsed);
   }
 
   static select(locale: string) {

@@ -22,11 +22,58 @@ footer:
   terms_of_service: naudojimo sąlygos
 coming_soon:
   comingsoon: netrukus atvyks
-  inspiredby: paremtas roblosium.net
-  about: daugia-versiju atgaivinimas
+  inspiredby: ideja iš roblosium.net
+  about: daugia-versiju "revival"
 home: 
   friends: draugai
   recently_played: neseniai žaisti
   see_all: matyti visus
 games:
   games: žaidimai
+  search: ieškokite žaidimu..
+catalog:
+  catalog: parduotuvė
+  search: ieškokite daiktu..
+  types:
+    all_types: visi tipai
+    clothing:
+      clothing: rubai
+      all: visi rubai
+      TShirt: marškinėliai
+      Hat: kepurės
+      Shirt: marškiniai
+      Pants: kelnės
+    body_parts:
+      body_parts: kūno dalys
+      all: visos kūno dalys
+      Head: galva
+      Face: veidas
+      Torso: liemuo
+      RightArm: dešinė ranka
+      LeftArm: kairė ranka
+      LeftLeg: kairė koja
+      RightLeg: dešinė joka
+      Package: kūno pakai
+    gear: priemonės
+    accessories:
+      accessories: priedai
+      all: visi priedai
+      HairAccessory: plaukai
+      FaceAccessory: veido priedai
+      NeckAccessory: kaklo priedai
+      ShoulderAccessory: pečiai priedai
+      FrontAccessory: priekiniai priedai
+      BackAccessory: užpakalinis priedai
+      WaistAccessory: juosmens priedas
+    animations:
+      animations: animacijos
+      all: visos animacijos
+      ClimbAnimation: lipimo animacija
+      DeathAnimation: mirties animacija
+      FallAnimation: kritimo animacija
+      IdleAnimation: neveikimo animacija
+      JumpAnimation: šuolio animacija
+      RunAnimation: bėgimo animacija
+      SwimAnimation: plaukimo animacija
+      WalkAnimation: ėjimo animacija
+      PoseAnimation: pozo animacija
