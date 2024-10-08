@@ -214,7 +214,20 @@ stars.forEach((star, index) => {
         });
     });
 });
-function openify(calledfrom, forelem, hide_elems) {
+function openify(calledfrom, forelem, hide_elems = [], opts = {}) {
+  if(opts.length !== 0) {
+    if(opts.click_outside_close) {
+      document.addEventListener("click", (event) => clickoutside(forelem, event));
+    }
+  }
+
+  function clickoutside(elem, event) {
+    if(!elem.contains(event.target) && !calledfrom.contains(event.target)) {
+      close(elem);
+      document.removeEventListener("click", (event) => clickoutside(elem, event));
+    }
+  }
+
   function close(elem) {
     elem.removeAttribute("open");
   }

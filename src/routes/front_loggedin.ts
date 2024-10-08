@@ -193,6 +193,7 @@ routes.get("/catalog/", notloggedin_handler, async_handler(async (req: Request, 
     : type !== undefined
       ? ENUM.assets_categorized.catalog[type]
       : asset_types_numbered.catalog;
+  actual_type = actual_type === undefined ? asset_types_numbered.catalog : actual_type;
 
   let sql_tags: Array<postgres.PendingQuery<postgres.Row[]>> = [];
   let matched_tags = search_tags.match_all(query);

@@ -1,11 +1,8 @@
 {% extends "html.twig" %}
-{% set title = "home" %}
+{% set title = t.home.home %}
 
 {% block content %}
-{% set randomhis = [
-"hello", "hola", "bonjour", "hallo", "ciao", "olá", "hallo", "здравствуйте", "你好", "こんにちは", "안녕하세요", "مرحباً", "नमस्ते", "jambo", "merhaba", "γειά σας", "שלום", "hej", "hei", "hei", "hej", "cześć", "helló", "xin chào", "สวัสดี", "سلام", "salut", "ahoj", "নমস্কার", "привіт", "kumusta", "hai", "dia dhuit", "halò", "halló", "labas", "tere", "bok", "здравейте", "здраво", "hello", "ahoj", "sveiki", "გამარჯობა", "नमस्ते", "բարև", "ہیلو", "bawo ni", "sawubona", "helo",
-] %}
-{% set randomhi = randomhis|shuffle[0] %}
+{% set randomhi = t.home.hellos|shuffle[0] %}
 <div class="d-flex flex-row-reverse flex-wrap gap-5" style="align-content: flex-start;">
 
   <div class="d-flex flex-column gap-3" style="flex-shrink: 3; flex-grow: 1; flex-basis: 24em;">

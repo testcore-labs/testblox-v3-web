@@ -5,14 +5,16 @@
   </head>
   <body class="body-padding body-backdrop" style="box-sizing: border-box;">
     {% if not cuser.has_membership or cuser.settings.show_ads %}
+      {% if showads ?? true %}
       <div id="ad-skyscraper-1" class="pos-absolute" style="left: 0; top: 50%; transform: translate(0, -50%);">
         <img class="ratio-skyscraper w-100 ms-8" style="max-width: 128px;" src="/assets/img/ad-skyscraper.png">
       </div>
       <div id="ad-skyscraper-2" class="pos-absolute" style="right: 0; top: 50%; transform: translate(0, -50%);">
         <img class="ratio-skyscraper w-100 me-8" style="max-width: 128px;" src="/assets/img/ad-skyscraper.png">
       </div>
+      {% endif %}
     {% endif %}
-    <div class="container round-4 pos-relative border-light-1" style="padding: 0; {% if enablecontainerbg ?? true %} background: #121212;{% endif %} {{ container_styles }}">
+    <div class="container round-4 pos-relative {% if containershowborder ?? false %}border-light-1{% endif %}" style="padding: 0; {% if enablecontainerbg ?? true %} background: #121212;{% endif %} {{ container_styles }}">
       {% if enablenavbar ?? true %}<nav class="border-light-b-1 d-flex flex-row flex-wrap gap-3 ai-center card card-dark-primary round-bx-0 py-2 p-3">
         <div class="navbar-hover d-flex flex-row flex-wrap ai-center gap-5 flex-grow-1 flex-shrink-1 me-2" style="flex-basis: 10em;">
         <a class="nav-logo" href="/"></a>

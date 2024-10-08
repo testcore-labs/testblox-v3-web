@@ -24,7 +24,15 @@ coming_soon:
   comingsoon: coming soon
   inspiredby: inspired by roblosium.net
   about: a multi-corescript version revival
+users: 
+  users: users
 home: 
+  home: home
+  hellos: 
+    - hello
+    - hi
+    - welcome
+    - hiya
   friends: friends
   recently_played: recently played
   see_all: see all
@@ -83,8 +91,6 @@ filter:
   order_by_ascending: order by <b>ascending</b>
   order_by_descending: order by <b>descending</b>
   sort_by_thing: sort by <b>%s</b>
-users:
-  users: users
 
 errors:
   test.test: legit!

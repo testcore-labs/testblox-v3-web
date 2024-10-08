@@ -52,7 +52,8 @@
       </a>{% endfor %}
     </div>
   </div>
-  <div class="p-2" style="flex-basis: 20em; flex-grow: 1;">
+  <div style="flex-basis: 20em; flex-grow: 1;">
+  <div class="p-2">
     <h4>instance "{{ env.app_name }}" info:</h4>
     <hr nomargin class="mt-1 mb-2">
     <div class="d-flex flex-column gap-3">
@@ -66,6 +67,7 @@
     {% else %}
       data hasn't initialized yet..
     {% endif %}
-    </div>
+    </div> 
+    </div> 
 </div>
 {% endblock %}

@@ -24,7 +24,13 @@ coming_soon:
   comingsoon: netrukus atvyks
   inspiredby: ideja iš roblosium.net
   about: daugia-versiju "revival"
+users: 
+  users: vartotojai
 home: 
+  home: pradžia
+  hellos: 
+    - labas
+    - sveiki
   friends: draugai
   recently_played: neseniai žaisti
   see_all: matyti visus
@@ -61,10 +67,10 @@ catalog:
       HairAccessory: plaukai
       FaceAccessory: veido priedai
       NeckAccessory: kaklo priedai
-      ShoulderAccessory: pečiai priedai
+      ShoulderAccessory: pečio priedai
       FrontAccessory: priekiniai priedai
-      BackAccessory: užpakalinis priedai
-      WaistAccessory: juosmens priedas
+      BackAccessory: užpakaliniai priedai
+      WaistAccessory: juosmens priedai
     animations:
       animations: animacijos
       all: visos animacijos

@@ -15,6 +15,8 @@ import cooldown from "../utils/cooldown";
 import { xss_all } from "../utils/xss";
 import { asset_types_numbered } from "../types/assets";
 import entity_ban from "./ban";
+import fs from "fs";
+import path from "path";
 
 class entity_user extends entity_base {
   table = "users";
@@ -131,6 +133,19 @@ class entity_user extends entity_base {
   
   get settings() {
     return this.data?.settings;
+  }
+  async setting(key: string, value: string|number|boolean, validate_setting = true) {
+    let settings = entity_user.settings_template;
+    if(!(key in settings)) {
+      return { success: false, messsage: "invalid setting"};
+    } else {
+      // ts so ass :pray:
+      await sql`UPDATE "users" 
+      SET settings = jsonb_set(settings::jsonb, ARRAY[${key}], ${value}::jsonb)::json 
+      WHERE "id" = ${this.data?.id}`;
+      await this._updateat();
+      return { success: true, message: "" };
+    }
   }
 
   // if you're returning db values, please make sure you dont xss yourself,
@@ -281,7 +296,7 @@ class entity_user extends entity_base {
       .where(sql`type IN ${ sql(asset_types_numbered.catalog) }`)
     ); 
     if(item.exists) {
-      let price = item.data.data.price;
+      let price = item.info.price;
       if(await this.has_item(item.id)) {
         return { success: false, message: "item.already_bought" };
       }
@@ -301,7 +316,7 @@ class entity_user extends entity_base {
             const [count] = await sql`SELECT COUNT(*) AS count FROM "owned_items" WHERE "item" = ${params.item}`;
             let message = null;
             // TODO: !HAVENT TESTED IF THE LIM+AVAIL WORKS!!!!!!
-            if((count >= item.data.data.availibility ?? 0) && (item.data.data.limited ?? false)) {
+            if((count >= item.info.availibility ?? 0) && (item.info.limited ?? false)) {
               message = "item.sold_out";
               return [count, null, null, message];
             } else {
@@ -429,7 +444,7 @@ class entity_user extends entity_base {
       .where(sql`id = ${this.data?.headshot} AND type = ${ENUM.assets.Thumbnail}`)
     );
     if(headshot.exists) {
-      return headshot.file;
+      return `/asset/?id=${headshot.id}`;
     } else {
       return "/assets/img/reviewpending.png";
     }

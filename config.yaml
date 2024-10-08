@@ -1,6 +1,7 @@
 app_name: testblox
 desc: testblox is a webclient revival aiming to recreate older versions
 domain: tstblx.win
+dsc_widget: 1263899341425213518 # please enable widgets
 dsc_invite: pHPBy8FvAY
 debug: true
 production: false # else development
@@ -29,7 +30,7 @@ invitekeys:
   randlength: 32
 
 backup: false
-behind_proxy: false # CloudFlare Mode ACtivated
+behind_proxy: true # CloudFlare Mode ACtivated
 
 admin_panel:
   # dont add a "/" suffix, please

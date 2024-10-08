@@ -1,5 +1,5 @@
 {% extends "html.twig" %}
-{% set title = "catalog" %}
+{% set title = t.catalog.catalog %}
 
 {% block content %}
 {% import "./_macros.twig" as utils %}
@@ -32,7 +32,7 @@
   <div class="p-2 border-light-1 round-4 d-flex flex-column gap-1">
     {%- macro generate_category(category, category_key) %}
     <div class="pos-relative">
-      <div onclick="openify(this, elem('#catalog-content-{{ category_key }}'), elems('[id^=\'catalog-content-\']'))" class="c-pointer d-flex flex-row px-2 py-2">
+      <div onclick="openify(this, elem('#catalog-content-{{ category_key }}'), elems('[id^=\'catalog-content-\']'), { click_outside_close: true })" class="c-pointer d-flex flex-row px-2 py-2">
         <span>{{ t.catalog.types[category_key][category_key] }}</span>
         <i class="bi bi-caret-right-fill ms-auto"></i>
       </div>

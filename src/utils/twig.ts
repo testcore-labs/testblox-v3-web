@@ -6,6 +6,7 @@ import twig from "twig";
 import translate from "../translate";
 import fs from "fs";
 import path from "path";
+import { printf } from 'fast-printf'
 import root_path from "./root_path";
 
 twig.extendFilter("shuffle", function(array: any): any {
@@ -17,6 +18,9 @@ twig.extendFilter("shuffle", function(array: any): any {
   }
 });
 
+twig.extendFilter("format", function(string: string, params: any): any {
+  return printf(string, ...params)
+});
 twig.extendFilter("parse_json", function(json: string): any {
   if(typeof json === 'undefined') return;
   return JSON.parse(json);
@@ -43,6 +47,9 @@ twig.extendFilter("nr2br", function(txt: string, args: any): any {
   return txt.replaceAll(/\n\r?/g, '&#13;&#10;');
 });
 twig.extendFilter("info_time", function(txt: number, args: any): any {
+  // how does this fix anything
+  // I HAVE NO IDEA BUT IT WORKS SO I DONT CARE
+  txt = txt * 1; // ABSOLUTE HACK
   let [_, out] = pcall_sync(() => info_time(txt));
   if(_ instanceof Error) {
     return info_time(txt / 1000);

@@ -3,7 +3,9 @@
 {% set enablenavbar = false %}
 {% set enablecontainerbg = false %}
 {% set enablefooter = false %}
+{% set containershowborder = false %}
 {% set paddingforcontent = false %}
+{% set showads = false %}
 
   {% set features = {
   "home": true
@@ -18,7 +20,6 @@
 {% block content %}
  <div class="parallax-city2"></div>
  <div class="parallax-city"></div>
- <span class="text-exexextramuted pos-absolute link" style="top: 0; right: 0; padding: 0.5em; z-index: 5; line-height: 0.5em;">{{ t.coming_soon.inspiredby }}</span>
  <div class="d-flex flex-row flex-wrap pos-relative" style="gap: 0.5em; z-index: 4; margin: 1em 0 7em 0;">
  <div class="d-flex flex-column" style="gap: 1em; flex: 1; padding: 2em 0.5em; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(0.5em); border-radius: 0.5em;">
  <div class="d-flex flex-column" style="gap: 0.5em; text-align: center; justify-content: center; align-items: center;">
@@ -39,7 +40,7 @@
  </div>
  </div>
  <div class="d-flex flex-column" style="gap: 0.5em; margin: 0 auto;">
- <iframe style="margin: 0 0;" src="https://ptb.discord.com/widget?id=1129153144685854800&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+ <iframe style="margin: 0 0;" src="https://ptb.discord.com/widget?id={{ env.dsc_widget }}&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
  <small class="text-extramuted card" style="width: auto;"><b>NOTE TO BETA TESTERS:</b><br>until everything is done, you <b>cannot sign up yet</b>. <br>you will receive an <b>invite key</b> once it's done.</small>
  <div class="d-flex flex-row" style="gap: 0.5em;">
  <a href="/?method=login" class="btn-primary pos-relative" style="flex: 1; text-align: center;">login <small class="pos-absolute text-extramuted xl" style="top: 0; right: 0; padding: 0.2em 0.3em;">OWNER ONLY</small></a>
@@ -50,6 +51,7 @@
 {% endblock %}
 
 {% block body %}
+ <span class="text-exexextramuted pos-absolute link" style="top: 0; right: 0; padding: 0.5em; z-index: 5; line-height: 0.5em;">{{ t.coming_soon.inspiredby }}</span>
  <div class="bbplayer pos-fixed d-flex flex-row flex-wrap" style="gap: 0.5em; z-index: 5; align-items: center; bottom: 0; left: 0.5em; width: calc(100% - 1em); flex: 1; backdrop-filter: blur(0.25em); padding-bottom: 1em; padding-top: 1em;">
    <a href="https://github.com/73rhodes/bbplayer" class="pos-absolute link" style="bottom: 0; right: 0; margin-right: 0.2em;  "><small>bbplayer</small></a>
    <div class="d-flex flex-row" style="flex: 1 0 0; gap: 1em; align-items: center;">

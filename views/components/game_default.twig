@@ -1,7 +1,7 @@
 <a href="/game/{{ game.id }}/view" class="mb-3 d-flex flex-column game-card" style="padding: 0; margin-top: 0.3em;">
   <div class="img-fluid pos-relative">
     <img src="{{ game.get_icon() }}" class="round-4 img-fluid">
-    {% if game.data.data.bc_only %}
+    {% if game.info.bc_only %}
     <div class="bottom-0 left-0 hide-stuff ridge-100 pos-absolute py-1 ps-2 pe-6 round-0" style="background: #0c0c0c;"><img width=22 height=22 src="/assets/img/bc_icon.svg"></div>
     {% endif %}
     <div class="more-info d-flex flex-column gap-3 pos-absolute right-0 bottom-0 overflow-none border-box w-100 h-100">
@@ -10,7 +10,7 @@
           <img width=24 height=24 class="round-2" src="{{ game.user.get_headshot() }}">
           <b class="text-truncate">{{ game.user.username|e }}</b>
         </div>
-        <span class="breakword text-truncate-l2 overflow-none">{{ (game.description|e ?? "<i class='breakword'>no description set.</i>")|truncate(96, "…") }}</span>
+        <span class="breakword text-truncate-l3 overflow-none">{{ (game.description|e ?? "<i class='breakword'>no description set.</i>") }}</span>
       
         <object>
           <a href="/game/{{ game.id }}/play" class="btn-play d-flex ai-center round-3 pos-absolute as-baseline" style="right: 0.25em; bottom: 0.25em; height: 16px; width: 16px; padding: 0.2em 0.3em 0.25em 0.1em; font-size: 1.55em;"><i class="bi bi-play-fill mx-auto"></i></a>

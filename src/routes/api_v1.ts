@@ -14,6 +14,11 @@ import entity_feed from "../db/feed";
 import { notloggedin_api_handler, owner_api_handler } from "../utils/handlers";
 import translate from "../translate";
 import websockets from "../websockets";
+import colors from "../utils/colors";
+import sql from "../sql";
+import * as crypto from 'crypto';
+import { date_format } from "../utils/time";
+import mime from "mime";
 
 // limiters
 const msg_too_many_reqs: message_type = {success: false, status: 429, message: "too many requests, try again later."};
@@ -283,6 +288,82 @@ routes.post("/owner/server-management", notloggedin_api_handler, owner_api_handl
   }
 }));
 
+
+routes.get("/client/latest-version", async_handler(async (req, res) => {
+  res.json({ success: true, message: "", info: { version: `version-54b58d77dd88cef53088bd3f` }});
+}));
+
+routes.get("/client/deploy/:folder/:file", async_handler(async (req, res, next) => {
+  let client_folder = path.join(root_path, "files", "clients");
+  const folder_param = String(req.params.folder);
+  const file_param = String(req.params.file);
+
+  fs.readdir(client_folder, (err, files) => {
+    if(err) {
+      res.end();
+      next();
+    } else {
+    let folder = String(files.filter(folder_name => folder_name.includes(folder_param))[0]);
+    if(folder) {
+      let version_folder = path.join(client_folder, folder);
+      fs.readdir(version_folder, (err, files) => {
+        let file = String(files.filter(file_name => file_name.includes(file_param))[0]);
+        if(file) {
+          let folder_file = path.join(version_folder, file);
+          let file_raw = fs.readFileSync(folder_file);
+
+          res.set("content-length", String(file_raw.byteLength));
+          // how and WHY does it omit the content-length??
+          res.set("content-size", String(file_raw.byteLength));
+          res.type(mime.lookup(folder_file));
+
+          let chunk_size = 1024 * 10000;
+          let offset = 0;
+
+          function send_chunk() {
+            if (offset < file_raw.length) {
+              res.write(file_raw.subarray(offset, offset + chunk_size));
+              offset += chunk_size;
+              setTimeout(send_chunk, 100); 
+            } else {
+              res.end();
+            }
+          }
+
+          send_chunk();
+        } else {
+          res.json({ success: false, message: "can't find file" })
+        }
+      });
+    } else {
+      res.json({ success: false, message: "can't find version" })
+    }
+  }});
+}));
+
+routes.get("/game/info", async_handler(async (req, res) => {
+  const id = Number(req.query.id);
+  const game = await (new entity_asset).by(entity_asset.query()
+    .where(sql`id = ${id}`)
+  );
+
+  if(!game.is_place) {
+    res.json({ success: false, message: "errors.type.not_a_place" }).end();
+  } else {
+    const response = {
+      id: game.id,
+      thumbnail: `${req.protocol}://${req.get('Host')}${game.get_icon()}`,
+      title: game.title,
+      description: game.description,
+      creator: game.user?.username,
+      year: 2019, // idk
+      players: 0,
+      max_players: Number(game.info.max_players ?? 0) 
+    }; 
+    console.log(response);
+    res.json({ success: true, message: "", info: response });
+  }
+}));
 
 routes.get("*", async_handler(async (req, res) => {
   res.status(404);

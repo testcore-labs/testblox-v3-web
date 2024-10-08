@@ -26,7 +26,6 @@ class translator {
       if(file === this.default_locale) {
         this.load_file(file);
       } else {
-        console.log(later_files);
         if(file !== this.default_locale) later_files.push(file);
       }
     }

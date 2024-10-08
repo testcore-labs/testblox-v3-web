@@ -111,6 +111,9 @@ class entity_asset extends entity_base {
   get createdat() {
     return this.data?.createdat;
   }
+  get info() {
+    return this.data?.data;
+  }
 
   async get_icon_image() {
     return await (new entity_asset).by_id(this.data.icon);

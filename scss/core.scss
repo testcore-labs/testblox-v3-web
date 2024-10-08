@@ -1122,7 +1122,21 @@ table.border-light {
   -webkit-line-clamp: 2;
   line-clamp: 2;
 }
+.text-truncate-l3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
 
+.text-truncate-l4 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+}
 
 .flash-game-embed {
   margin: auto auto;

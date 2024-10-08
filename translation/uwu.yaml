@@ -1,0 +1,95 @@
+_locale: uw-uu
+_lang: silly-ish
+_author: qzip
+# aaaaa TRANSLATION
+navbar:
+  games: gaems
+  catalog: go shopping 
+  develop: cweate!
+  avatar: uuu!
+  messages: dms
+  trade: item giv
+  groups: gc
+  users: peepole
+  profile: ur profil!
+  inventory: bakpak :D
+  settings: set tings
+  admin: ban hammer page
+  logout: quit :<
+  register: create acc!
+  login: plz login
+footer:
+  terms_of_service: long and boring page
+coming_soon:
+  comingsoon: Comeing soon
+  inspiredby: inspired by roblosium.net
+  about: a multi-corescript version revival
+users: 
+  users: peepoole
+home: 
+  home: home sweet home
+  hellos: 
+    - nya
+    - hewoo
+    - hiya
+  friends: friendly peepole
+  recently_played: gaem played
+  see_all: all See
+games:
+  games: gaems
+  search: serch for an gaem..
+catalog:
+  catalog: shooping
+  search: item go here..
+  types:
+    all_types: all tings
+    clothing:
+      clothing: cloths
+      all: all cloth
+      TShirt: tee shurt
+      Hat: tophat
+      Shirt: sheert
+      Pants: pantaloons
+    body_parts:
+      body_parts: Your own limbs
+      all: all Limbs
+      Head: the thinker
+      Face: the see-r
+      Torso: the belly
+      RightArm: politically right wing arm
+      LeftArm: politically left wing arm
+      LeftLeg: politically left wing leg
+      RightLeg: politically right wing leg
+      Package: the collection of limbs that you buy
+    gear: terrorist and food items
+    accessories:
+      accessories: i hate this
+      all: too many
+      HairAccessory: guess
+      FaceAccessory: guess
+      NeckAccessory: guess
+      ShoulderAccessory: guess
+      FrontAccessory: guess
+      BackAccessory: JUST FUCKING guess
+      WaistAccessory: guess
+    animations:
+      animations: walky
+      all: all animations
+      ClimbAnimation: climb animation
+      DeathAnimation: death animation
+      FallAnimation: fall animation
+      IdleAnimation: idle animation
+      JumpAnimation: jump animation
+      RunAnimation: run animation
+      SwimAnimation: swim animation
+      WalkAnimation: walk animation
+      PoseAnimation: pose animation
+
+# please dont remove the html aka <b> and </b>, dont modify the tags aswell
+filter:
+  order_by_ascending: order by <b>ascending</b>
+  order_by_descending: order by <b>descending</b>
+  sort_by_thing: sort by <b>%s</b>
+
+errors:
+  test.test: legit!
