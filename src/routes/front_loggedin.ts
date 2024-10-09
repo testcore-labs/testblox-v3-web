@@ -7,6 +7,7 @@ import {asset_types, asset_types_numbered} from "../types/assets"
 import type { message_type } from "../types/message";
 import htmx_middleware from "../utils/express-extend";
 import cooldown from "../utils/cooldown";
+import colors from "../utils/colors";
 import env, { raw_env } from "../utils/env";
 import filter from "../utils/filter";
 import entity_feed from "../db/feed";
@@ -27,6 +28,7 @@ import _ from "lodash";
 import { xss_all } from "../utils/xss";
 import search_tags from "../utils/search_tags";
 import entity_ban from "../db/ban";
+import logs from "../utils/log";
 routes.use(htmx_middleware);
 
 routes.all("/redeem", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
@@ -353,7 +355,7 @@ let update_sys_info = async () => {
 
   sys_info.inited = true;
   } catch(e) {
-    console.error("admin info failed updating: ", e);
+    logs.custom(e, colors.red(`admin`));
   }
 }
 update_sys_info();

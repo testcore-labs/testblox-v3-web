@@ -21,7 +21,7 @@ import path from "path";
 class entity_user extends entity_base {
   table = "users";
 
-  static settings_template = {
+  static settings_template: {[key: string]: number|string|boolean} = {
     locale: "en-us", // for privacy reasons i wont detect the users locale
     css: "",
 
@@ -134,11 +134,15 @@ class entity_user extends entity_base {
   get settings() {
     return this.data?.settings;
   }
-  async setting(key: string, value: string|number|boolean, validate_setting = true) {
+  async setting(key: string, value: string|number, validate_setting = true) {
     let settings = entity_user.settings_template;
     if(!(key in settings)) {
-      return { success: false, messsage: "invalid setting"};
+      return { success: false, messsage: "invalid key"};
     } else {
+      if(typeof settings[key] !== typeof value) {
+        return { success: false, messsage: "invalid value type"};
+      }
+      if(typeof value == "boolean") value = String(value);
       // ts so ass :pray:
       await sql`UPDATE "users" 
       SET settings = jsonb_set(settings::jsonb, ARRAY[${key}], ${value}::jsonb)::json 

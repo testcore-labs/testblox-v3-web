@@ -83,8 +83,5 @@ rcc:
 
 # http config
 http:
+  baseurl: "https://tstblx.win"
   port: 8021
-
-# websocket (Socket.io)
-ws:
-  port: 8022

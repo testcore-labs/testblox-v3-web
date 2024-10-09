@@ -133,6 +133,28 @@ routes.get("/user/gamble", notloggedin_api_handler, async_handler(async (req: Re
   let gambled = await res.locals.cuser.gamble_2x(gamble_amount);
   res.json(gambled);
 }));
+routes.get("/user/setting/set", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
+  let key = String(req.query?.key)
+  let value = (() => { 
+    switch(typeof req.query?.value) {
+      case "string":
+        return String(req.query?.value)
+      case "number":
+        return Number(req.query?.value)
+      case "boolean":
+        return Boolean(req.query?.value)
+      default:
+        return String(req.query?.value)
+    }
+  })()
+  let set_ting = await res.locals.cuser.setting(key, value);
+  res.json(set_ting);
+}));
+
+routes.get("/user/setting/get", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
+  let set_ting = res.locals.cuser.settings;
+  res.json(set_ting);
+}));
 
 routes.post("/item/buy", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
   let item_id = Number(req.body?.id);

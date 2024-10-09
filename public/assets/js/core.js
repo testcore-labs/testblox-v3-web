@@ -12,20 +12,20 @@ const loaded = new Promise((resolve) => {
   document.addEventListener("DOMContentLoaded", resolve);
 });
 
-// (async () => {
-//   await loaded;
-//   socket = io(`${ws_protocol}://localhost:8022/`, {
-//     reconnectionDelayMax: 2500,
-//     auth: {
-//       token: utils.get_cookie("{{ env.session.name }}")
-//     },
-//     query: {}
-//   });
+(async () => {
+  await loaded;
+  socket = io(`${ws_protocol}://${window.location.host}`, {
+    reconnectionDelayMax: 2500,
+    auth: {
+      token: utils.get_cookie("{{ env.session.name }}")
+    },
+    query: {}
+  });
 
-//   socket.on("test ass", (event, ...args) => {
-//     //console.log(event, args);
-//   });
-// })();
+  socket.on("test ass", (event, ...args) => {
+    //console.log(event, args);
+  });
+})();
 
 const utils = {
   get_cookie: (name) => {

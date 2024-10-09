@@ -1,7 +1,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/assets/css/core.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/assets/css/bootstrap-icons.min.css">
     <link rel="icon" type="image/png" href="/assets/img/logo-t_64.png">
     <meta property="og:site_name" content="{{ env["name"] }}">
     <meta property="og:image" content="/assets/img/logo-t_64.png" />
@@ -11,8 +11,8 @@
     <script src="/assets/js/core_legacy.js"></script>
     <script src="/assets/js/core.js"></script>
     <script src="/assets/js/htmx.min.js"></script>
-    {#<script src="//{{ req.hostname }}:{{ env.ws.port }}/socket.io/socket.io.js"></script>#}
-    <script src="https://unpkg.com/htmx-ext-client-side-templates@2.0.0/client-side-templates.js"></script>
-    <script src="https://mozilla.github.io/nunjucks/files/nunjucks.js"></script>
-    <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/assets/js/client-side-templates.js"></script>
+    <script src="/assets/js/nunjucks.js"></script>
+    <script src="/assets/js/hyperscript.js"></script>
     <title>{{ title ?? req.path }} | {{ env['app_name'] }}</title>
