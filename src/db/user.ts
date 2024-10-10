@@ -103,6 +103,23 @@ class entity_user extends entity_base {
     return String(this.data?.username);
   }
 
+  //TODO: change username with currency
+  async set_username(username: string, paid: boolean = false) {
+    let un_err = entity_user.username_validate(username);
+    if(un_err !== false) {
+      return { success: false, message: un_err};
+    } else {
+      let user = await (new entity_user).by(entity_user.query()
+        .where(sql`username = ${username}`)
+      );
+      if(user.exists) {
+        return { success: false, message: "username.taken"};
+      } else {
+        await sql`UPDATE ${sql(this.table)} SET username = ${username} WHERE id = ${this.id}`;
+      }
+    }
+  }
+
   get password() {
     return String(this.data?.password);
   }
@@ -134,6 +151,7 @@ class entity_user extends entity_base {
   get settings() {
     return this.data?.settings;
   }
+
   async setting(key: string, value: string|number, validate_setting = true) {
     let settings = entity_user.settings_template;
     if(!(key in settings)) {
@@ -144,7 +162,7 @@ class entity_user extends entity_base {
       }
       if(typeof value == "boolean") value = String(value);
       // ts so ass :pray:
-      await sql`UPDATE "users" 
+      await sql`UPDATE ${sql(this.table)} 
       SET settings = jsonb_set(settings::jsonb, ARRAY[${key}], ${value}::jsonb)::json 
       WHERE "id" = ${this.data?.id}`;
       await this._updateat();
@@ -272,7 +290,7 @@ class entity_user extends entity_base {
 
   
   async set_membership(membership_type: membership_types = ENUM.membership.TIER_1, lastfor: number = (Date.now() + (3600 * 24 * 30) * 1000) /* month */) {
-    this.data = await sql`UPDATE "users" SET membership = ${membership_type}, membership_valid = ${lastfor} WHERE "id" = ${this.data?.id} RETURNING *`;
+    this.data = await sql`UPDATE ${sql(this.table)} SET membership = ${membership_type}, membership_valid = ${lastfor} WHERE "id" = ${this.data?.id} RETURNING *`;
     await this._updateat();
   }
 
@@ -329,7 +347,7 @@ class entity_user extends entity_base {
             RETURNING *`;
 
             // the db should also check just for safety
-            const [money_left] = await sql`UPDATE "users" SET currency = currency - ${params.price} WHERE currency >= ${params.price} RETURNING currency`;
+            const [money_left] = await sql`UPDATE ${sql(this.table)} SET currency = currency - ${params.price} WHERE currency >= ${params.price} RETURNING currency`;
             return [count, item_info, money_left, message];
             }
           })
@@ -354,13 +372,13 @@ class entity_user extends entity_base {
   }
 
   async set_money(amount: number) {
-    await sql`UPDATE "users" SET currency = ${amount} WHERE "id" = ${this.data?.id}`;
+    await sql`UPDATE ${sql(this.table)} SET currency = ${amount} WHERE "id" = ${this.data?.id}`;
     if(this.data) this.data.currency = amount;
     await this._updateat();
   }
 
   async add_money(amount: number) {
-    await sql`UPDATE "users" SET currency = currency + ${ Number(amount) } WHERE "id" = ${this.data?.id}`;
+    await sql`UPDATE ${sql(this.table)} SET currency = currency + ${ Number(amount) } WHERE "id" = ${this.data?.id}`;
     if(this.data) this.data.currency = Number(this.data.currency) + Number(amount);
     await this._updateat();
   }
@@ -379,7 +397,7 @@ class entity_user extends entity_base {
         ELSE "from"
       END as friend_id
     FROM "friends" 
-    INNER JOIN "users" ON "users".id = CASE
+    INNER JOIN ${sql(this.table)} ON ${sql(this.table)}.id = CASE
       WHEN "from" = ${this.data?.id} THEN "to"
       ELSE "from"
     END
@@ -470,7 +488,7 @@ class entity_user extends entity_base {
   }
 
   async set_online() {
-    this.data = await sql`UPDATE "users" SET online = ${ Date.now() + 30 * 1000 } WHERE "id" = ${this.data?.id} RETURNING *`;
+    this.data = await sql`UPDATE ${sql(this.table)} SET online = ${ Date.now() + 30 * 1000 } WHERE "id" = ${this.data?.id} RETURNING *`;
     await this._updateat();
   }
 
@@ -565,6 +583,13 @@ class entity_user extends entity_base {
     const pw_err = this.password_validate(password);
     if(pw_err !== false) {
       return { success: false, message: String(pw_err) };
+    }
+
+    let taken_user = await (new entity_user).by(entity_user.query()
+      .where(sql`username = ${username}`)
+    );
+    if(taken_user.exists) {
+      return { success: false, message: "username.taken"};
     }
 
     const [success, hash] = await pcall(async () => await this.generate_hash(password));

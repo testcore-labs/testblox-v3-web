@@ -69,6 +69,14 @@ const templater = {
 }
 
 const cuser = {
+  set_username: async (value) => {
+    let request = fetch(`${api_endpoint.v1}/user/username/set?username=${value}`);
+    return request;
+  },
+  set_setting: async (key, value) => {
+    let request = fetch(`${api_endpoint.v1}/user/setting/set?key=${key}&value=${value}`);
+    return request;
+  },
   set_money_locally: async (amount) => {
     await loaded;
     amount = Number(amount);

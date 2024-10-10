@@ -133,8 +133,13 @@ routes.get("/users/", notloggedin_handler, async_handler(async (req: Request, re
 }));
 
 routes.get("/users/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
+  const id = Number(req.params?.id);
+  if(Number.isNaN(id)) {
+    res.status(404).render("error.twig")
+    return;
+  }
   let user = await (new entity_user).by(entity_user.query()
-  .where(sql`id = ${ Number(req.params?.id) }`)
+  .where(sql`id = ${id}`)
   );
   let option = req.params?.name ? req.params?.name : "profile";
 
@@ -294,7 +299,7 @@ routes.get("/settings/:setting", notloggedin_handler, async_handler(async (req: 
   if(settings_tab) {
     res.render(`settings/${settings_tab.file}.twig`);
   } else {
-    res.render(`settings/account.twig`)
+    res.render(`settings/404.twig`);
   }
 }));
 
