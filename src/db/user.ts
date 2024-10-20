@@ -17,6 +17,7 @@ import { asset_types_numbered } from "../types/assets";
 import entity_ban from "./ban";
 import fs from "fs";
 import path from "path";
+import rule_validator from "../utils/rule_validation";
 
 class entity_user extends entity_base {
   table = "users";
@@ -106,8 +107,8 @@ class entity_user extends entity_base {
   //TODO: change username with currency
   async set_username(username: string, paid: boolean = false) {
     let un_err = entity_user.username_validate(username);
-    if(un_err !== false) {
-      return { success: false, message: un_err};
+    if(!un_err.success) {
+      return un_err;
     } else {
       let user = await (new entity_user).by(entity_user.query()
         .where(sql`username = ${username}`)
@@ -116,6 +117,7 @@ class entity_user extends entity_base {
         return { success: false, message: "username.taken"};
       } else {
         await sql`UPDATE ${sql(this.table)} SET username = ${username} WHERE id = ${this.id}`;
+        return { success: true, message: "username.set"};
       }
     }
   }
@@ -530,32 +532,21 @@ class entity_user extends entity_base {
     }
   }
 
-  static username_validate(username: any) {
-    let rules = {
-      "username.empty": (!username || username === "" || username.length === 0),
-      "username.is_more_than_20": username.length > 20,
-      "username.is_0": username.length === 0,
-      "username.is_not_ascii": !(new RegExp(`^[A-Za-z0-9_]+$`)).test(username),
-    }
-
-    for(const [rule, valid] of Object.entries(rules)) {
-      if(valid) return rule;
-    }
-    return false;
+  static username_validate = (username: string) => {
+    let validator = new rule_validator(username, "username");
+    validator.filters.is_empty();
+    validator.filters.min_eq_len(1, true);
+    validator.filters.max_eq_len(20, true);
+    validator.filters.regex(new RegExp(`^[A-Za-z0-9_]+$`), true, `allowed_chars`);
+    return validator.validate();
   }
 
   static password_validate(password: any) {
-    let rules = {
-      "password.empty": (!password || password === "" || password.length === 0),
-      "password.is_more_than_32": password.length > 32,
-      "password.is_less_than_4": password.length < 4,
-      "password.is_not_ascii": !(new RegExp(`^[A-Za-z0-9_#\$]+$`)).test(password),
-    }
-
-    for(const [rule, valid] of Object.entries(rules)) {
-      if(valid) return rule;
-    }
-    return false;
+    let validator = new rule_validator(password, "password");
+    validator.filters.is_empty();
+    validator.filters.min_eq_len(1, true);
+    validator.filters.max_eq_len(32, true);
+    return validator.validate();
   }
 
   static async generate_hash(password: string) {
@@ -571,18 +562,17 @@ class entity_user extends entity_base {
   }
 
   // run this with a pcall (yes i made a simpler way to catch errs) or try catch clause
-  static async register(username: any, password: any): Promise<message_type> {
+  static async register(username: any, password: any, invkey: any): Promise<message_type> {
     username = username.toString();
     password = password.toString();
 
     const un_err = this.username_validate(username);
-    if(un_err !== false) {
-      // this isnt a bool typescript just assumes
-      return { success: false, message: String(un_err) };
+    if(!un_err.success) {
+      return un_err;
     }
     const pw_err = this.password_validate(password);
-    if(pw_err !== false) {
-      return { success: false, message: String(pw_err) };
+    if(!pw_err.success) {
+      return pw_err;
     }
 
     let taken_user = await (new entity_user).by(entity_user.query()
@@ -593,6 +583,12 @@ class entity_user extends entity_base {
     }
 
     const [success, hash] = await pcall(async () => await this.generate_hash(password));
+
+    if(!success) {
+      //!!!
+      console.log(success);
+      return { success: false, message: "password.no_hash_generated"};
+    }
 
     let token = await this.check_and_rand_token(); // too lazy to make it use message type
     if(token && token.stack && token.message) {
@@ -632,12 +628,12 @@ class entity_user extends entity_base {
     password = password.toString();
 
     const un_err = this.username_validate(username);
-    if(un_err !== false) {
-      return { success: false, message: String(un_err) };
+    if(!un_err.success) {
+      return un_err;
     }
     const pw_err = this.password_validate(password);
-    if(pw_err !== false) {
-      return { success: false, message: String(pw_err) };
+    if(!pw_err.success) {
+      return pw_err;
     }
 
     let st = await sql`
@@ -657,7 +653,9 @@ class entity_user extends entity_base {
       }
 
       if(!argon_verify) {
-        let new_token = this.check_and_rand_token(); 
+        // this is a bad idea tho, maybe only as a feature?
+        // ~~TODO: regen on login~~
+        //let new_token = this.check_and_rand_token(); 
         return {success: false, message: env.debug ? "password is invalid" : "username or password is incorrect."};
       } else {
         return {success: true, message: "created account.", info: { id: query?.id, token: query?.token }}; 
@@ -666,29 +664,6 @@ class entity_user extends entity_base {
       return {success: false, message: env.debug ? "user not found" : "username or password is incorrect."}
     }
   }
-    // username = username?.trim();
-    // username = username?.toString();
-    // const err_un = this.username_validate(username);
-    // if(err_un && !err_un.success) {
-    //   return err_un;
-    // }
-    // const user_find = this.table.find((p: user_table) => p.username === username);
-    // if(!user_find || this.empty_table) {
-    //   return {success: false, message: "user not found."};
-    // }
-
-    // password = password?.trim();
-    // password = password?.toString();
-    // const err_pw = this.password_validate(password);
-    // if(err_pw && !err_pw.success) {
-    //   return err_pw;
-    // }
-    // if(!(await argon2.verify(user_find.password, password))) {
-    //   return {success: false, message: "username or password is incorrect."};
-    // }
-    // return {success: true, message: "created account.", info: { id: user_find.id, token: user_find.token }}; 
-
-
 }
 
 export default entity_user;

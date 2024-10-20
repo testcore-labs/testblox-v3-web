@@ -28,8 +28,8 @@
 {% if req.query.type == "login" or req.query.type == "" or not req.query.type %}
 <form class="d-flex flex-column gap-2 as-baseline w-100" hx-target="#result" hx-swap="innerHTML" hx-post="/api/v1/user/login?plaintext&redirect=/">
   <div class="d-flex flex-row card card-dark-primary hide-if-no-text" id="result"></div>
-  <input type="text" name="username" placeholder="username">
-  <input type="password" name="password" placeholder="PaSsWoRd123#">
+  <input type="text" name="username" placeholder="silly_username123">
+  <input type="password" name="password" placeholder="PaSsWoRd123#!@$%^&*">
   
   <button type="submit" class="btn-secondary mt-2 text-center py-2 flex-1" style="font-size: 1.125em;">login</button>
   <small class="text-muted">if you don't have an account, <a class="link" href="?type=register">register</a></small>
@@ -37,8 +37,8 @@
 {% elseif req.query.type == "register" %}
 <form class="d-flex flex-column gap-2 as-baseline w-100" hx-target="#result" hx-swap="innerHTML" hx-post="/api/v1/user/create?plaintext&redirect=/">
   <div class="d-flex flex-row card card-dark-primary hide-if-no-text" id="result"></div>
-  <input type="text" name="username" placeholder="username">
-  <input type="password" name="password" placeholder="PaSsWoRd123#">
+  <input type="text" name="username" placeholder="silly_username123">
+  <input type="password" name="password" placeholder="PaSsWoRd123#!@$%^&*">
   <input type="text" name="invkey" placeholder="{{ env.invitekeys.name }}-{{ repeat("xX", (env.invitekeys.randlength - env.invitekeys.name|length) / 2) }}">
   
   <button type="submit" class="btn-secondary mt-2 text-center py-2 flex-1" style="font-size: 1.125em;">register</button>

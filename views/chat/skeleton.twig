@@ -24,7 +24,7 @@
       _="on htmx:sendError add .htmx-request to #chat-load-indicator
       then show #chat-load-indicator-dismiss-btn
       then set #chat-load-indicator-msg.innerHTML to 'failed to request.'" 
-  class="round-0 border-box flex-1 d-flex flex-column">{% block content %} {% endblock %}</div>
+  class="round-0 border-box flex-1 d-flex flex-column pos-relative">{% block content %} {% endblock %}</div>
 </div>
 {% else %}
 {% block content %} {% endblock %}

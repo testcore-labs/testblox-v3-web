@@ -1,8 +1,8 @@
 {% extends "chat/skeleton.twig" %}
 
 {% block content %}
-  <div class="d-flex flex-column" style="overflow: hidden;">
-    <div class="card py-2 px-3 round-0 border-light-b-1 d-flex flex-row ai-center" style="justify-content: space-between;">
+  <div class="d-flex flex-column">
+    <div class="card py-2 px-3 round-0 border-light-b-1 d-flex flex-row ai-center  pos-sticky" style="top: 0; left: 0; justify-content: space-between;">
       <a class="h3 bi bi-chevron-left c-pointer" style="line-height: 0;" hx-get="/chat/"></a>
         <div class="d-flex flex-row gap-3 ai-center">
         <img src="{{ cuser.get_headshot() }}" class="round-4"
@@ -12,7 +12,7 @@
       <a class="h3 bi bi-gear c-pointer" style="line-height: 0;"></a>
     </div>
 
-    <div style="flex: 0 1 50%; overflow-y: scroll !important;">
+    <div style="flex: 1; overflow-y: scroll !important;">
     <div class="d-flex flex-column p-3 gap-3">
       <div class="d-flex flex-row gap-2">
         <div class="blue-bg-dark ms-auto p-3 round-4">yo</div>
@@ -27,12 +27,13 @@
     </div>
     </div>
 
-    <form class="d-flex border-light-t-1 flex-row mt-auto w-100">
+    <form class="d-flex border-light-t-1 flex-row mt-auto w-100 pos-sticky" style="backdrop-filter: blur(0.4em); background: rgba(0,0,0, 0.7); bottom: 0; left: 0;">
       <textarea class="flex-grow-1 shadowless" 
-      style="background: none; border-radius: 0;
+      style="field-sizing: content; background: none; 
+        border-radius: 0;
         border: none; text-wrap: unrestricted; 
         word-wrap: break-word; white-space: pre-wrap; 
-        max-height: 4em;" rows=1
+        max-height: 4em;" rows=1 oninput="auto_grow_input(this)"
       placeholder="type a message.."></textarea>
       <a class="h5 bi bi-send px-3 py-2 c-pointer"></a>
     </form>

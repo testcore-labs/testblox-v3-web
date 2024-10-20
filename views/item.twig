@@ -1,5 +1,5 @@
 {% extends "html.twig" %}
-{% set title = item.title %}
+{% set title = item.title|e %}
 
 {% block content %}
 {% import "./_macros.twig" as utils %}

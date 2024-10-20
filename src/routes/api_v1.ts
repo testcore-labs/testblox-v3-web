@@ -48,7 +48,10 @@ websockets.on("connection", (socket) => {
 
 routes.post("/user/create", creation_and_login_limiter, async_handler(async (req: Request, res: Response) => {
   try {
-    const user = await entity_user.register(req.body.username?.toString(), req.body.password?.toString());
+    const username = String(req.body.username);
+    const password = String(req.body.password);
+    const invitekey = String(req.body.invkey);
+    const user = await entity_user.register(username, password, invitekey);
   
     if(user.success) {
       if(user.info !== undefined) {

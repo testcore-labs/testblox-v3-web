@@ -434,3 +434,8 @@ function htmx_tabs(elem, event) {
   event.target.setAttribute('disabled', 'true');
   }
 }
+
+function auto_grow_input(element) {
+  element.style.height = "1px";
+  element.style.height = (element.scrollHeight) + "px";
+}

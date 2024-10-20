@@ -1,7 +1,18 @@
 <div class="d-flex flex-column gap-2">
-  <input placeholder="username" 
-  @keyup.enter="cuser.set_username($event.target.value)" 
-  name="username" type="text">
-  
+  <div x-data="{ username: '' }" 
+  @update="let resp = await cuser.set_username(username); $dispatch('popup-new', { type: resp.success ? 'success' : 'error', title: 'updated', msg: resp.message, time: 3 });" 
+  class="d-flex flex-column gap-2">
+    <div class="p-2">username</div>
+    <div class="d-flex flex-row pillify shadow-1 round-4 overflow-none">
+    <input class="shadowless"
+      placeholder="silly_person123" 
+      @change="username = $event.target.value"
+      @blur="username = $event.target.value"
+      @keyup.enter="$dispatch('update');" 
+      name="username" type="text">
+      <button class="bi bi-pencil-square shadowless" @click="$dispatch('update')"></button>
+    </div>
+  </div>
+
 
 </div>

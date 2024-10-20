@@ -27,7 +27,19 @@ const loaded = new Promise((resolve) => {
   });
 })();
 
+const template = {
+  clone: (elem, first_child = false) => {
+    const template_new = elem.content.cloneNode(true)
+    return first_child ? template_new.firstElementChild : template_new;
+  }
+}
+
 const utils = {
+  format_duration: (duration) => {
+    const minutes = Math.floor(duration / 60);
+    const seconds = duration % 60;
+    return `${String(minutes).padStart(1, "0")}:${String(seconds).padStart(2, "0")}`;
+  },
   get_cookie: (name) => {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -70,12 +82,12 @@ const templater = {
 
 const cuser = {
   set_username: async (value) => {
-    let request = fetch(`${api_endpoint.v1}/user/username/set?username=${value}`);
-    return request;
+    let request = await fetch(`${api_endpoint.v1}/user/username/set?username=${value}`);
+    return request.json();
   },
   set_setting: async (key, value) => {
-    let request = fetch(`${api_endpoint.v1}/user/setting/set?key=${key}&value=${value}`);
-    return request;
+    let request = await fetch(`${api_endpoint.v1}/user/setting/set?key=${key}&value=${value}`);
+    return request.json();
   },
   set_money_locally: async (amount) => {
     await loaded;

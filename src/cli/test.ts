@@ -1,9 +1,10 @@
 // for testing things in cli obv
-import user from "../db/user";
-import sql from "../sql";
+import rule_validation from "../utils/rule_validation";
 
-let cuser = await (new user).by(user.query()
-  .where(sql`id = ${23}`)
-);
+let validator = new rule_validation("", "thing");
 
-console.log(await cuser.setting("css", "world!!"));
+validator.custom.add("is_empty", (input) => {
+  return input.length == 0 || !input;
+})
+
+console.log(validator.validate());

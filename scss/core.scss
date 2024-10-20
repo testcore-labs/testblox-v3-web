@@ -762,6 +762,11 @@ textarea,
   box-sizing: border-box;
   font-size: 1em !important;
   box-shadow: 1px 1px 2px 2px $shadow;
+  &:-webkit-autofill {
+    outline: none !important;
+    -webkit-text-fill-color: white !important;
+    transition: background-color 5500s ease-in-out 0s;
+  }
 }
 
 input[type="checkbox"] {
@@ -821,7 +826,7 @@ textarea {
 }
 
 .shadowless {
-  box-shadow: unset;
+  box-shadow: unset !important;
 }
 
 .shadow-1 {
@@ -1331,7 +1336,8 @@ $sides: (
  
 .spinner {
   width: 2em;
-  aspect-ratio: 1;
+  height: 2em;
+  aspect-ratio: 1/1;
   border-radius: 50%;
   border: 8px solid $accent;
   animation:
@@ -1341,18 +1347,23 @@ $sides: (
 
 .spinner.sm {
   width: 1em;
+  height: 1em;
 }
 .spinner.md {
   width: 2em;
+  height: 2em;
 }
 .spinner.lg {
   width: 3em;
+  height: 3em;
 }
 .spinner.xl {
   width: 4em;
+  height: 4em;
 }
 .spinner.xxl {
   width: 5em;
+  height: 5em;
 }
 @keyframes l20-1{
    0%    {clip-path: polygon(50% 50%,0       0,  50%   0%,  50%    0%, 50%    0%, 50%    0%, 50%    0% )}

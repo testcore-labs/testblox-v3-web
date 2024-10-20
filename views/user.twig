@@ -1,5 +1,5 @@
 {% extends "html.twig" %}
-{% set title = "users" %}
+{% set title = user.username|e %}
 
 {% block content %}
 {% import "./_macros.twig" as utils %}

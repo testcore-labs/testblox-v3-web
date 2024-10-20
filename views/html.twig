@@ -94,9 +94,64 @@
       </footer>{% endif %}
     </div>
 
-    <div class="d-flex flex-column pos-fixed me-3" style="bottom: 0; right: 0; max-width: 20em; width: 100%;">
-      {% include "chat/index.twig" %}
+    <div x-data 
+    @popup-new.window="
+    const args = $event.detail; 
+    let time = Number(args.time);
+    let new_popup = template.clone($refs[args.type ?? 'info'], true); 
+    new_popup.querySelector('[x-ref=msg]').textContent = args.msg;
+    new_popup.querySelector('[x-ref=title]').textContent = args.title;
+    new_popup.querySelector('[x-ref=time]').textContent = utils.format_duration(time);
+    let time_interval = setInterval(() => {
+      time -= 1;
+      new_popup.querySelector('[x-ref=time]').textContent = utils.format_duration(time);
+      if(time === 0) {
+        new_popup.remove();
+        clearInterval(time_interval);
+      }
+    }, 1000);
+
+    $refs.toasts.appendChild(new_popup);"
+    class="pos-absolute" id="toasts" style="bottom: 0; left: 0; margin: 1em; z-index: 3;">
+      <template x-ref="info">
+      <div x-data @close="$el.classList.add('d-none')" class="d-flex flex-column round-4 overflow-hidden border-light-1" style="min-width: 10em; max-width: 20em; backdrop-filter: blur(0.35em)">
+        <div class="d-flex flex-row ai-center gap-3 p-3 border-light-b-1" style="background: rgba(35,35,35,0.5);">
+          <i class="bi bi-info-circle"></i>
+          <span x-ref="title">-</span>
+          <small x-ref="time" class="ms-auto ps-3 text-muted">0:00</small>
+          <span @click="$dispatch('close')" class="bi bi-x-lg"></span>
+        </div>
+        <div x-ref="msg" class="p-3" style="background: rgba(0,0,0,0.5);">-</div>
+      </div>
+      </template>
+      <template x-ref="success">
+      <div x-data @close="$el.classList.add('d-none')" class="d-flex flex-column round-4 overflow-hidden border-light-1" style="min-width: 10em; max-width: 20em; backdrop-filter: blur(0.35em)">
+        <div class="d-flex flex-row ai-center gap-3 p-3 border-light-b-1" style="background: rgba(1, 59, 2,0.5);">
+          <i class="bi bi-check-circle"></i>
+          <span x-ref="title">-</span>
+          <small x-ref="time" class="ms-auto ps-3 text-muted">0:00</small>
+          <span @click="$dispatch('close')" class="bi bi-x-lg"></span>
+        </div>  
+        <div x-ref="msg" class="p-3" style="background: rgba(0,0,0,0.5);">-</div>
+      </div>
+      </template>
+      <template x-ref="error">
+      <div x-data @close="$el.classList.add('d-none')" class="d-flex flex-column round-4 overflow-hidden border-light-1" style="min-width: 10em; max-width: 20em; backdrop-filter: blur(0.35em)">
+        <div class="d-flex flex-row ai-center gap-3 p-3 border-light-b-1" style="background: rgba(74, 2, 13,0.5);">
+          <i class="bi bi-x-circle"></i>
+          <span x-ref="title">-</span>
+          <small x-ref="time" class="ms-auto ps-3 text-muted">0:00</small>
+          <span @click="$dispatch('close')" class="bi bi-x-lg"></span>
+        </div>
+        <div x-ref="msg" class="p-3" style="background: rgba(0, 0, 0,0.5);">-</div>
+      </div>
+      </template>
+      <div x-ref="toasts" class="d-flex flex-column gap-3"></div>
     </div>
+
+    {% if isloggedin %}<div class="d-flex flex-column pos-fixed me-3" style="bottom: 0; right: 0; max-width: 20em; width: 100%;">
+      {% include "chat/index.twig" %}
+    </div>{% endif %}
     <div class="d-none pos-absolute round-4 p-3" style="top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0, 0.33); backdrop-filter: blur(1em);" id="cmd_window">
     nothing here.. (close me by typing --cmd again)
     </div>
