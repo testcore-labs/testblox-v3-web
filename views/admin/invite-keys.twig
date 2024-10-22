@@ -9,7 +9,14 @@ x-data="{ query: ``, res: response_skeleton }"
   page: 1,
 }).toString());
 res = await req.json();
-console.log(res);" 
+if(!res.success) {
+  $dispatch('popup-new', { 
+    type: 'error', 
+    title: 'request failed', 
+    msg: res.message, 
+    time: (res.info.time / 1000)
+  });
+}" 
 x-init="$nextTick(() => $dispatch(`fetch`));">
 
 

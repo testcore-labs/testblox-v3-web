@@ -299,9 +299,6 @@ h6 {
   &:not([nobold]) {
     font-weight: 600;
   }
-  & {
-    color: #ffffff;
-  }
 }
 
 .ratio {
@@ -552,6 +549,7 @@ button,
   }
   &:active,
   &[disabled] {
+    color: #a7a7a7 !important;
     background: darken($primary-2, 5%);
   }
   &[disabled] {
@@ -582,6 +580,7 @@ button[nostyle] {
   }
   &:active,
   &[disabled] {
+    color: #a7a7a7 !important;
     background: darken($accent-darker, 5%);
   }
   &[disabled] {

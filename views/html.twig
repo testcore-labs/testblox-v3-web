@@ -98,6 +98,7 @@
     @popup-new.window="
     const args = $event.detail; 
     let time = Number(args.time);
+    time = Math.floor(time);
     let new_popup = template.clone($refs[args.type ?? 'info'], true); 
     new_popup.querySelector('[x-ref=msg]').textContent = args.msg;
     new_popup.querySelector('[x-ref=title]').textContent = args.title;
@@ -105,7 +106,7 @@
     let time_interval = setInterval(() => {
       time -= 1;
       new_popup.querySelector('[x-ref=time]').textContent = utils.format_duration(time);
-      if(time === 0) {
+      if(time === 0 || time < 0) {
         new_popup.remove();
         clearInterval(time_interval);
       }
@@ -114,7 +115,7 @@
     $refs.toasts.appendChild(new_popup);"
     class="pos-absolute" id="toasts" style="bottom: 0; left: 0; margin: 1em; z-index: 3;">
       <template x-ref="info">
-      <div x-data @close="$el.classList.add('d-none')" class="d-flex flex-column round-4 overflow-hidden border-light-1" style="min-width: 10em; max-width: 20em; backdrop-filter: blur(0.35em)">
+      <div x-data @close="$el.classList.add('d-none')" class="d-flex flex-column round-4 overflow-hidden border-light-1" style="min-width: 10em; max-width: 25em; backdrop-filter: blur(0.35em)">
         <div class="d-flex flex-row ai-center gap-3 p-3 border-light-b-1" style="background: rgba(35,35,35,0.5);">
           <i class="bi bi-info-circle"></i>
           <span x-ref="title">-</span>
@@ -125,7 +126,7 @@
       </div>
       </template>
       <template x-ref="success">
-      <div x-data @close="$el.classList.add('d-none')" class="d-flex flex-column round-4 overflow-hidden border-light-1" style="min-width: 10em; max-width: 20em; backdrop-filter: blur(0.35em)">
+      <div x-data @close="$el.classList.add('d-none')" class="d-flex flex-column round-4 overflow-hidden border-light-1" style="min-width: 10em; max-width: 25em; backdrop-filter: blur(0.35em)">
         <div class="d-flex flex-row ai-center gap-3 p-3 border-light-b-1" style="background: rgba(1, 59, 2,0.5);">
           <i class="bi bi-check-circle"></i>
           <span x-ref="title">-</span>

@@ -23,7 +23,11 @@ import entity_invitekey from "../db/invitekey";
 import cooldown from "../utils/cooldown";
 
 // limiters
-const msg_too_many_reqs: message_type = {success: false, status: 429, info: { time: undefined }, message: "too many requests, try again later."};
+const msg_too_many_reqs: message_type = {success: false, status: 429, info: { 
+  time: undefined,
+  current: undefined,
+  max: undefined
+}, message: "too many requests, try again later."};
 
 // keeping for legacy
 const creation_and_login_limiter = rateLimit({
@@ -37,17 +41,26 @@ const creation_and_login_limiter = rateLimit({
   }
 });
 
+// unless you spam the shit out of this it wont limit unfairly 
 const generic_limiter = async (req: Request, res: Response, next: NextFunction) => {
-  const identifier = `[${req.ip}]:${res.locals.cuser.id}-(${req.path})`;
-  const [ can_do, time_left ] = cooldown.apply(identifier, 3000, 5);
-  console.log(cooldown.data);
+  const identifier = `[${req.ip}]:${res.locals.cuser.id}-(${req.route.path})`;
+  const [ can_do, time_left, reqs, max_reqs ] = cooldown.apply(
+    identifier, 
+    (0.15 * 60) * 1000, // while time
+    50, // reqs
+    (10 * 60) * 1000 // consequence
+  );
   if(!can_do) {
-    console.log(`blocked ${ identifier}`);
+    console.log(`blocked ${ identifier}`, time_left, reqs, max_reqs);
     let custom_msg = Object.assign({}, msg_too_many_reqs);
-    if(custom_msg.info) custom_msg.info.time = time_left;
+    if(custom_msg.info) {
+      custom_msg.info.time = time_left;
+      custom_msg.info.current = reqs;
+      custom_msg.info.max = max_reqs;
+    }
     return res.json(custom_msg)
   } else {
-    console.log(`allowed ${ identifier}`);
+    console.log(`allowed ${ identifier}`, time_left, reqs, max_reqs);
     next();
   }
 }
