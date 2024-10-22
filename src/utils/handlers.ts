@@ -17,6 +17,13 @@ export function notloggedin_api_handler(req: Request, res: Response, next: NextF
     next();
   }
 }
+export function admin_api_handler(req: Request, res: Response, next: NextFunction) {
+  if(!(res.locals.cuser.is_admin || res.locals.cuser.is_owner)) {
+    res.json({ success: false, message: `you are not owner` });
+  } else {
+    next();
+  }
+}
 export function owner_api_handler(req: Request, res: Response, next: NextFunction) {
   if(!res.locals.cuser.is_owner) {
     res.json({ success: false, message: `you are not owner` });

@@ -81,6 +81,14 @@ export default class rule_validator {
         }
       )
     },
+    is_email: (strict: boolean = false, not: boolean = false) => {
+      const rgx = strict 
+        ? new RegExp("/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/")
+        : new RegExp("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$");
+      this.custom.add(
+        `${not ? `not.` : ``}is_email`, 
+        (input) => this.not_ify((rgx.test(input)), not))
+    },
     regex: (regex: RegExp, not: boolean = false, rule_name: string = `regex`) => {
       this.custom.add(
         `${not ? `not.` : ``}${rule_name}`, 

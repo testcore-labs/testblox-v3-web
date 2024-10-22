@@ -1,4 +1,4 @@
-import express, { type Express, type Request, type Response } from "express";
+import express, { type Express, type NextFunction, type Request, type Response } from "express";
 import entity_user from "../db/user";
 const routes = express.Router();
 import { type message_type } from "../types/message";
@@ -11,7 +11,7 @@ import { asset_types } from "../types/assets";
 import root_path from "../utils/root_path";
 import fs from "fs";
 import entity_feed from "../db/feed";
-import { notloggedin_api_handler, owner_api_handler } from "../utils/handlers";
+import { admin_api_handler, notloggedin_api_handler, owner_api_handler } from "../utils/handlers";
 import translate from "../translate";
 import websockets from "../websockets";
 import colors from "../utils/colors";
@@ -20,10 +20,12 @@ import * as crypto from 'crypto';
 import { date_format } from "../utils/time";
 import mime from "mime";
 import entity_invitekey from "../db/invitekey";
+import cooldown from "../utils/cooldown";
 
 // limiters
-const msg_too_many_reqs: message_type = {success: false, status: 429, message: "too many requests, try again later."};
+const msg_too_many_reqs: message_type = {success: false, status: 429, info: { time: undefined }, message: "too many requests, try again later."};
 
+// keeping for legacy
 const creation_and_login_limiter = rateLimit({
 	windowMs: 2.5 * 60 * 1000, // 2 minutes and 30 secs
 	limit: 50,
@@ -34,6 +36,21 @@ const creation_and_login_limiter = rateLimit({
     return req.ip; 
   }
 });
+
+const generic_limiter = async (req: Request, res: Response, next: NextFunction) => {
+  const identifier = `[${req.ip}]:${res.locals.cuser.id}-(${req.path})`;
+  const [ can_do, time_left ] = cooldown.apply(identifier, 3000, 5);
+  console.log(cooldown.data);
+  if(!can_do) {
+    console.log(`blocked ${ identifier}`);
+    let custom_msg = Object.assign({}, msg_too_many_reqs);
+    if(custom_msg.info) custom_msg.info.time = time_left;
+    return res.json(custom_msg)
+  } else {
+    console.log(`allowed ${ identifier}`);
+    next();
+  }
+}
 
 websockets.on("connection", (socket) => {
   console.log(socket.handshake.auth.token);
@@ -359,7 +376,8 @@ routes.get("/client/deploy/:folder/:file", async_handler(async (req, res, next) 
   }});
 }));
 
-routes.get("/admin/invite-keys/all", async_handler(async (req, res) => {
+routes.get("/admin/invite-keys/all", generic_limiter, notloggedin_api_handler, admin_api_handler, async_handler(async (req, res) => {
+  
   const query = String(req.query?.query ?? "");
   let page = Number(req.query.page);
   if(Number.isNaN(page) || Number(page) <= 0) {
