@@ -19,6 +19,7 @@ import sql from "../sql";
 import * as crypto from 'crypto';
 import { date_format } from "../utils/time";
 import mime from "mime";
+import entity_invitekey from "../db/invitekey";
 
 // limiters
 const msg_too_many_reqs: message_type = {success: false, status: 429, message: "too many requests, try again later."};
@@ -170,21 +171,6 @@ routes.post("/item/buy", notloggedin_api_handler, async_handler(async (req: Requ
   res.json(await res.locals.cuser.buy_item(item_id));
 }));
 
-// import { createSession, createChannel } from "better-sse";
-// import { sleep } from "bun";
-// const ping_online = createChannel();
-
-// setInterval(() => {
-//   console.log("sss");
-//   ping_online.broadcast("ss " +Math.random(), "message");
-// }, 1000);
-
-// routes.get("/keep_alive", async (req, res) => {
-// 	const session = await createSession(req, res);
-//   ping_online.register(session);
-//   res.locals.cuser.set_online();
-// });
-
 routes.get("/isloggedin", async_handler(async (_req, res) => {
   res.json({ success: res.locals.isloggedin, message: res.locals.isloggedin ? "logged in" : "not logged in" });
 }));
@@ -192,6 +178,7 @@ routes.get("/isloggedin", async_handler(async (_req, res) => {
 routes.get("/keep_alive", async_handler(async (req, res) => {
   if(res.locals.isloggedin) {
     await res.locals.cuser.set_online();
+    await res.locals.cuser.daily_money();
     res.json({ "success": true, message: "set online" });
   } else {
     res.json({ "success": false, "message": "not logged in" });
@@ -371,6 +358,27 @@ routes.get("/client/deploy/:folder/:file", async_handler(async (req, res, next) 
     }
   }});
 }));
+
+routes.get("/admin/invite-keys/all", async_handler(async (req, res) => {
+  const query = String(req.query?.query ?? "");
+  let page = Number(req.query.page);
+  if(Number.isNaN(page) || Number(page) <= 0) {
+    page = 1;
+  }
+
+  const order = String(req.query?.order).toString();
+  const sort = String(req.query?.sort).toString();
+  const stmt = entity_invitekey.query()
+    .select(["id", "code", "usedby", "createdby", "createdat", "updatedat"])
+    .limit(6)
+    .page(page)
+    .search(query, ["code"], false)
+    .sort(sort) 
+    .order(order);
+  const data = await stmt.exec();
+  res.json({ success: true, message: "", info: {...data}});
+}));
+
 
 routes.get("/game/info", async_handler(async (req, res) => {
   const id = Number(req.query.id);

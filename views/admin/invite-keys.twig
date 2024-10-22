@@ -1,23 +1,58 @@
 {% extends "html.twig" %}
 
 {% block content %}
-<h2>invite keys</h2>
+<div class="d-flex flex-column flex-1"
+x-data="{ query: ``, res: response_skeleton }" 
+@fetch="let req = await fetch(`${api_endpoint.v1}/admin/invite-keys/all?`
++ new URLSearchParams({
+  query: query,
+  page: 1,
+}).toString());
+res = await req.json();
+console.log(res);" 
+x-init="$nextTick(() => $dispatch(`fetch`));">
+
+
+<div class="d-flex flex-row flex-wrap ai-center gap-3">
+  <h2>invite keys</h2>
+  <div class="d-flex flex-row flex-wrap gap-2 ms-auto w-autoto100-sm">
+  {% include '/components/pagination.twig' with {params: req.query, page: page, queries: items, totalpages: pages, classes: "jc-center"} %}
+  <div class="d-flex flex-row pillify flex-grow-1" style="width: 25em;">
+  <input 
+  @keyup.enter="$dispatch('fetch');" 
+  x-model="query" 
+  class="w-100 shadowless" placeholder="code" value="{{ req.query.query|e }}" type="search">
+  <button class="shadowless" @click="$dispatch('fetch');"><h5 class="bi bi-search"></h5></button>
+  </div>
+</div>
+</div>
 <hr class="mt-3 mb-2">
-<table class="w-100 border-dark" style="text-align: left;">
-  <thead>
-  <tr>
-    <th style="width: 2em;">id</th>
-    <th>code</th>
-    <th>usedby</th>
-  </tr>
-  </thead>
-  <tbody>
-  {% for invkey in items %}
+<div class="d-flex flex-row gap-3 flex-wrap">
+  <div class="border-light-1 p-2 round-4" style="flex-grow: 25em; flex-grow: 1; flex-shrink: 1;">
+    filtration sistema
+  </div>
+
+  <table
+  class="border-dark" style="flex-basis: 30em; flex-grow: 10; text-align: left;">
+    <thead>
     <tr>
-      <td>{{ invkey.id }}</td>
-      <td>{{ invkey.code }}</td>
-      <td>{{ invkey.usedby.exists ? invkey.usedby.username : '<i class="text-muted">not used</i>' }}</td>
+      <th style="width: 2em;">id</th>
+      <th>code</th>
+      <th>used by</th>
+      <th>created by</th>
     </tr>
-  {% endfor %}
-</table> 
+    </thead>
+    <tbody>
+    <template x-for="invkey in res.info.data === null ? [] : res.info.data" :key="invkey.id">
+      <tr>
+        <td x-text="invkey.id"></td>
+        <td x-text="invkey.code"></td>
+        <td x-html="invkey.usedby !== 0 ? invkey.usedby : `<i class='text-muted'>not used</i>`"></td>
+        <td x-html="invkey.createdby !== 0 ? invkey.createdby : `<i class='text-muted'>unknown</i>`"></td>
+      </tr>
+    </template>
+    </tbody>
+  </table>
+</div>
+</div>
 {% endblock %}

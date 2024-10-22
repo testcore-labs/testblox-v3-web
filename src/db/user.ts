@@ -9,7 +9,7 @@ import entity_asset from "./asset";
 import { pcall } from "../utils/pcall";
 import ENUM from "../types/enums";
 import type ENUM_T from "../types/enums";
-import type { membership_types } from "../types/membership";
+import { membership_perks, type membership_types } from "../types/membership";
 import entity_base, { query_builder } from "./base";
 import cooldown from "../utils/cooldown";
 import { xss_all } from "../utils/xss";
@@ -133,10 +133,6 @@ class entity_user extends entity_base {
   get status() {
     return String(this.data?.status);
   }
-
-  get currency() {
-    return String(this.data?.description);
-  }
   
   get description() {
     return String(this.data?.description);
@@ -144,6 +140,25 @@ class entity_user extends entity_base {
   
   get money() {
     return Number(this.data?.currency);
+  }
+
+  get last_daily_money() {
+    return Number(this.data?.last_daily_currency);
+  }
+
+  get can_give_daily() {
+    return (Date.now() - this.last_daily_money) >= (86400 * 1000);  
+  }
+
+  async daily_money() {
+    if(!this.can_give_daily) return;
+    const perks = membership_perks[(this.membership as (membership_types))];
+
+    console.log("hh");
+    await sql`UPDATE ${sql(this.table)}
+    SET currency = currency + ${perks.daily_currency},
+    last_daily_currency = ${Date.now()}
+    WHERE id = ${this.id}`;
   }
 
   get gender() {
@@ -292,7 +307,10 @@ class entity_user extends entity_base {
 
   
   async set_membership(membership_type: membership_types = ENUM.membership.TIER_1, lastfor: number = (Date.now() + (3600 * 24 * 30) * 1000) /* month */) {
-    this.data = await sql`UPDATE ${sql(this.table)} SET membership = ${membership_type}, membership_valid = ${lastfor} WHERE "id" = ${this.data?.id} RETURNING *`;
+    const stmt = await sql`UPDATE ${sql(this.table)} SET membership = ${membership_type}, membership_valid = ${lastfor} WHERE "id" = ${this.data?.id} RETURNING *`;
+    if(stmt.length >= 1) {
+      this.data = stmt[0];
+    }
     await this._updateat();
   }
 
@@ -300,8 +318,8 @@ class entity_user extends entity_base {
     return (this.data?.membership > 0 && Date.now() < this.data?.membership_valid);
   }
 
-  get membership() {
-    return this.data?.membership;
+  get membership(): number {
+    return Number(this.data?.membership);
   }
 
   get what_membership() {
@@ -391,6 +409,28 @@ class entity_user extends entity_base {
 
   async accept_user() {
     // todo
+  }
+
+  async get_friend_count() {
+    let count = await sql`SELECT (CASE
+        WHEN "from" = ${this.data?.id} THEN "to"
+        ELSE "from"
+      END) as friend_id, COUNT(*) as "fcount"
+    FROM "friends"
+    INNER JOIN ${sql(this.table)} ON ${sql(this.table)}.id = CASE
+      WHEN "from" = ${this.data?.id} THEN "to"
+      ELSE "from"
+    END
+    WHERE ("from" = ${this.data?.id} OR "to" = ${this.data?.id})
+    AND "accepted" = true
+    GROUP BY friend_id, users.username
+    ORDER BY users.username ASC`;
+
+    if(count.length >= 1) {
+      return count[0].fcount;
+    } else {
+      return 0;
+    }
   }
 
   async get_friends(limit: 16) {
@@ -490,7 +530,10 @@ class entity_user extends entity_base {
   }
 
   async set_online() {
-    this.data = await sql`UPDATE ${sql(this.table)} SET online = ${ Date.now() + 30 * 1000 } WHERE "id" = ${this.data?.id} RETURNING *`;
+    const stmt = await sql`UPDATE ${sql(this.table)} SET online = ${ Date.now() + 30 * 1000 } WHERE "id" = ${this.data?.id} RETURNING *`;
+    if(stmt.length >= 1) {
+      this.data = stmt[0];
+    }
     await this._updateat();
   }
 
@@ -506,12 +549,13 @@ class entity_user extends entity_base {
   }
 
   static get rand_token(): string {
-    let characters = "0123456789abcdefABCDEFxyzXYZ"
-    let str = ""
-    for(let i = 0; i < 96; i++){
-      str += characters[Math.floor(Math.random() * characters.length)]
+    const characters = "0123456789abcdefABCDEFxyzXYZmeow:3" // yes this is intentional
+    let new_token = ""
+    const token_length = 96;
+    for(let i = 0; i < token_length; i++){
+      new_token += characters[Math.floor(Math.random() * characters.length)]
     }
-    return str;
+    return new_token;
   }
 
   static async check_and_rand_token(i = 0): Promise<any> {

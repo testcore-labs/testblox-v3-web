@@ -3,7 +3,7 @@
   <head>
 {% include "head.twig" %}
   </head>
-  <body class="body-padding body-backdrop" style="box-sizing: border-box;">
+  <body center class="body-backdrop" style="box-sizing: border-box;">
     {% if not cuser.has_membership or cuser.settings.show_ads %}
       {% if showads ?? true %}
       <div id="ad-skyscraper-1" class="pos-absolute" style="left: 0; top: 50%; transform: translate(0, -50%);">

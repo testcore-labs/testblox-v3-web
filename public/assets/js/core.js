@@ -5,6 +5,7 @@ const ws_protocol = (location.protocol === 'https:') ? "wss" : "ws";
 const api_endpoint = {
   v1: "/api/v1",
 };
+const response_skeleton = { success: false, message: "", info: {} };
 
 let socket = { };
 
@@ -96,8 +97,13 @@ const cuser = {
       let money_div = elem(".cuser-money-div")
       let money_amount = elem(".cuser-money-amount")
 
+      let amount_formatted = Intl.NumberFormat('en-US', {
+        notation: "compact",
+        maximumFractionDigits: 1
+      }).format(amount);
+
       money_div.setAttribute("title", amount);
-      money_amount.textContent = amount;
+      money_amount.textContent = amount_formatted;
     }
   }
 };

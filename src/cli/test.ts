@@ -1,10 +1,10 @@
 // for testing things in cli obv
-import rule_validation from "../utils/rule_validation";
+import {query_builder} from "../db/base";
+import sql from "../sql";
 
-let validator = new rule_validation("", "thing");
+let qu = new query_builder;
+const stmt = await
+qu.table("invitekeys")
+  .exec();
 
-validator.custom.add("is_empty", (input) => {
-  return input.length == 0 || !input;
-})
-
-console.log(validator.validate());
+console.log(stmt);

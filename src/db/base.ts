@@ -20,6 +20,10 @@ class query_builder {
   v_randomize_sort: boolean = false;
   v_condition_separator: string = "AND";
   v_search_separator: string = "OR";
+  v_inner_join: Array<{
+    table: string,
+    on: PendingQuery<Row[]>[]
+  }> = [];
 
   private safe_number(number: number) {
     return _.clamp(number,-2^31, 2^31-1)
@@ -56,6 +60,14 @@ class query_builder {
      sql`(to_tsvector(${sql(column)}) ${ sql.unsafe(`@@`) } phraseto_tsquery(${search}))`
     ));
 
+    return this;
+  }
+
+  inner_join(table: string, wheres: typeof this.v_conditions) {
+    this.v_inner_join.push({
+      table: table,
+      on: wheres
+    });
     return this;
   }
 
@@ -131,8 +143,11 @@ class query_builder {
   
 
   async exec() {
-    let select_stmt = sql`SELECT *
+    let select_stmt = sql`SELECT ${ sql.unsafe(this.v_selected) }
     FROM ${ sql(this.v_table) }
+    ${ this.v_inner_join.length > 0 ? (this.v_inner_join.flatMap((inner_join) => {
+      return sql`INNER JOIN ${sql(inner_join.table)} ON ${this.where_mapper(inner_join.on)}`
+    })) : sql`` }
     WHERE (${ this.where_mapper(this.v_search, this.v_search_separator) }) AND
     (${ this.where_mapper(this.v_conditions, this.v_condition_separator) })
     ORDER BY 

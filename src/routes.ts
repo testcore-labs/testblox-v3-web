@@ -63,7 +63,7 @@ app.use(async_handler(async (req, res, next) => {
   next();
 }));
 // separated so cuser isnt used for assets, good for perfomance
-app.use("/assets", express.static(path.join(__dirname, "../public/assets")));
+app.use("/", express.static(path.join(__dirname, "../public/")));
 app.use(async_handler(async (req, res, next) => {
   translate.select(req.cookies?.locale ?? env.locale)
   res.locals.req = req;
@@ -81,7 +81,6 @@ app.use(async_handler(async (req, res, next) => {
   );
   res.locals.cuser = cuser;
   res.locals.isloggedin = req.cookies[env.session.name] && (await cuser).exists; // await DOES change everything >:(
-
   next();
 }));
 
@@ -104,7 +103,7 @@ app.use((err: any, req: any, res: any, next: any) => {
     logs.custom(err.stack.replace(err.name + ": ", ""), colors.red("error: " +err.name));
     if(env.debug) {
       let error = err.stack;
-      res.set("content-type", "text/plain").status(500).send(error);
+      return res.set("content-type", "text/plain").status(500).send(error);
     }
   } catch(e) {
     console.error(err);

@@ -6,8 +6,7 @@
     <div class="d-flex flex-row pillify shadow-1 round-4 overflow-none">
     <input class="shadowless"
       placeholder="silly_person123" 
-      @change="username = $event.target.value"
-      @blur="username = $event.target.value"
+      x-model="username"
       @keyup.enter="$dispatch('update');" 
       name="username" type="text">
       <button class="bi bi-pencil-square shadowless" @click="$dispatch('update')"></button>

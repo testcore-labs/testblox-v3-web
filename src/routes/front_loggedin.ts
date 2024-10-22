@@ -152,7 +152,7 @@ routes.get("/users/:id/:name", notloggedin_handler, async_handler(async (req: Re
   const page = (Number(req.query.p) <= 0 && Number.isNaN(req.query.p)) ? Number(req.query.p) : 1;
   switch(option) {
     case "profile":
-      res.render("user.twig", { user: user });
+      res.render("user.twig", { user: user, friend_count: user.get_friend_count() });
       break;
     case "avatar":
       let user_equipped_items = await user.get_items(16, page, query, undefined, undefined, true);
@@ -376,16 +376,7 @@ routes.get(`${admin_route_path}/debug`, notloggedin_handler, admin_handler, asyn
 }));
 
 routes.get(`${admin_route_path}/invite-keys`, notloggedin_handler, admin_handler, async_handler(async (req: Request, res: Response) => {
-  const query = String(req.query?.q).toString();
-  let page = Number(req.query.p);
-  if(Number.isNaN(page) || Number(page) <= 0) {
-    page = 1;
-  }
-
-  const order = String(req.query?.order).toString();
-  const sort = String(req.query?.sort).toString();
-  const invitekeys = await entity_invitekey.all(6, page, query, sort, order);
-  res.render("admin/invite-keys.twig", { ...invitekeys.info})
+  res.render("admin/invite-keys.twig")
 }));
 
 routes.get(`${admin_route_path}/server-management`, notloggedin_handler, owner_handler, async_handler(async (req: Request, res: Response) => {

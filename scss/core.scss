@@ -276,8 +276,10 @@ body {
   margin: 0;
   padding: 0;
   align-items: center;
-  justify-content: center;
   min-height: 100vh;
+  &[center] {
+    justify-content: center;
+  }
 }
 
 body > .container {
@@ -1522,8 +1524,11 @@ a {
 }
 
 @media (min-width: 1px) {
-  .body-padding {
+  body {
     padding: 0 !important;
+    &:not([center]) {
+      padding-top: 0 !important;
+    }
   }
   .swap-element-400px {
     & > *.first {
@@ -1593,8 +1598,11 @@ a {
 }
   
 @media (min-width: 550px) {
-  .body-padding {
+  body {
     padding: 0.4em !important;
+    &:not([center]) {
+      padding-top: 0.4em !important;
+    }
   }
   .mobile-hide {
     display: initial;
