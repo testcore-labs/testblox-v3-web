@@ -12,9 +12,12 @@ res = await req.json();
 if(!res.success) {
   $dispatch('popup-new', { 
     type: 'error', 
-    title: 'request failed', 
+    title: `request failed`,
+    hint: `timed out for ${utils.format_duration(
+      Math.ceil(res.info.time / 1000)
+    )}`, 
     msg: res.message, 
-    time: (res.info.time / 1000)
+    time: 5,
   });
 }" 
 x-init="$nextTick(() => $dispatch(`fetch`));">

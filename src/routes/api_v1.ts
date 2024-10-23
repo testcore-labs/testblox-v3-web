@@ -21,6 +21,7 @@ import { date_format } from "../utils/time";
 import mime from "mime";
 import entity_invitekey from "../db/invitekey";
 import cooldown from "../utils/cooldown";
+import logs from "../utils/log";
 
 // limiters
 const msg_too_many_reqs: message_type = {success: false, status: 429, info: { 
@@ -48,10 +49,10 @@ const generic_limiter = async (req: Request, res: Response, next: NextFunction) 
     identifier, 
     (0.15 * 60) * 1000, // while time
     50, // reqs
-    (10 * 60) * 1000 // consequence
+    (5 * 60) * 1000 // consequence
   );
   if(!can_do) {
-    console.log(`blocked ${ identifier}`, time_left, reqs, max_reqs);
+    logs.custom(`${colors.bgRed(`BLOCKED`)} ${identifier}, for ${time_left}. ${reqs}, ${max_reqs}`, colors.gray(`limiter`), true);
     let custom_msg = structuredClone(msg_too_many_reqs);
     if(custom_msg.info) {
       custom_msg.info.time = time_left;
@@ -60,7 +61,7 @@ const generic_limiter = async (req: Request, res: Response, next: NextFunction) 
     }
     return res.json(custom_msg)
   } else {
-    console.log(`allowed ${ identifier}`, time_left, reqs, max_reqs);
+    logs.custom(`${colors.bgGreen(`ALLOWED`)} ${identifier}, for ${time_left}. ${reqs}, ${max_reqs}`, colors.gray(`limiter`), true);
     next();
   }
 }
@@ -400,13 +401,19 @@ routes.get("/admin/invite-keys/all", generic_limiter, notloggedin_api_handler, a
   const order = String(req.query?.order).toString();
   const sort = String(req.query?.sort).toString();
   const stmt = entity_invitekey.query()
-    .select(["id", "code", "usedby", "createdby", "createdat", "updatedat"])
+    //.select(["id", "code", "usedby", "createdby", "createdat", "updatedat"])
     .limit(6)
     .page(page)
+    .classify("id", async (key, value) => {
+      return await (new entity_invitekey).by(entity_invitekey.query()
+        .where(sql`${sql(key)} = ${value}`)
+      );
+    })
     .search(query, ["code"], false)
     .sort(sort) 
     .order(order);
   const data = await stmt.exec();
+  console.log(data);
   res.json({ success: true, message: "", info: {...data}});
 }));
 

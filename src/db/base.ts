@@ -5,6 +5,20 @@ import { validate_orderby } from "../types/orderby";
 import _ from "lodash"; 
 import type { PendingQuery, Row } from "postgres";
 
+export enum join_types {
+  INNER = "INNER",
+  SELF = "SELF",
+  CROSS = "CROSS",
+  OUTER_LEFT = "LEFT OUTER",
+  OUTER_RIGHT = "RIGHT OUTER",
+}
+
+export type sql_join = {
+  table: string,
+  on: PendingQuery<Row[]>[],
+  type: join_types
+};
+
 class query_builder {
   v_selected: string = "*";
   v_table: string = "";
@@ -20,10 +34,12 @@ class query_builder {
   v_randomize_sort: boolean = false;
   v_condition_separator: string = "AND";
   v_search_separator: string = "OR";
-  v_inner_join: Array<{
-    table: string,
-    on: PendingQuery<Row[]>[]
-  }> = [];
+  v_joins: Array<sql_join> = [];
+
+  v_classify: {
+    fn: (key: string, value: number|string|boolean) => unknown,
+    selector: string
+  } | null = null;
 
   private safe_number(number: number) {
     return _.clamp(number,-2^31, 2^31-1)
@@ -55,18 +71,31 @@ class query_builder {
     str = str.trimStart().trimEnd()
     if(str.length == 0) return this;
 
-    const search = `${str}:*`;
+    const search = `$$${str}$$:*`;
     this.v_search = Object.assign(this.v_search, column_array.map(column => 
-     sql`(to_tsvector(${sql(column)}) ${ sql.unsafe(`@@`) } phraseto_tsquery(${search}))`
+     sql`(to_tsvector(${sql(column)}) ${ sql.unsafe(`@@`) } websearch_to_tsquery(${search}))`
     ));
 
     return this;
   }
 
-  inner_join(table: string, wheres: typeof this.v_conditions) {
-    this.v_inner_join.push({
+  classify(selector: string = "id", func: (key: string, value: number|string|boolean) => any) {
+    this.v_classify = {
+      fn: func,
+      selector: selector
+    }
+    return this;
+  }
+
+  join(
+    table: string, 
+    on: typeof this.v_conditions, 
+    type: join_types = join_types.INNER
+  ) {
+    this.v_joins.push({
       table: table,
-      on: wheres
+      on: on,
+      type: type
     });
     return this;
   }
@@ -143,10 +172,14 @@ class query_builder {
   
 
   async exec() {
+    if(this.v_classify !== null) {
+      this.select([this.v_classify.selector]);
+    }
+
     let select_stmt = sql`SELECT ${ sql.unsafe(this.v_selected) }
     FROM ${ sql(this.v_table) }
-    ${ this.v_inner_join.length > 0 ? (this.v_inner_join.flatMap((inner_join) => {
-      return sql`INNER JOIN ${sql(inner_join.table)} ON ${this.where_mapper(inner_join.on)}`
+    ${ this.v_joins.length > 0 ? (this.v_joins.flatMap((join: sql_join) => {
+      return sql`${sql.unsafe(join.type)} JOIN ${sql(join.table)} ON ${this.where_mapper(join.on)}`
     })) : sql`` }
     WHERE (${ this.where_mapper(this.v_search, this.v_search_separator) }) AND
     (${ this.where_mapper(this.v_conditions, this.v_condition_separator) })
@@ -166,12 +199,21 @@ class query_builder {
       select_cnt
     ]);
 
+
+    const selectors = data.map(row => row[this.v_selected]);
+    const items = await Promise.all(
+      selectors.map(async selector => {
+        return await this.v_classify?.fn !== undefined ? this.v_classify?.fn(this.v_selected, selector) : null;
+      })
+    );
+
     const total_items = Number(count[0].count);
     const total_pages = Math.ceil(total_items / (this.v_limit ?? 1));
     return this.v_single
       ? data[0]
       : { 
         data: data,
+        items: items,
         total_count: total_items, // pagination
         pages: total_pages,
         page: this.v_page,
@@ -207,17 +249,17 @@ class entity_base {
   static async insert(data: { [key: string|number|symbol]: any } = {}, return_data: boolean = false) {
     let returned_data;
     let st = await sql`
-      INSERT INTO "users" ${sql(data)}
+      INSERT INTO ${sql((new this).table)} ${sql(data)}
       ${ return_data ? sql.unsafe(`RETURNING *`) : sql`` }`;
 
-    if(return_data) returned_data = st;
+    if(return_data) returned_data = st.length == 1 ? st[0] : st;
     return returned_data;
   }
   static async insert_many(datas: Array<{ [key: string|number|symbol]: any }> = [], return_data: boolean = false) {
     let returned_data = [];
 
     let st = await sql`
-      INSERT INTO "users" ${sql(datas)}
+      INSERT INTO ${(new this).table} ${sql(datas)}
       ${ return_data ? sql.unsafe(`RETURNING *`) : sql`` }`;
 
     if(return_data) returned_data.push(st[0]);

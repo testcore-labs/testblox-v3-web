@@ -98,9 +98,10 @@
     @popup-new.window="
     const args = $event.detail; 
     let time = Number(args.time);
-    time = Math.floor(time);
+    time = Math.ceil(time);
     let new_popup = template.clone($refs[args.type ?? 'info'], true); 
     new_popup.querySelector('[x-ref=msg]').textContent = args.msg;
+    new_popup.querySelector('[x-ref=hint]').textContent = args.hint ?? ``;
     new_popup.querySelector('[x-ref=title]').textContent = args.title;
     new_popup.querySelector('[x-ref=time]').textContent = utils.format_duration(time);
     let time_interval = setInterval(() => {
@@ -122,7 +123,10 @@
           <small x-ref="time" class="ms-auto ps-3 text-muted">0:00</small>
           <span @click="$dispatch('close')" class="bi bi-x-lg"></span>
         </div>
-        <div x-ref="msg" class="p-3" style="background: rgba(0,0,0,0.5);">-</div>
+        <div class="d-flex flex-column p-3" style="background: rgba(0,0,0,0.5);">
+          <div x-ref="msg">-</div>
+          <small x-ref="hint" class="text-muted mt-auto"></small>
+        </div>
       </div>
       </template>
       <template x-ref="success">
@@ -133,18 +137,24 @@
           <small x-ref="time" class="ms-auto ps-3 text-muted">0:00</small>
           <span @click="$dispatch('close')" class="bi bi-x-lg"></span>
         </div>  
-        <div x-ref="msg" class="p-3" style="background: rgba(0,0,0,0.5);">-</div>
+        <div class="d-flex flex-column p-3" style="background: rgba(0,0,0,0.5);">
+          <div x-ref="msg">-</div>
+          <small x-ref="hint" class="text-muted mt-auto"></small>
+        </div>
       </div>
       </template>
       <template x-ref="error">
-      <div x-data @close="$el.classList.add('d-none')" class="d-flex flex-column round-4 overflow-hidden border-light-1" style="min-width: 10em; max-width: 20em; backdrop-filter: blur(0.35em)">
+      <div x-data @close="$el.classList.add('d-none')" class="d-flex flex-column round-4 overflow-hidden border-light-1" style="min-width: 10em; max-width: 25em; backdrop-filter: blur(0.35em)">
         <div class="d-flex flex-row ai-center gap-3 p-3 border-light-b-1" style="background: rgba(74, 2, 13,0.5);">
           <i class="bi bi-x-circle"></i>
           <span x-ref="title">-</span>
           <small x-ref="time" class="ms-auto ps-3 text-muted">0:00</small>
           <span @click="$dispatch('close')" class="bi bi-x-lg"></span>
         </div>
-        <div x-ref="msg" class="p-3" style="background: rgba(0, 0, 0,0.5);">-</div>
+        <div class="d-flex flex-column p-3" style="background: rgba(0,0,0,0.5);">
+          <div x-ref="msg">-</div>
+          <small x-ref="hint" class="text-muted mt-auto"></small>
+        </div>
       </div>
       </template>
       <div x-ref="toasts" class="d-flex flex-column gap-3"></div>
