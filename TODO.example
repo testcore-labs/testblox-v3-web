@@ -1,0 +1,15 @@
+# we'll use this for general purpose todo 
+# and not specific areas of code,
+# as its easier to check whats done
+[v]       - checked
+[x]       - rejected
+[p]       - paused
+[-]       - in progress
+[] OR [ ] - unchecked
+
+[]=HI     - high priority 
+[]=MD     - medium priority
+[]=LO     - low priority
+
+example:
+[]=LO Generic Todo Here
