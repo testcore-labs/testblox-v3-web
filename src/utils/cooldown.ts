@@ -13,8 +13,9 @@ class cooldown {
     if(this.data[key] && (this.data[key] && diff > 0)) {
       if(this.data[key].current >= this.data[key].max) {
         if(!this.data[key].consequence_given) {
-          this.data[key].consequence_given = true;
           this.data[key].time += consequence;
+          diff += consequence; // so you actually get it at the first blocked ~~requset~~ cooldown
+          this.data[key].consequence_given = true;
         }
         return [false, diff, this.data[key].current, this.data[key].max];
       } else {

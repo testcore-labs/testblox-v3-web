@@ -52,7 +52,7 @@ const generic_limiter = async (req: Request, res: Response, next: NextFunction) 
   );
   if(!can_do) {
     console.log(`blocked ${ identifier}`, time_left, reqs, max_reqs);
-    let custom_msg = Object.assign({}, msg_too_many_reqs);
+    let custom_msg = structuredClone(msg_too_many_reqs);
     if(custom_msg.info) {
       custom_msg.info.time = time_left;
       custom_msg.info.current = reqs;
