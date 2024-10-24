@@ -200,20 +200,24 @@ class query_builder {
     ]);
 
 
-    const selectors = data.map(row => row[this.v_selected]);
-    const items = await Promise.all(
-      selectors.map(async selector => {
-        return await this.v_classify?.fn !== undefined ? this.v_classify?.fn(this.v_selected, selector) : null;
-      })
-    );
+    const classify = this.v_classify !== null;
+    let items: any[] = [];
+    if(classify) {
+      const selectors = data.map(row => row[this.v_selected]);
+      items = await Promise.all(
+        selectors.map(async selector => {
+          return await this.v_classify?.fn !== undefined ? this.v_classify?.fn(this.v_selected, selector) : null;
+        })
+      );
+    }
 
     const total_items = Number(count[0].count);
     const total_pages = Math.ceil(total_items / (this.v_limit ?? 1));
     return this.v_single
-      ? data[0]
+      ? (classify ? items[0] : data[0])
       : { 
         data: data,
-        items: items,
+        ...(classify) && {items: items},
         total_count: total_items, // pagination
         pages: total_pages,
         page: this.v_page,

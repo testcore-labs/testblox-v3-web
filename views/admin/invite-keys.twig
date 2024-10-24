@@ -53,12 +53,12 @@ x-init="$nextTick(() => $dispatch(`fetch`));">
     </tr>
     </thead>
     <tbody>
-    <template x-for="invkey in res.info.data === null ? [] : res.info.data" :key="invkey.id">
+    <template x-for="invkey in res.info.items === null ? [] : res.info.items" :key="invkey.id">
       <tr>
         <td x-text="invkey.id"></td>
         <td x-text="invkey.code"></td>
-        <td x-html="invkey.usedby !== 0 ? invkey.usedby : `<i class='text-muted'>not used</i>`"></td>
-        <td x-html="invkey.createdby !== 0 ? invkey.createdby : `<i class='text-muted'>unknown</i>`"></td>
+        <td x-html="invkey.usedby.exists ? invkey.usedby.username : `<i class='text-muted'>not used</i>`"></td>
+        <td x-html="invkey.createdby.exists ? invkey.createdby.username : `<i class='text-muted'>unknown</i>`"></td>
       </tr>
     </template>
     </tbody>

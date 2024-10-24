@@ -1,4 +1,4 @@
-[]=HI make a better API system, just for comfort
+[v]=HI make a better API system, just for comfort
 []=HI rewrite src/db/user.ts and its `forks`
 []=MD finish neccesary rbx apis for it to run 
 []=LO finish settings page

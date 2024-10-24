@@ -405,15 +405,31 @@ routes.get("/admin/invite-keys/all", generic_limiter, notloggedin_api_handler, a
     .limit(6)
     .page(page)
     .classify("id", async (key, value) => {
-      return await (new entity_invitekey).by(entity_invitekey.query()
+      const item = await (new entity_invitekey).by(entity_invitekey.query()
         .where(sql`${sql(key)} = ${value}`)
       );
+
+      return {
+        exists: item.exists,
+        id: item.id,
+        code: item.code,
+        usedby: {
+          exists: item.usedby.exists,
+          username: item.usedby.username
+        },
+        createdby: {
+          exists: item.createdby.exists,
+          username: item.createdby.username
+        },
+        createdat: item.createdat,
+        updatedat: item.updatedat
+      };
     })
     .search(query, ["code"], false)
     .sort(sort) 
     .order(order);
+
   const data = await stmt.exec();
-  console.log(data);
   res.json({ success: true, message: "", info: {...data}});
 }));
 
