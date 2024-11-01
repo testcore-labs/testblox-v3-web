@@ -10,7 +10,6 @@ import entity_asset from "../db/asset";
 import { asset_types } from "../types/assets";
 import root_path from "../utils/root_path";
 import fs from "fs";
-import entity_feed from "../db/feed";
 import { admin_api_handler, notloggedin_api_handler, owner_api_handler } from "../utils/handlers";
 import translate from "../translate";
 import websockets from "../websockets";
@@ -43,26 +42,32 @@ const creation_and_login_limiter = rateLimit({
 });
 
 // unless you spam the shit out of this it wont limit unfairly 
-const generic_limiter = async (req: Request, res: Response, next: NextFunction) => {
-  const identifier = `[${req.ip}]:${res.locals.cuser.id}-(${req.route.path})`;
-  const [ can_do, time_left, reqs, max_reqs ] = cooldown.apply(
-    identifier, 
-    (0.15 * 60) * 1000, // while time
-    50, // reqs
-    (5 * 60) * 1000 // consequence
-  );
-  if(!can_do) {
-    logs.custom(`${colors.bgRed(`BLOCKED`)} ${identifier}, for ${time_left}. ${reqs}, ${max_reqs}`, colors.gray(`limiter`), true);
-    let custom_msg = structuredClone(msg_too_many_reqs);
-    if(custom_msg.info) {
-      custom_msg.info.time = time_left;
-      custom_msg.info.current = reqs;
-      custom_msg.info.max = max_reqs;
+const generic_limiter = (options: {
+      timeframe?: number
+      max_reqs?: number
+      consequence?: number
+    } = {}) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const identifier = `[${req.ip}]:${res.locals.cuser.id}-(${req.route.path})`;
+    const [ can_do, time_left, reqs, max_reqs ] = cooldown.apply(
+      identifier, 
+      options.timeframe ?? (0.15 * 60) * 1000,
+      options.max_reqs ?? 50,
+      options.consequence ?? (5 * 60) * 1000
+    );
+    if(!can_do) {
+      logs.custom(`${colors.bgRed(`BLOCKED`)} ${identifier}, for ${time_left}. ${reqs}, ${max_reqs}`, colors.gray(`limiter`), true);
+      let custom_msg = structuredClone(msg_too_many_reqs);
+      if(custom_msg.info) {
+        custom_msg.info.time = time_left;
+        custom_msg.info.current = reqs;
+        custom_msg.info.max = max_reqs;
+      }
+      return res.json(custom_msg)
+    } else {
+      logs.custom(`${colors.bgGreen(`ALLOWED`)} ${identifier}, for ${time_left}. ${reqs}, ${max_reqs}`, colors.gray(`limiter`), true);
+      next();
     }
-    return res.json(custom_msg)
-  } else {
-    logs.custom(`${colors.bgGreen(`ALLOWED`)} ${identifier}, for ${time_left}. ${reqs}, ${max_reqs}`, colors.gray(`limiter`), true);
-    next();
   }
 }
 
@@ -164,8 +169,8 @@ routes.post("/user/logout", async_handler(async (req: Request, res: Response) =>
 }));
 
 routes.get("/user/gamble", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
-  let gamble_amount = Number(req.query?.gamble_amount)
-  let gambled = await res.locals.cuser.gamble_2x(gamble_amount);
+  let gamble = Number(req.query?.gamble)
+  let gambled = await res.locals.cuser.gamble_2x(gamble);
   res.json(gambled);
 }));
 routes.get("/user/username/set", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
@@ -295,49 +300,6 @@ routes.get("/asset/icon", async_handler(async (req, res) => {
   }
 }));
 
-routes.get("/feed/posts", async_handler(async (req, res) => {
-  let page = Number(req.query.p);
-  let limit = Number(req.query.limit);
-  if(String(page) === "NaN" || Number(page) <= 0) {
-    page = 1;
-  }
-  if(String(limit) === "NaN" || Number(limit) <= 0) {
-    limit = 5;
-  }
-
-  let feeds = await entity_feed.all(limit, page, "", "", "");
-  if(req.query?.html != undefined) {
-    res.render("components/feeds.twig", { feeds: feeds?.info?.items });
-  } else {
-    res.json(feeds);
-  }
-}));
-
-routes.post("/feed/send", notloggedin_api_handler, async_handler(async (req, res) => {
-  let txt = req.body?.feed_text.toString();
-  let replyto = Number(req.body?.replyto ?? 0);
-
-  let sent = await entity_feed.send(txt, res.locals.cuser.id, replyto);
-  if(!req.query?.plaintext) {
-    res.send(sent.message);
-  } else {
-    res.json(sent);
-  }
-})); 
-
-routes.post("/owner/server-management", notloggedin_api_handler, owner_api_handler, async_handler(async (req, res) => {
-  let txt = req.body?.feed_text.toString();
-  let replyto = Number(req.body?.replyto ?? 0);
-
-  let sent = await entity_feed.send(txt, res.locals.cuser.id, replyto);
-  if(!req.query?.plaintext) {
-    res.send(sent.message);
-  } else {
-    res.json(sent);
-  }
-}));
-
-
 routes.get("/client/latest-version", async_handler(async (req, res) => {
   res.json({ success: true, message: "", info: { version: `version-54b58d77dd88cef53088bd3f` }});
 }));
@@ -390,7 +352,7 @@ routes.get("/client/deploy/:folder/:file", async_handler(async (req, res, next) 
   }});
 }));
 
-routes.get("/admin/invite-keys/all", generic_limiter, notloggedin_api_handler, admin_api_handler, async_handler(async (req, res) => {
+routes.get("/admin/invite-keys/all", generic_limiter({ timeframe: 500}), notloggedin_api_handler, admin_api_handler, async_handler(async (req, res) => {
   
   const query = String(req.query?.query ?? "");
   let page = Number(req.query.page);
@@ -453,7 +415,6 @@ routes.get("/game/info", async_handler(async (req, res) => {
       players: 0,
       max_players: Number(game.info.max_players ?? 0) 
     }; 
-    console.log(response);
     res.json({ success: true, message: "", info: response });
   }
 }));

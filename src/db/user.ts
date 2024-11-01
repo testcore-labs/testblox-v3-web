@@ -67,6 +67,7 @@ class entity_user extends entity_base {
     let result = await this.query()
       .search(query, ["username", "description", "status"], false)
       .separate(`AND`)
+      .limit(limit)
       .page(page)
       .sort_safe(sort, {
         id: "id", 
@@ -77,7 +78,6 @@ class entity_user extends entity_base {
         })
       .randomize(sort === "random")
       .direction(order)
-      .limit(limit)
       .exec();
 
     const item_ids = result.data.map((row: any) => row.id);
@@ -549,7 +549,7 @@ class entity_user extends entity_base {
   }
 
   static get rand_token(): string {
-    const characters = "0123456789abcdefABCDEFxyzXYZmeow:3" // yes this is intentional
+    const characters = "0123456789abcdefABCDEFxyzXYZmeow" // yes this is intentional
     let new_token = ""
     const token_length = 96;
     for(let i = 0; i < token_length; i++){

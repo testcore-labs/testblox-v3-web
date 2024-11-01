@@ -2,9 +2,45 @@
 {% set title = "gamble" %}
 
 {% block content %}
-  <div>
-    {% set gamble = cuser.gamble_2x(req.query.amount) %}
-    {{ gamble|json_encode }}
-    <script>cuser.set_money_locally({{ gamble.info.left }});</script>
+  <div 
+x-data="{ gamble_amount: 1, res: response_skeleton, gamble: { won_or_lost: undefined, won_amount: 0, left: 0, random: 0} }" 
+@fetch="let req = await fetch(`${api_endpoint.v1}/user/gamble?`
++ new URLSearchParams({
+  gamble: gamble_amount
+}).toString());
+res = await req.json();
+if(!res.success) {
+  $dispatch('popup-new', { 
+    type: 'error', 
+    title: `gambling failed`,
+    msg: res.message, 
+    time: 3,
+  });
+} else {
+  if(res.info) {
+    gamble = res.info;
+    cuser.set_money_locally(res.info.left);
+  }
+}
+" 
+x-init="$nextTick(() => $dispatch(`fetch`));">
+  <template x-if="gamble.won_or_lost === undefined">
+  <div>retard</div>
+  </template>
+  <template x-if="gamble.won_or_lost === true">
+  <div>You won!
+    <div x-text="gamble.won_or_lost"></div>
+    <div x-text="gamble.won_amount"></div>
+    <div x-text="gamble.left"></div>
+    <div x-text="gamble.random"></div>
   </div>
+  </template>
+  <template x-if="gamble.won_or_lost === false">
+  <div>YOU LOST LOSER FUCING LOGSEr
+    <div x-text="gamble.won_amount"></div>
+    <div x-text="gamble.left"></div>
+    <div x-text="gamble.random"></div>
+  </div>
+  </template>
+</div>
 {% endblock %}

@@ -1,9 +1,9 @@
 [v]=HI make a better API system, just for comfort
-[]=HI rewrite src/db/user.ts and its `forks`
-[]=MD finish neccesary rbx apis for it to run 
+[x]=HI rewrite src/db/user.ts and its `forks`
+[-]=MD finish neccesary rbx apis for it to run 
 []=LO finish settings page
 []=MD make avatar page functional
 []=LO chat functionality
 []=LO game ratings
 []=LO catalog comments & owners
-[]=LO gambling page | to be styled
+[p]=LO gambling page | to be styled

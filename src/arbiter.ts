@@ -23,13 +23,13 @@ class arbiter {
   wine = {
     use: true, // checks automatically if your not on windows and then tries to use wine
     path: "wine",
-    prefix: "",
+    prefix: "/home/qzip/.tstblx",
   }
   gameserver = {
-    exec: path.join("bin", "gameserver.exe")
+    exec: path.join("bin", "rcc", "TCCService.exe")
   }
   thumbnail = {
-    exec: path.join("bin", "thumbnail.exe")
+    exec: path.join("bin", "rcc", "TCCService.exe")
   }
 
   async run_wine(cmd: string) {
@@ -76,7 +76,7 @@ class arbiter {
     logs.arbiter("starting...");
     logs.arbiter(`os: ${colors.yellow(os.platform())}`, true);
     Object.entries(this.wine).forEach(([key, val]) => {
-      logs.arbiter(`wine.${key}: ${val}`, true);
+      logs.arbiter(`wine.${key}: ${colors.yellow(String(val))}`, true);
     });
 
     if(this.wine.use

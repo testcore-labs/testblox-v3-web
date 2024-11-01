@@ -10,7 +10,6 @@ import cooldown from "../utils/cooldown";
 import colors from "../utils/colors";
 import env, { raw_env } from "../utils/env";
 import filter from "../utils/filter";
-import entity_feed from "../db/feed";
 import entity_asset from "../db/asset"
 import entity_invitekey from "../db/invitekey";
 import entity_user from "../db/user";
@@ -61,10 +60,9 @@ routes.get("/home", notloggedin_handler, async_handler(async (req: Request, res:
     page = 1;
   }
 
-  let feeds = await entity_feed.all(5, page, "", "", "");
   let recently_played = await res.locals.cuser.recently_played(12);
   let friends = await res.locals.cuser.get_friends(12);
-  res.render("home.twig", { friends: friends, recently_played, feeds: feeds });
+  res.render("home.twig", { friends: friends, recently_played });
 }));
 
 
@@ -104,8 +102,12 @@ routes.get("/game/:id/:name", notloggedin_handler, async_handler(async (req: Req
       res.render("components/game_tabs.twig", { tab: option, game });
       break;
     case "play":
-      res.render("player/index.twig");
+      const job_id = req.query.job_id;
+      res.json({
+        uri: `tstblx-bootstrapper://${encodeURIComponent(btoa(`--user-token ${res.locals.cuser.token} --join-place ${game.id} ${job_id !== null ? `--job-id ${job_id}` : ``}`))}`
+      });
       break;
+    // removal maybe because of stupid possibility of dmca by nintendo on a ROBLOX revival
     case "sm64":
       res.render("player/sm64.twig");
       break;
@@ -128,7 +130,7 @@ routes.get("/users/", notloggedin_handler, async_handler(async (req: Request, re
 
   const order = String(req.query?.order);
   const sort = String(req.query?.sort);
-  const users = await entity_user.all(8, page, query, sort, order);
+  const users = await entity_user.all(6, page, query, sort, order);
   res.render("users.twig", { ...users.info});
 }));
 

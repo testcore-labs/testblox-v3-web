@@ -23,6 +23,7 @@ class entity_ban extends entity_base {
     let stmt = this.query()
       .search(query, ["reason", "moderator_note"], false)
       .separate(`AND`)
+      .limit(limit)
       .page(page)
       .sort_safe(sort, {
         id: "id", 
@@ -33,8 +34,7 @@ class entity_ban extends entity_base {
         created: "createdat"
         })
       .randomize(sort === "random")
-      .direction(order)
-      .limit(limit);
+      .direction(order);
 
     custom_wheres.forEach(where => {
       stmt = stmt.where(where);

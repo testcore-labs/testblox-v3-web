@@ -105,6 +105,17 @@ const cuser = {
       money_div.setAttribute("title", amount);
       money_amount.textContent = amount_formatted;
     }
+  },
+  play: async (place_id, job_id = null) => {
+    let resp = await fetch(`/game/${place_id}/play?job_id=${job_id}`);
+    let data = await resp.json();
+    if(data) {
+      if(data.uri) {
+        let new_window = window.open(data.uri, '_parent');
+        return true;
+      }
+    }
+    return false;
   }
 };
 

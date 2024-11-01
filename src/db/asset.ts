@@ -138,6 +138,7 @@ class entity_asset extends entity_base {
     let stmt = this.query()
       .search(query, ["title", "description"], false)
       .separate(`AND`)
+      .limit(limit)
       .page(page)
       .where(sql`type IN ${ sql(types) }`)
       .where(sql`privacy = ${privacy}`)
@@ -149,8 +150,7 @@ class entity_asset extends entity_base {
         created: "createdat"
         })
       .randomize(sort === "random")
-      .direction(order)
-      .limit(limit);
+      .direction(order);
 
     custom_wheres.forEach(where => {
       stmt = stmt.where(where);

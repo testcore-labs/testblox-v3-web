@@ -2013,37 +2013,15 @@ img {
   height: 100% !important;
 }
 
-
-.spinner-sm {
-background-size: 1em 1em;
-width: 1em;
-height: 1em;
-}
-.spinner-md {
-background-size: 2em 2em;
-width: 2em;
-height: 2em;
-}
-.spinner-lg {
-background-size: 5em 5em;
-width: 5em;
-height: 5em;
-}
-
-@keyframes spin {
-  5% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-
 .loadingbaranim {
 background: $accent;
-animation: loadingbaranim 2.5s ease infinite alternate;
+animation: loadingbaranim 5s linear infinite forwards;
 }
 
 @keyframes loadingbaranim {
-  0% { width: 0%; transform: translateX(0%); }
-  100% { width: -50%; transform: translateX(100%); }
+  0% { width: 50%; transform: translateX(100%); }
+  50% { width: 50%; transform: translateX(-100%); }
+  100% { width: 50%; transform: translateX(100%); }
 }
 
 .bbplayer {

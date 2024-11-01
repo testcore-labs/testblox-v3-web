@@ -1,12 +1,12 @@
 import colors from "../utils/colors";
-import { log_time } from '../utils/time';
+import { log_time, date_format } from '../utils/time';
 import env from '../utils/env'
 import { printf } from 'fast-printf'
 import root_path from '../utils/root_path';
 import fs from 'fs';
 import path from "path";
 
-const directory = path.join(root_path, "logs", `${Date.now()}.log`) // for logs
+const directory = path.join(root_path, "logs", `log_${date_format(Date.now(), "yyyy-mm-dd_hh-MM-ss")}.log`) // for logs
 class logs {
   static debug_format = ` ${colors.gray("|")} ${colors.green("debug")}`;
   static colors: typeof colors;
@@ -15,7 +15,7 @@ class logs {
 
   static {
     logs.colors = colors;
-    logs.format = `[%s] [%s]: %s`;
+    logs.format = `${colors.gray(`[`)}%s${colors.gray(`]`)} [%s]: %s`;
   }
 
   private static push(txt: string) {
@@ -25,8 +25,8 @@ class logs {
     // for removing ansi
     // credits to https://stackoverflow.com/a/29497680
     let new_txt = txt.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, "")
-    fs.appendFile(directory, `${new_txt}\n`, function (err) {
-
+    fs.appendFile(directory, `${new_txt}\n`, (error) => {
+      if(error) console.error(error);
     });
   }
 

@@ -158,6 +158,9 @@ class query_builder {
   }
 
   page(page: number) {
+    if(this.v_limit == null) {
+      console.warn("please set limit before setting page")
+    }
     const offset = (page - 1) * (this.v_limit ?? 1);
     this.v_offset = this.safe_number(offset);
     this.v_page = this.safe_number(page);
