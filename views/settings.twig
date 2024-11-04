@@ -2,8 +2,12 @@
 {% set title = "settings" %}
 
 {% block content %}
-<div class="d-flex flex-row flex-wrap gap-3">
+<div class="d-flex flex-row flex-wrap gap-5">
   <div class="d-flex flex-column gap-3" hx-target="#settings-content" role="tablist" id="settings-tab" style="flex-grow: 1; flex-basis: 10em;">
+    <div exclude-search-html class="w-100">
+    <h3 class="mb-2">settings</h3>
+    <hr nomargin>
+    </div>
     <input class="mb-1" type="search" onkeyup="search_html(this, $('#settings-tab'))" placeholder="search...">
     <a class="d-flex flex-row gap-3 px-2 ai-center" hx-get="/settings/account"><h4 class="bi bi-person-gear"></h4> account</a>
     <a class="d-flex flex-row gap-3 px-2 ai-center" hx-get="/settings/customization"><h4 class="bi bi-palette2"></h4> customization</a>

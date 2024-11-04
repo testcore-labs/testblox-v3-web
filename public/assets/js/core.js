@@ -86,6 +86,10 @@ const cuser = {
     let request = await fetch(`${api_endpoint.v1}/user/username/set?username=${value}`);
     return request.json();
   },
+  set_password: async (value) => {
+    let request = await fetch(`${api_endpoint.v1}/user/password/set?password=${value}`);
+    return request.json();
+  },
   set_setting: async (key, value) => {
     let request = await fetch(`${api_endpoint.v1}/user/setting/set?key=${key}&value=${value}`);
     return request.json();

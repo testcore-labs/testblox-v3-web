@@ -21,6 +21,7 @@ import mime from "mime";
 import entity_invitekey from "../db/invitekey";
 import cooldown from "../utils/cooldown";
 import logs from "../utils/log";
+import { pcall } from "../utils/pcall";
 
 // limiters
 const msg_too_many_reqs: message_type = {success: false, status: 429, info: { 
@@ -176,6 +177,32 @@ routes.get("/user/gamble", notloggedin_api_handler, async_handler(async (req: Re
 routes.get("/user/username/set", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
   let username = String(req.query?.username)
   res.json(await res.locals.cuser.set_username(username, true));
+}));
+routes.get("/user/password/set", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
+  const password = String(req.query?.password);
+  const cuser = res.locals.cuser;
+
+  const error = entity_user.password_validate(password);
+  if(!error.success) {
+    res.json(error);
+    return;
+  }
+
+  const [success, hashed_password] = await pcall(async () => await entity_user.generate_hash(password));
+  if(!success) {
+    res.json({ success: false, message: `password.no_hash_generated`});
+    return;
+  }
+  let stmt = await sql`UPDATE ${sql(cuser.table)} 
+  SET password = ${hashed_password}
+  WHERE id = ${cuser.id}`;
+  if(stmt) {
+    res.json({ success: true, message: `password.set`});
+    return;
+  } else {
+    res.json({ success: true, message: `password.unknown`});
+    return;
+  }
 }));
 
 routes.get("/user/setting/set", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {

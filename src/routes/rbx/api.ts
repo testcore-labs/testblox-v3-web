@@ -88,6 +88,7 @@ routes.get(["/asset/", "/asset", "/Asset/", "/Asset"], async_handler(async(req, 
 }));
 
 const fflags: {[key: string]: Buffer} = {
+  "RCCServiceLinuxTSTBLX": fs.readFileSync(path.join(root_path, "files", "fflags", "RCCService.json")),
   "RCCServiceTSTBLX": fs.readFileSync(path.join(root_path, "files", "fflags", "RCCService.json")),
   "PCDesktopClient": fs.readFileSync(path.join(root_path, "files", "fflags", "PCDesktopClient.json"))
 }
@@ -101,17 +102,19 @@ routes.all("/moderation/v2/filtertext", async_handler(async(req, res) => {
   }
 
   const filtered = filter.text_all(data.text);
-  res.json({ 
+  const response = { 
     success: true, 
     data: { 
       AgeUnder13: String(filtered.txt), 
       Age13OrOver: String(filtered.txt) 
     }
-  });
+  };
+  console.log(response);
+  res.json(response);
 }));
 
 routes.get("/v1/settings/application", async_handler(async(req, res) => {
-  let application_name = String(req.query.applicationName);
+  let application_name = String(req.query.applicationName).trim();
 
   res.type("json").send(String(fflags[application_name]));
 }));

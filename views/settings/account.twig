@@ -1,17 +1,42 @@
-<div class="d-flex flex-column gap-2">
+<div class="d-flex flex-column gap-3 w-100">
+  <div class="w-100">
+    <h3 class="mb-2">account</h3>
+    <hr nomargin>
+  </div>
+
+  <div class="d-flex flex-column gap-5">
   <div x-data="{ username: '' }" 
-  @update="let resp = await cuser.set_username(username); $dispatch('popup-new', { type: resp.success ? 'success' : 'error', title: 'updated', msg: resp.message, time: 3 });" 
-  class="d-flex flex-column gap-2">
-    <div class="p-2">username</div>
+  @update="let resp = await cuser.set_username(username); 
+  $dispatch('popup-new', { type: resp.success ? 'success' : 'error', 
+  title: 'updated username', msg: resp.message, time: 3 });" 
+  class="d-flex flex-column gap-1">
+    <h5 class="mb-1">username</h5>
     <div class="d-flex flex-row pillify shadow-1 round-4 overflow-none">
-    <input class="shadowless"
+    <input class="w-100 shadowless"
       placeholder="silly_person123" 
       x-model="username"
       @keyup.enter="$dispatch('update');" 
       name="username" type="text">
       <button class="bi bi-pencil-square shadowless" @click="$dispatch('update')"></button>
     </div>
+    <small class="text-muted mt-1">this action will cost you <b><i class="bi bi-gem" alt="currency"></i> 1000</b></small>
+  </div>
+  <div x-data="{ password: '' }" 
+  @update="let resp = await cuser.set_password(password); 
+  $dispatch('popup-new', { type: resp.success ? 'success' : 'error', 
+  title: 'updated password', msg: resp.message, time: 3 });" 
+  class="d-flex flex-column gap-1">
+    <h5 class="mb-1">password</h5>
+    <div class="d-flex flex-row pillify shadow-1 round-4 overflow-none">
+    <input class="w-100 shadowless"
+      placeholder="secret_plz_dont_share" 
+      x-model="password"
+      @keyup.enter="$dispatch('update');" 
+      name="password" type="text">
+      <button class="bi bi-pencil-square shadowless" @click="$dispatch('update')"></button>
+    </div>
   </div>
 
 
+  </div>
 </div>
