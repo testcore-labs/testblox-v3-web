@@ -50,7 +50,7 @@ class entity_user extends entity_base {
     this.data = data;
     if(this.exists) {
     this.ban = await (new entity_ban).by(entity_ban.query()
-      .where(sql`userid = ${this.data.id}`)
+      .where(sql`userid = ${data.id}`)
       .order("createdat", ENUM.order.DESCENDING)
     );
     }
@@ -519,7 +519,7 @@ class entity_user extends entity_base {
       .where(sql`id = ${this.data?.fullbody} AND type = ${ENUM.assets.Thumbnail}`)
     );
     if(fullbody.exists) {
-      return fullbody.file;
+      return `/asset/?id=${fullbody.id}`;
     } else {
       return "/assets/img/reviewpending.png";
     }

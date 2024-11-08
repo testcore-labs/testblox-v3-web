@@ -77,13 +77,18 @@
     </div>
   </div>
 
+  <input type="hidden" value="{{ user.settings.css }}" id="user-css">
   <style class="user-custom-css"></style>
   <script>
   const load_css = elem(".user-css-checkbox");
+  //uncheck for safety on reload
+  if(load_css.checked) {
+    load_css.checked = false;
+  }
 
   function updatecss() {
     if(load_css.checked) {
-      elem(".user-custom-css").textContent = '{{ user.settings.css|replace("'": ""}}) }}'; {# prevents running js #}
+      elem(".user-custom-css").textContent = elem("#user-css").value;
     } else {
       elem(".user-custom-css").textContent = ``;
     }

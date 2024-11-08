@@ -1,19 +1,75 @@
 {% extends "html.twig" %}
 {% set title = "avatar customization" %}
 
+{#
+
+    <div class="d-flex flex-column p-4 ai-center jc-center round-4 border-light-1">
+      <div class="pos-relative d-none" id="avatar-body-pallete" style="min-height: 15.5em; min-width: 12.75em;">
+        <div style="background: #fff; top: 1.5em; left: 50%; transform: translate(-50%, -50%); width: 3em; height: 3em;"
+        class="pos-absolute round-4" id="avatar-head"></div>
+        
+        <div style="background: #fff; top: 6.25em; left: 50%; transform: translate(-50%, -50%); width: 6.25em; height: 6em;"
+        class="pos-relative round-4" id="avatar-torso">
+          <div style="background: #fff; top: 0; left: 100%; margin-left: 0.25em; width: 3em; height: 6em;"
+          class="pos-absolute round-4" id="avatar-left-arm"></div>
+
+          <div style="background: #fff; top: 0; right: 100%; margin-right: 0.25em; width: 3em; height: 6em;"
+          class="pos-absolute round-4" id="avatar-right-arm"></div>
+
+          <div style="background: #fff; top: 100%; left: 0; margin-top: 0.25em; width: 3em; height: 6em;"
+          class="pos-absolute round-4" id="avatar-left-leg"></div>
+          <div style="background: #fff; top: 100%; right: 0; margin-top: 0.25em; width: 3em; height: 6em;"
+          class="pos-absolute round-4" id="avatar-right-leg"></div>
+        </div>
+      </div>
+    </div>
+    #}
+
 {% block content %}
-<div class="d-flex flex-row gap-2 flex-wrap">
-  <div class="d-flex flex-column">
-    <div class="pos-relative as-baseline">
+<div class="d-flex flex-row gap-4 flex-wrap">
+  <div class="d-flex flex-column gap-3">
+    <div class="round-4 border-light-1 pos-relative">
       <div class="pos-absolute p-2" style="top: 0; right: 0;">
         <button class="py-1 px-2"><h3 class="bi bi-arrow-clockwise"></h3></button>
       </div>
-      <img class="round-4" width=256 src="{{ cuser.get_fullbody() }}">
+      <img width=256 src="{{ cuser.get_fullbody() }}">
     </div>
   </div>
 
-  <div>
-
+  <div class="d-flex flex-column gap-3 flex-1">
+    <div class="d-flex flex-row overflow-hidden pillify round-4">
+      <button class="text-center flex-1">
+        accessories
+      </button>
+      <button class="text-center flex-1">
+        clothing
+      </button>
+      <button class="text-center flex-1">
+        body parts
+      </button>
+    </div>
+    <hr nomargin>
   </div>
+
+  <script defer async>
+  (async () => {
+    await loaded;
+    const limbs = {
+      head: elem("#avatar-head"),
+      torso: elem("#avatar-torso"),
+      left_arm: elem("#avatar-left-arm"),
+      left_leg: elem("#avatar-left-leg"),
+      right_arm: elem("#avatar-right-arm"),
+      right_leg: elem("#avatar-right-leg"),
+    }
+
+    Object.entries(limbs).forEach(([limb_name, limb]) => {
+      if(limb) limb.classList.add("c-pointer");
+    });
+
+    const body_pallete = elem("#avatar-body-pallete");
+    if(body_pallete) body_pallete.classList.remove("d-none");
+  })();
+  </script>
 </div>
 {% endblock %}

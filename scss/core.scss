@@ -1250,6 +1250,20 @@ $sides: (
   }
 }
 
+
+.border-t-0 {
+  border-top: none !important; 
+}
+.border-b-0 {
+  border-bottom: none !important; 
+}
+.border-s-0 {
+  border-left: none !important; 
+}
+.border-e-0 {
+  border-right: none !important; 
+}
+
 @each $space-key, $space-value in $space-values {
   .mx-#{$space-key} {
     margin-left: #{$space-value} !important;

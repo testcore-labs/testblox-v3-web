@@ -1,0 +1,30 @@
+<div class="d-flex flex-column gap-3 w-100">
+  <div class="w-100">
+    <h3 class="mb-2">customization</h3>
+    <hr nomargin>
+  </div>
+
+  <div class="d-flex flex-column gap-5">
+  <div x-data="{ css: $refs.old_value.value }" 
+  @update="console.log(css); let resp = await cuser.set_setting('css', css.replace(`\n`, `%0A`)); 
+  $dispatch('popup-new', { type: resp.success ? 'success' : 'error', 
+  title: 'updated css', msg: resp.message, time: 3 });"
+  class="d-flex flex-column gap-1">
+    <h5 class="mb-1">css (styles)</h5>
+    <input type="hidden" value="{{ cuser.settings.css|e }}" x-ref="old_value">
+    <div class="d-flex flex-row pillify shadow-1 round-4 overflow-none">
+    <textarea class="d-block w-100 shadowless"
+      style="white-space: pre-wrap; min-height: 2em;"
+      placeholder="element {
+  property: value 
+}"
+      x-model="css"
+      x-html="$refs.old_value.value"
+      y-only></textarea>
+      <button class="bi bi-pencil-square shadowless" @click="$dispatch('update')"></button>
+    </div>
+    <small class="text-muted mt-1">if you find any issues, please report them.</small>
+  </div>
+
+  </div>
+</div>

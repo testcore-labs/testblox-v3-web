@@ -13,7 +13,8 @@
       <b class="text-muted">ban length</b>
       <span>: {{ cuser.ban.length|info_time }}</span>
     </div>
-    <fieldset class="round-4 border-light-1 p-3 m-0">
+    {% if not (ban_off_items|length == 0) %}
+    <fieldset class="round-4 border-light-1 p-3 m-0 mt-2">
     <legend>offensive items</legend>
       <div class="d-flex flex-column gap-8">
       {% for reason, item in ban_off_items %}
@@ -47,6 +48,7 @@
       {% endfor %}
       </div>
     </fieldset>
+    {% endif %}
     <small class="text-muted">will be unbanned {{ cuser.ban.length|timeago }}</small>
     <div class="d-flex flex-row gap-3 mx-auto">
       <a class="btn-primary" {% if item.length == -1 %}href="/api/v1/ban/agree"{% else %}disabled{% endif %}>agree</a>

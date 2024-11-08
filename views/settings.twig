@@ -9,10 +9,11 @@
     <hr nomargin>
     </div>
     <input class="mb-1" type="search" onkeyup="search_html(this, $('#settings-tab'))" placeholder="search...">
-    <a class="d-flex flex-row gap-3 px-2 ai-center" hx-get="/settings/account"><h4 class="bi bi-person-gear"></h4> account</a>
-    <a class="d-flex flex-row gap-3 px-2 ai-center" hx-get="/settings/customization"><h4 class="bi bi-palette2"></h4> customization</a>
+    {% for name, setting_tab in settings_tabs %}
+    <a class="d-flex flex-row gap-3 px-2 ai-center" hx-get="/settings/{{ setting_tab.file }}"><h4 class="bi bi-{{ setting_tab.icon }}"></h4> {{ name }}</a>
+    {% endfor %}
   </div>
-  <div id="settings-content" hx-get="/settings/account" hx-trigger="revealed" class="d-flex flex-1" style="flex-grow: 50;">
+  <div id="settings-content" hx-get="/settings/account" hx-trigger="revealed" class="d-flex flex-1" style="flex-grow: 50; flex-basis: 30em;">
   </div>
 </div>
 {% endblock %}

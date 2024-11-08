@@ -63,7 +63,7 @@
 {% elseif tab == "css" %}
   <h3 class="mb-2">CSS</h3>
   {% if user.settings.css|length != 0 %}
-  <textarea class="w-100" rows=8 readonly>{{ user.settings.css }}
+  <textarea class="w-100" rows=8 style="white-space: pre-wrap;"readonly>{{ user.settings.css }}
   </textarea>
   {% else %}
   <div class="d-flex flex-column ai-center gap-2 p-3">
@@ -79,7 +79,7 @@
   {% for ban in bans.info.items %}
     <div class="d-flex flex-column gap-2 card border-light-1">
       <div class="d-flex flex-row gap-2">
-        {% if not ban.is_banned %}<h3 class="bi bi-check-lg"></h3>{% endif %}
+        {% if ban.is_banned %}<h3 class="bi bi-check-lg"></h3>{% endif %}
         <h3>{% if item.length == -1 %}warning{% else %}banned{% endif %}</h3>
       </div>
       <div>{{ ban.reason }}</div>

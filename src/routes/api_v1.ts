@@ -100,7 +100,7 @@ routes.post("/user/create", creation_and_login_limiter, async_handler(async (req
         });
       }
     }
-
+    
     if(req.query.redirect && user.success) {
       res.redirect("/redirect?url="+encodeURI(req.query?.redirect?.toString()));
     } else {

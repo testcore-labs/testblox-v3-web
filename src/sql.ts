@@ -19,6 +19,7 @@ try {
     ssl: db_creds.ssl ?? false,
     transform: { undefined: null },
     debug: (connection, query, parameters) => {
+      //TODO: add logging (to file) sql queries so in prod or dev i can catch bugs adn shiet
       // shit code
       if(env.database.log_queries) { 
         logs.custom(`${ connection }\n${ colors.blue("query") }: ${ highlight(query, { colors: { 

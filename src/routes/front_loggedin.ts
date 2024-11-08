@@ -274,7 +274,12 @@ const settings_tabs: {[key: string]: any} = {
     icon: "person-gear",
     file: "account",
     url: "account",
-  }
+  },
+  customization: {
+    icon: "palette2",
+    file: "customization",
+    url: "customization",
+  },
 }
 
 routes.get("/avatar/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
@@ -292,7 +297,7 @@ routes.get("/banned", notloggedin_handler, async_handler(async (req: Request, re
 }));
 
 routes.get("/settings/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  res.render("settings.twig", settings_tabs);
+  res.render("settings.twig", {settings_tabs: settings_tabs});
 }));
 
 routes.get("/settings/:setting", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
