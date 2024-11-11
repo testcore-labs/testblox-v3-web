@@ -19,7 +19,7 @@ const routes = express.Router();
 
 routes.get(["/asset/", "/asset", "/Asset/", "/Asset"], async_handler(async(req, res) => {
   const id = Number(req.query?.id)
-  const read_from_roblox = true;
+  const read_from_roblox = true; // idk lol
   if(String(req.query?.id)?.startsWith("../")) {
     res.render("bftobanner.twig");
     return;
@@ -48,42 +48,18 @@ routes.get(["/asset/", "/asset", "/Asset/", "/Asset"], async_handler(async(req, 
     }
   }
 
-  const is_url = (string: string) => {
-    let url;
-    try { url = new URL(string); } catch (_) { return false; }
-
-    return url.protocol === "http:" || url.protocol === "https:";
-  };
-
-  let asset_data;
-  if(is_url(asset.file)) {
-    let asset_fetch = await fetch(asset.file)
-      .then(async response => await response.arrayBuffer());
-
-    asset_data = Buffer.from(asset_fetch);
-
-    if(asset_data.byteLength == 0) {
-      res.status(404).json({success: false, message: "asset's file could not be fetched/read.3"});
-      return;
-    } else {
-      res.set("content-type", "application/octet-stream");
-      res.send(asset_data);
-      return;
-    }
-  } else {
-    if(asset.file && asset.file.length > 0) {
-      let asset_file_path = path.join(root_path, "files", "assets", asset.file);
-      fs.readFile(asset_file_path, (err, buff) => {
-        if(err instanceof Error) {
-          res.status(404).json({success: false, message: "asset's file could not be fetched/read.2"});
-          return;
-        } else {
-          res.set("content-type", "application/octet-stream");
-          res.send(buff);
-          return
-        }
-      });
-    }
+  if(asset.file && asset.file.length > 0) {
+    let asset_file_path = path.join(root_path, "files", "assets", asset.file);
+    fs.readFile(asset_file_path, (err, buff) => {
+      if(err instanceof Error) {
+        res.status(404).json({success: false, message: "asset's file could not be fetched/read.2"});
+        return;
+      } else {
+        res.set("content-type", "application/octet-stream");
+        res.send(buff);
+        return;
+      }
+    });
   }
 }));
 

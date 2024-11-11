@@ -327,7 +327,10 @@ let sys_info = {
   cpu: { 
     cores: cpus.length,
     model: cpus[0].model,
-    temp: "0C°",
+    temp: "0",
+    temp_K: "273.15K", //Kentucky
+    temp_F: "32°F",    //Fried
+    temp_C: "0°C",     //Chicken
     brand: "undefined",
     usage: "NaN%",
   }, 
@@ -354,12 +357,16 @@ let update_sys_info = async () => {
       }
     })
 
+  const C_to_F = (c: number): number => (c*9/5) + 32;
   
   sys_info.folders["assets"] = format_bytes(await gfs.loose(path.join(root_path, "files", "assets")), 2);
   sys_info.folders["logs"] = format_bytes(await gfs.loose(path.join(root_path, "logs")), 2);
   sys_info.folders["files"] = format_bytes(await gfs.loose(path.join(root_path, "files")), 2);
   sys_info.cpu.temp = await si.cpuTemperature()
-    .then(data => (data.main ?? "0").toString() + "C°");
+    .then(data => (data.main ?? 0).toString());
+  sys_info.cpu.temp_K = `${Number(sys_info.cpu.temp) + 273.15}K`;
+  sys_info.cpu.temp_F = `${Math.floor(C_to_F(Number(sys_info.cpu.temp)))}°F`;
+  sys_info.cpu.temp_C = `${sys_info.cpu.temp}°C`;
   sys_info.cpu.brand = await si.cpu()
     .then(data => data.manufacturer);
   sys_info.cpu.usage = await si.currentLoad()
