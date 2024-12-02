@@ -215,7 +215,7 @@ class query_builder {
     }
 
     const total_items = Number(count[0].count);
-    const total_pages = Math.ceil(total_items / (this.v_limit ?? 1));
+    const total_pages = Math.floor(total_items / (this.v_limit ?? 1));
     return this.v_single
       ? (classify ? items[0] : data[0])
       : { 

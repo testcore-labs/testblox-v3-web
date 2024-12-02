@@ -3,25 +3,58 @@
 
 {% block content %}
 {% import "./_macros.twig" as utils %}
-<div class="d-flex flex-column gap-1">
+<div class="d-flex flex-column gap-1"
+x-data="{ query: ``, sort: `id`, order: `DESC`, type: ``, page: 1, requesting: true, res: response_skeleton }" 
+@fetch="requesting = true; 
+let req = await fetch(`${api_endpoint.v1}/catalog/fetch?`
++ new URLSearchParams({
+  q: query,
+  type: type,
+  sort: sort,
+  order: order,
+  p: page,
+}).toString());
+res = await req.json();
+requesting = false;
+if(res.status === 429) {
+  $dispatch('popup-new', { 
+    type: 'error', 
+    title: `request failed`,
+    hint: `timed out for ${utils.format_duration(
+      Math.ceil(res.info.time / 1000)
+    )}`, 
+    msg: res.message, 
+    time: 5,
+  });
+}" 
+x-init="$nextTick(() => $dispatch(`fetch`));">
 <div class="d-flex flex-row flex-wrap ai-center gap-3">
   <h2>{{ t.catalog.catalog }}</h2>
-  <div class="d-flex flex-row flex-wrap gap-2 ms-auto w-autoto100-sm">
-  {% include '/components/pagination.twig' with {params: req.query, page: page, queries: items, totalpages: pages, classes: "jc-center"} %}
+  <div class="d-flex flex-row flex-wrap gap-2 ms-auto ai-center w-autoto100-sm">
+  <div class="d-flex flex-row border-light-1 round-4 overflow-hidden h-100">
+    <a @click="page <= 1 ? page : (page--)" :disabled="page <= 1"
+    class="btn-primary c-pointer round-0 border-none shadowless py-2 d-flex jc-center ai-center"><</a>
+    <template x-for="i_page in (res.info.pages ?? [1])" :key="i_page">
+    <a @click="page = i_page" :disabled="i_page == page" x-text="i_page"
+    class="btn-primary c-pointer round-0 border-none shadowless py-2 d-flex jc-center ai-center">-</a>
+    </template>
+    <a @click="page >= res.info.pages ? page : (page++)" :disabled="page >= res.info.pages"
+    class="btn-primary c-pointer round-0 border-none shadowless py-2 d-flex jc-center ai-center">></a>
+  </div>
   <div class="d-flex flex-row pillify flex-grow-1" style="width: 25em;">
-  <input name="q" class="w-100 shadowless" placeholder="{{ t.catalog.search }}" value="{{ req.query.q|e }}" onkeydown="search_onkeyup(this)" id="catalog-search" type="search">
-  <button class="shadowless" onclick="search_onkeyup($('#catalog-search'), true)"><h5 class="bi bi-search"></h5></button>
+  <input x-model="query" @keyup.enter="$dispatch('fetch');" class="w-100 shadowless" placeholder="{{ t.catalog.search }}" value="{{ req.query.q|e }}" id="catalog-search" type="search">
+  <button @click="$dispatch('fetch');" class="shadowless"><h5 class="bi bi-search"></h5></button>
   </div>
   <div class="pos-relative">
     <button onclick="dropdownify(this, $('#filterresults'));"><h4 class="bi bi-filter"></h4></button>
     <div class="pos-absolute dropdownify mt-1 card d-flex flex-column gap-3" style="width: 14em; z-index: 2;" id="filterresults">
-      {% include '/components/query_btns.twig' with {urlparams: req.query, keyparam: "order", valueparam: "ASC", text: t.filter.order_by_ascending} %}
-      {% include '/components/query_btns.twig' with {urlparams: req.query, keyparam: "order", valueparam: "DESC", text: t.filter.order_by_descending} %}
+      <a :class="order == `ASC` ? `c-block text-extramuted` : `c-pointer` " class="py-1" @click="order = `ASC`;" x-html="`{{t.filter.order_by_ascending}}`">-</a>
+      <a :class="order == `DESC` ? `c-block text-extramuted` : `c-pointer` " class="py-1" @click="order = `DESC`;" x-html="`{{t.filter.order_by_descending}}`">-</a>
       <hr class="mt-1 mb-1">
-      {% include '/components/query_btns.twig' with {urlparams: req.query, keyparam: "sort", valueparam: "random", text: "sort by " ~ "<b>random</b>"} %}
-      {% for name, column in sorts %}
-      {% include '/components/query_btns.twig' with {urlparams: req.query, keyparam: "sort", valueparam: column, text: "sort by " ~ "<b>" ~ name ~ "</b>"} %}
-      {% endfor %}
+      <a :class="sort == `random` ? `c-block text-extramuted` : `c-pointer` " class="py-1" @click="sort = `random`;" x-html="`sort by <b>random</b>`">-</a>
+      <template x-for="(name, value) in res.info.sorts ?? []" :key="name">
+        <a :class="sort == value ? `c-block text-extramuted` : `c-pointer` " class="py-1" @click="sort = value;" x-html="`sort by <b>${name}</b>`">-</a>
+      </template>
     </div>
   </div>
   </div>
@@ -37,38 +70,69 @@
         <i class="bi bi-caret-right-fill ms-auto"></i>
       </div>
       <div style="left: 100%; top: 0; overflow : auto; z-index: 2; width: 14em;" id="catalog-content-{{ category_key }}" class="openify card pos-absolute d-flex flex-column gap-1">
-      {% include '/components/query_btns.twig' with {classes: "py-2", urlparams: req.query, keyparam: "type", valueparam: category_key, text: t.catalog.types[category_key].all} %}
+      <a :class="type == `{{ category_key }}` ? `c-block text-extramuted` : `c-pointer` " class="py-2" @click="type = `{{category_key}}`;">{{ t.catalog.types[category_key].all }}</a>
       {% for name, column in catalog_types[category_key]|sort %}
-        {% include '/components/query_btns.twig' with {classes: "py-2", urlparams: req.query, keyparam: "type", valueparam: column, text: t.catalog.types[category_key][name]} %}
+        <a :class="type == `{{ column }}` ? `c-block text-extramuted` : `c-pointer` " class="py-2" @click="type = `{{column}}`;">{{ t.catalog.types[category_key][name] }}</a>
       {% endfor %}
       </div>
     </div>
     {% endmacro -%}
     {% import _self as self %} {# twig hack #}
-    {% include '/components/query_btns.twig' with {classes: "px-2 py-2", urlparams: req.query, keyparam: "type", valueparam: "", text: t.catalog.types.all_types} %}
+    <a :class="type == `` ? `text-extramuted` : `c-pointer` " class="py-2" @click="type = ``;">{{ t.catalog.types.all_types }}</a>
     <hr class="my-2" nomargin>
     {{ self.generate_category("clothing", "clothing") }}
     {{ self.generate_category("body parts", "body_parts") }}
-    {% include '/components/query_btns.twig' with {classes: "px-2 py-2", urlparams: req.query, keyparam: "type", valueparam: (ENUM.assets.Gear), text: t.catalog.types.gear} %}
+    <a :class="type == `{{ (ENUM.assets.Gear) }}` ? `c-block text-extramuted` : `c-pointer` " class="px-2 py-2" @click="type = `{{ (ENUM.assets.Gear) }}`;">{{ t.catalog.types.gear }}</a>
     {{ self.generate_category("accessories", "accessories") }}
     {{ self.generate_category("animations", "animations") }}
   </div>
   </div>
 
-  <div style="flex-basis: 25em; flex-grow: 25; {% if items|length == 0 %}margin: auto;{% endif %}">
-  {% if items|length == 0 %}
+  <div style="flex-basis: 25em; flex-grow: 25; margin: auto;">
+  <template x-if="(!res.info.items || (res.info.items && res.info.items.length === 0)) && !requesting">
     <div class="d-flex flex-column ai-center gap-2 p-3">
     <h1 style="font-size: 4em;" class="bi bi-egg-fried"></h1>
     <h4>no items found</h4>
     <small class="text-muted">heres a fried egg for you</small>
     </div>
-  {% else %}
-    <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));">
-      {% for item in items %}
-        {% include '/components/item_default.twig' with {item: item} %}
-      {% endfor %}
+  </template>
+  <template x-if="requesting">
+    <div class="d-flex flex-column ai-center gap-2 pos-relative">
+      <div class="spinner md" style="pos-absolute"></div>
     </div>
-  {% endif %}
+  </template>
+  <template x-if="res.info.items && res.info.items.length > 0">
+    <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));">
+      <template x-for="item in res.info.items ?? []" :key="item.id">
+
+<a :href="`/catalog/${item.id}/view`" class="mb-3 d-flex flex-column item-card" style="padding: 0; margin-top: 0.3em;">
+  <div class="img-fluid pos-relative">
+    <img :src="item.thumbs.icon.url" class="round-4 img-fluid">
+    <div x-show="item.limited" class="bottom-0 left-0 hide-stuff ridge-100 pos-absolute py-1 ps-2 pe-9 round-0 limited-bg "><small><b>LIMITED</b></small></div>
+    <div class="more-info d-flex flex-column gap-3 pos-absolute overflow-none right-0 bottom-0 border-box w-100 h-100">
+      <div class="d-flex flex-column gap-3 p-2 break-all overflow-none round-2" style="background: linear-gradient(180deg, rgba(0,0,0, 0.975) 0%, rgba(0,0,0, 0.35) 100%); height: 100%;">
+        <div class="d-flex flex-row gap-3 ai-center">
+          <img width=24 height=24 class="round-2" :src="item.creator.thumbs.headshot.url">
+          <b class="text-truncate" x-text="item.creator.username.raw"></b>
+        </div>
+        <span class="breakword text-truncate-l3 overflow-none" x-text="item.description.raw ?? `<i class='breakword'>no description set.</i>`"></span>
+      
+        {# <object>
+          <a href="/item/{{ item.id }}/play" class="btn-play d-flex ai-center jc-center round-3 pos-absolute as-baseline" style="right: 0.25em; bottom: 0.25em; height: 16px; width: 16px; padding: 0.2em 0.3em 0.2em 0.1em; font-size: 1.55em;"><i class="bi bi-play-fill"></i></a>
+        </object> #}
+      </div>
+    </div> 
+  </div>
+  <div class="d-flex flex-column border-box m-1 my-0"><h5 class="text-muted breakword text-truncate-l2" x-text="item.title"></h5>
+    <div class="d-flex flex-row gap-6">
+      <span class="d-flex flex-row gap-2 text-laccent ai-center mt-1"><i class="bi bi-gem"></i> <b class="breakword" x-text="item.price == 0 ? `FREE` : utils.format_currency(item.price)"></b></span>
+    </div>
+  </div> 
+</a>
+
+      </template>
+    </div>
+  </template>
   </div>
 </div>
 </div>

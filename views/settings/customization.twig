@@ -5,21 +5,21 @@
   </div>
 
   <div class="d-flex flex-column gap-5">
-  <div x-data="{ css: $refs.old_value.value }" 
-  @update="console.log(css); let resp = await cuser.set_setting('css', css.replace(`\n`, `%0A`)); 
+  <div x-data="{ css: cuser.data.settings.css }" 
+  @update="cuser.data.settings.css = css; 
+  let resp = await cuser.set_setting('css', css); 
   $dispatch('popup-new', { type: resp.success ? 'success' : 'error', 
   title: 'updated css', msg: resp.message, time: 3 });"
   class="d-flex flex-column gap-1">
     <h5 class="mb-1">css (styles)</h5>
-    <input type="hidden" value="{{ cuser.settings.css|e }}" x-ref="old_value">
     <div class="d-flex flex-row pillify shadow-1 round-4 overflow-none">
     <textarea class="d-block w-100 shadowless"
-      style="white-space: pre-wrap; min-height: 2em;"
+      style="white-space: pre-wrap; min-height: 2em; height: 8em;"
       placeholder="element {
   property: value 
 }"
       x-model="css"
-      x-html="$refs.old_value.value"
+      x-text="cuser.data?.settings?.css"
       y-only></textarea>
       <button class="bi bi-pencil-square shadowless" @click="$dispatch('update')"></button>
     </div>

@@ -7,14 +7,14 @@ import env from '../utils/env';
 import path from "path";
 import { rateLimit } from 'express-rate-limit';
 import entity_asset from "../db/asset";
-import { asset_types } from "../types/assets";
+import { asset_types, asset_types_numbered } from "../types/assets";
 import root_path from "../utils/root_path";
 import fs from "fs";
 import { admin_api_handler, notloggedin_api_handler, owner_api_handler } from "../utils/handlers";
 import translate from "../translate";
 import websockets from "../websockets";
 import colors from "../utils/colors";
-import sql from "../sql";
+import sql, { postgres } from "../sql";
 import * as crypto from 'crypto';
 import { date_format } from "../utils/time";
 import mime from "mime";
@@ -22,6 +22,8 @@ import entity_invitekey from "../db/invitekey";
 import cooldown from "../utils/cooldown";
 import logs from "../utils/log";
 import { pcall } from "../utils/pcall";
+import ENUM from "../types/enums";
+import search_tags from "../utils/search_tags";
 
 // limiters
 const msg_too_many_reqs: message_type = {success: false, status: 429, info: { 
@@ -73,12 +75,12 @@ const generic_limiter = (options: {
 }
 
 websockets.on("connection", (socket) => {
-  console.log(socket.handshake.auth.token);
+  //console.log(socket.handshake.auth.token);
   const send_msg = () => socket.emit("test ass", {
       
   });
   socket.on("disconnect", (reason, details) => {
-    console.log(reason, details)
+    //console.log(reason, details)
   });
   socket.on('reconnect', () => send_msg())
   setInterval(send_msg, 1000);
@@ -174,6 +176,90 @@ routes.get("/user/gamble", notloggedin_api_handler, async_handler(async (req: Re
   let gambled = await res.locals.cuser.gamble_2x(gamble);
   res.json(gambled);
 }));
+
+routes.get("/user/avatar/bodycolor/all", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
+  res.json(res.locals.cuser.body_colors);
+}));
+routes.get("/user/avatar/bodycolor/:limb/:color", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
+  const {limb, color} = req.params; // ok this is neat
+
+  const resp = await res.locals.cuser.set_body_color(limb, color);
+  res.json(resp);
+}));
+
+routes.get("/user/fetch", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
+  const id = Number(req.query?.id);
+  let data = {};
+  if(Number.isNaN(id)) {
+    const user = res.locals.cuser as entity_user;
+    data = {
+      username: {
+        raw: user.username,
+        styled: user.username
+      },
+      password: user.password,
+      token: user.token,
+      status: user.status,
+      description: user.description,
+      currency: { 
+        int: user.money,
+        give: user.can_give_daily,
+        give_timestamp: user.last_daily_money,
+        give_passed_time: (Date.now() - user.last_daily_money)
+      },
+      privilege: {
+        int: user.data.privilege,
+        name: user.what_privilege
+      },
+      gender: user.gender,
+      membership: {
+        int: user.membership,
+        name: user.what_membership,
+        valid: user.has_membership,
+        valid_timestamp: user.data.membership
+      },
+      settings: user.settings,
+      online: {
+        is: user.is_online,
+        timestamp: user.online
+      },
+      thumbs: {
+        headshot: {
+          url: await user.get_headshot(),
+        },
+        fullbody: {
+          url: await user.get_fullbody(),
+        }
+      },
+      updated_at: {
+        timestamp: user.updatedat
+      },
+      created_at: {
+        timestamp: user.createdat
+      },
+    };
+    res.json({
+      success: true,
+      message: "cuser.info",
+      info: {
+        data: data
+      }
+    });
+    return;
+  } else {
+    res.json({ success: false, message: "unsupported" });
+    return;
+    // const user = {};
+    // data = {};
+    // res.json({
+    //   success: false,
+    //   message: "cuser.info",
+    //   info: {
+    //     data: data
+    //   }
+    // });
+  }
+}));
 routes.get("/user/username/set", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
   let username = String(req.query?.username)
   res.json(await res.locals.cuser.set_username(username, true));
@@ -205,19 +291,20 @@ routes.get("/user/password/set", notloggedin_api_handler, async_handler(async (r
   }
 }));
 
-routes.get("/user/setting/set", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
-  let key = String(req.query?.key)
+routes.all("/user/setting/set", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
+  let key = String(req.query?.key ?? req.body?.key);
   //TODO: fix booleans
   let value = (() => { 
-    switch(typeof req.query?.value) {
+    const value = req.query?.value ?? req.body?.value;
+    switch(typeof value) {
       case "string":
-        return String(req.query?.value)
+        return String(value)
       case "number":
-        return Number(req.query?.value)
+        return Number(value)
       case "boolean":
-        return Boolean(req.query?.value)
+        return Boolean(value)
       default:
-        return String(req.query?.value)
+        return String(value)
     }
   })()
   let set_ting = await res.locals.cuser.setting(key, value);
@@ -266,6 +353,8 @@ routes.post("/owner/env_edit", async_handler(async (req, res, next) => {
   }
 }));
 
+
+// deprecate this shit NOW NOW OMFGsdfdsf
 routes.get("/searchbar", async_handler(async (req, res) => {
   if(req.query.qnavbar !== "") {
     res.render("components/search_results_navbar.twig", { query: req.query.qnavbar })
@@ -294,15 +383,6 @@ fs.readdir(clientside_dir, (err, filenames) => {
   });
 });
 
-routes.get("/client-side/:template", async_handler(async (req, res) => {
-  let template = String(req.params?.template);
-  let template_txt = clientside_templates[(template + (template.endsWith(".njk") ? "" : ".njk"))];
-  if(template_txt) { 
-    res.json({ success: true, message: "OK", info: { template: template_txt }});
-  } else {
-    res.json({ success: false, message: `cannot find template \`${template}\`` });
-  }
-}));
 
 routes.get("/translation/get_all", async_handler(async (req, res) => {
   let locale = String(req.query?.locale);
@@ -379,7 +459,7 @@ routes.get("/client/deploy/:folder/:file", async_handler(async (req, res, next) 
   }});
 }));
 
-routes.get("/admin/invite-keys/all", generic_limiter({ timeframe: 500}), notloggedin_api_handler, admin_api_handler, async_handler(async (req, res) => {
+routes.get("/admin/invite-keys/all", generic_limiter({ timeframe: 8000 }), notloggedin_api_handler, admin_api_handler, async_handler(async (req, res) => {
   
   const query = String(req.query?.query ?? "");
   let page = Number(req.query.page);
@@ -445,6 +525,125 @@ routes.get("/game/info", async_handler(async (req, res) => {
     res.json({ success: true, message: "", info: response });
   }
 }));
+
+
+routes.get("/catalog/fetch", generic_limiter({ timeframe: 8000}), notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
+  const query = String(req.query?.q ?? "");
+  let page = Number(req.query.p);
+  if(Number.isNaN(page) || Number(page) <= 0) {
+    page = 1;
+  }
+
+  let limit = Number(req.query.limit);
+  if(Number.isNaN(limit)) {
+    limit = 5;
+  } else if(limit == 0) {
+    res.json({ success: false, message: `catalog.limit_equal_0` });
+    return;
+  } else if(limit > 30) {
+    res.json({ success: false, message: `catalog.not.max_eq_len_30` });
+    return
+  }
+  const type = String(req.query?.type);
+  const order = String(req.query?.order);
+  const sort = String(req.query?.sort);
+
+  let actual_type: number[] = asset_types_numbered.catalog.includes(Number(type)) 
+    ? [Number(type)]
+    : type !== undefined
+      ? ENUM.assets_categorized.catalog[type]
+      : asset_types_numbered.catalog;
+  actual_type = actual_type === undefined ? asset_types_numbered.catalog : actual_type;
+
+  let sql_tags: Array<postgres.PendingQuery<postgres.Row[]>> = [];
+  let matched_tags = search_tags.match_all(query);
+  let query_without_tags = query;
+
+  Object.values(matched_tags).forEach((tag) => {
+    query_without_tags = query_without_tags.replace(tag.full, "");
+
+    switch(String(tag.key).trim().toLowerCase()) {
+      case "min_price":
+        sql_tags.push(sql`CAST(data->>'price' AS numeric) >= ${Number(tag.value)}`)
+        break;
+      case "max_price":
+        sql_tags.push(sql`CAST(data->>'price' AS numeric) <= ${Number(tag.value)}`)
+        break;
+      case "price":
+        let valid_signs = [">=", "<=", "=", ">", "<"];
+        let sign = valid_signs.find(s => tag.value.startsWith(s));
+        sign = sign !== undefined ? sign : valid_signs[0];
+        sql_tags.push(sql`CAST(data->>'price' AS numeric) ${sql.unsafe(sign)} ${Number(tag.value.replace(sign, ""))}`);
+        break;
+      case "faggot": 
+        res.htmx.redirect(`https://x.com/${tag.value}`)
+        break;
+      case "offsale":
+        sql_tags.push(sql`data->>'offsale' = ${String(tag.value).toLowerCase() == "true" ? "true" : "false"}`)
+        break;
+    }
+  });
+
+  const catalog = await entity_asset.all(actual_type, limit, page, query_without_tags, sort, order, ENUM.privacy.PUBLIC, [
+    ...sql_tags,
+  ]);
+
+  const items = await Promise.all(catalog.info?.items.map(async (item: entity_asset) => {
+    return {
+      id: item.id,
+      title: item.title,
+      description: { // ye
+        raw: item.description,
+        styled: item.description
+      },
+      type: item.type,
+      //useless
+      //file: item.file,
+      privacy: {
+        int: item.data.privacy,
+        name: ENUM.privacy[item.data.privacy]
+      },
+      creator: {
+        id: item.data.creator,
+        username: {
+          raw: item.user?.username,
+          styled: item.user?.username
+        },
+        thumbs: {
+          headshot: {
+            url: await item.user?.get_headshot(),
+          },
+          fullbody: {
+            url: await item.user?.get_fullbody(),
+          }
+        },
+      },
+      thumbs: {
+        icon: {
+          asset: item.data.icon, 
+          url: item.get_icon(),
+        },
+      },
+      price: item.info.price ?? 0,
+      limited: item.info.limited ?? false,
+    }
+  }));
+
+  res.json({
+    success: true,
+    message: "catalog.info",
+    info: {
+      items: items,
+      total_count: catalog.info?.total_count,
+      pages: catalog.info?.pages,
+      page: catalog.info?.page,
+      order: catalog.info?.order,
+      sorts: catalog.info?.sorts,
+      types: actual_type,
+    }
+  });
+}));
+
 
 routes.get("*", async_handler(async (req, res) => {
   res.status(404);

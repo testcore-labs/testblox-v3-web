@@ -85,7 +85,6 @@ routes.all("/moderation/v2/filtertext", async_handler(async(req, res) => {
       Age13OrOver: String(filtered.txt) 
     }
   };
-  console.log(response);
   res.json(response);
 }));
 
@@ -300,7 +299,6 @@ routes.all("/Game/Join.ashx", async_handler(async(req, res) => {
   */  
 
   const ticket = generate_ticket();
-  console.log(ticket)
   let join_script = {
     "ClientPort": 0,
     "MachineAddress": "127.0.0.1", // ::1 || ::ffff:127.0.0.1

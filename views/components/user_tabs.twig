@@ -63,7 +63,7 @@
 {% elseif tab == "css" %}
   <h3 class="mb-2">CSS</h3>
   {% if user.settings.css|length != 0 %}
-  <textarea class="w-100" rows=8 style="white-space: pre-wrap;"readonly>{{ user.settings.css }}
+  <textarea class="w-100" rows=8 style="white-space: pre-wrap;"readonly>{{ user.settings.css|e }}
   </textarea>
   {% else %}
   <div class="d-flex flex-column ai-center gap-2 p-3">

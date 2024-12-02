@@ -15,6 +15,7 @@ import async_handler from 'express-async-handler';
 import cookie_parser from "cookie-parser";
 import { queryParser as query_parser} from "express-query-parser";
 import cors from "cors";
+import body_parser from "body-parser";
 
 import entity_user from "./db/user";
 import twig from "./utils/twig";
@@ -39,7 +40,7 @@ app.use(express.urlencoded({
     extended: false,
     limit: "25mb"
 }));
-app.use(express.json());
+app.use(body_parser.json());
 app.use(
   query_parser({
     parseNull: true,
@@ -75,7 +76,7 @@ app.use(async_handler(async (req, res, next) => {
   const selected_translation = translate.translations[req.cookies?.locale ? req.cookies?.locale.toString() : env.locale];
   res.locals.t = selected_translation;
   // cuser = current user
-  let cuser = new entity_user();
+  let cuser = new entity_user;
   await cuser.by(entity_user.query()
     .where(sql`token = ${req.cookies[env.session.name]}`)
   );

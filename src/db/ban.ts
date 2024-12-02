@@ -73,7 +73,6 @@ class entity_ban extends entity_base {
   async get_items() {
     let off_items = Object.entries(this.data.items);
 
-    console.log(off_items);
     let items: {[key: string]: entity_asset} = {};
     for await (const item of off_items) {
       items[item[0]] = await (new entity_asset).by(entity_asset.query()

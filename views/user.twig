@@ -77,7 +77,7 @@
     </div>
   </div>
 
-  <input type="hidden" value="{{ user.settings.css }}" id="user-css">
+  <div style="display: none;" id="user-css">{{ user.settings.css|e }}</div>
   <style class="user-custom-css"></style>
   <script>
   const load_css = elem(".user-css-checkbox");
@@ -88,7 +88,7 @@
 
   function updatecss() {
     if(load_css.checked) {
-      elem(".user-custom-css").textContent = elem("#user-css").value;
+      elem(".user-custom-css").textContent = elem("#user-css").textContent;
     } else {
       elem(".user-custom-css").textContent = ``;
     }

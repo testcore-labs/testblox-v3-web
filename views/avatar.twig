@@ -1,57 +1,125 @@
 {% extends "html.twig" %}
 {% set title = "avatar customization" %}
 
-{#
-
-    <div class="d-flex flex-column p-4 ai-center jc-center round-4 border-light-1">
-      <div class="pos-relative d-none" id="avatar-body-pallete" style="min-height: 15.5em; min-width: 12.75em;">
-        <div style="background: #fff; top: 1.5em; left: 50%; transform: translate(-50%, -50%); width: 3em; height: 3em;"
-        class="pos-absolute round-4" id="avatar-head"></div>
-        
-        <div style="background: #fff; top: 6.25em; left: 50%; transform: translate(-50%, -50%); width: 6.25em; height: 6em;"
-        class="pos-relative round-4" id="avatar-torso">
-          <div style="background: #fff; top: 0; left: 100%; margin-left: 0.25em; width: 3em; height: 6em;"
-          class="pos-absolute round-4" id="avatar-left-arm"></div>
-
-          <div style="background: #fff; top: 0; right: 100%; margin-right: 0.25em; width: 3em; height: 6em;"
-          class="pos-absolute round-4" id="avatar-right-arm"></div>
-
-          <div style="background: #fff; top: 100%; left: 0; margin-top: 0.25em; width: 3em; height: 6em;"
-          class="pos-absolute round-4" id="avatar-left-leg"></div>
-          <div style="background: #fff; top: 100%; right: 0; margin-top: 0.25em; width: 3em; height: 6em;"
-          class="pos-absolute round-4" id="avatar-right-leg"></div>
-        </div>
-      </div>
-    </div>
-    #}
-
 {% block content %}
-<div class="d-flex flex-row gap-4 flex-wrap">
-  <div class="d-flex flex-column gap-3">
-    <div class="round-4 border-light-1 pos-relative">
+<div class="d-flex flex-row gap-4 flex-wrap" x-data="{ rig_type: `R6` }">
+  <div class="d-flex flex-column gap-3" style="flex-grow: 1; flex-shrink: 1; flex-basis: 5em;">
+    <div class="d-flex flex-column round-4 border-light-1 pos-relative w-100">
       <div class="pos-absolute p-2" style="top: 0; right: 0;">
         <button class="py-1 px-2"><h3 class="bi bi-arrow-clockwise"></h3></button>
       </div>
-      <img width=256 src="{{ cuser.get_fullbody() }}">
+      <img width="256" class="mx-auto" src="{{ cuser.get_fullbody() }}">
+    </div>
+    <div class="d-flex flex-row ai-center gap-3 p-3 round-4 border-light-1">
+      <div>rig type</div>
+      <div class="d-flex flex-row pillify ms-auto">
+        <button class="px-5" :disabled="(rig_type == `R6`) && `true`" @click="rig_type = `R6`">r6</button>
+        <button class="px-5" :disabled="(rig_type == `R15`) && `true`" @click="rig_type = `R15`">r15</button>
+      </div>
     </div>
   </div>
 
-  <div class="d-flex flex-column gap-3 flex-1">
-    <div class="d-flex flex-row overflow-hidden pillify round-4">
-      <button class="text-center flex-1">
+  <div style="flex-grow: 10; flex-basis: 30em;"
+    x-data="{ 
+      main_tabs: [`accessories`, `clothing`, `body_parts`],
+      main_tab: `accessories`,
+      
+      bp_tabs: [`parts`, `colors`],
+      bp_tab: `parts`
+    }" 
+    @main-tab-switch="const tab = $event.detail.tab; 
+    if(main_tabs.includes(tab)) { main_tab = tab; }"
+    @bp-tab-switch="const tab = $event.detail.tab; 
+    if(bp_tabs.includes(tab)) { bp_tab = tab; }"
+    class="d-flex flex-column gap-3 flex-1">
+    <div id="avatar-tabs" class="d-flex flex-row overflow-hidden pillify round-4">
+      <button x-bind:disabled="(main_tab == `accessories`) && 'true'" @click="$dispatch(`main-tab-switch`, { tab: `accessories` })" class="px-5 text-center flex-1">
         accessories
       </button>
-      <button class="text-center flex-1">
+      <button x-bind:disabled="(main_tab == `clothing`) && 'true'" @click="$dispatch(`main-tab-switch`, { tab: `clothing` })" class="px-5 text-center flex-1">
         clothing
       </button>
-      <button class="text-center flex-1">
+      <button x-bind:disabled="(main_tab == `body_parts`) && 'true'" @click="$dispatch(`main-tab-switch`, { tab: `body_parts` })" class="px-5 text-center flex-1">
         body parts
       </button>
     </div>
-    <hr nomargin>
+
+    <hr x-show="main_tab != `body_parts`" nomargin>
+
+    <div x-transition:enter x-show="main_tab == `body_parts`"
+    class="d-flex flex-column gap-3 flex-1">
+      <div class="d-flex flex-row overflow-hidden pillify round-4">
+        <button x-bind:disabled="(bp_tab == `parts`) && 'true'" @click="$dispatch(`bp-tab-switch`, { tab: `parts` })" class="px-5 text-center flex-1">
+          parts
+        </button>
+        <button x-bind:disabled="(bp_tab == `colors`) && 'true'" @click="$dispatch(`bp-tab-switch`, { tab: `colors` })" class="px-5 text-center flex-1">
+          colors
+        </button>
+      </div>
+      <hr nomargin>
+      <div x-transition:enter x-show="bp_tab == `parts`">parts</div>
+      <div x-transition:enter x-show="bp_tab == `colors`"
+      class="d-flex flex-row flex-wrap gap-3"
+      x-data="avatar_data">
+        <div class="d-flex pos-relative flex-column p-4 ai-center jc-center round-4 border-light-1"
+        style="flex: 1 10 0;">
+          <div class="pos-relative d-none" id="avatar-body-pallete" style="min-height: 15.5em; min-width: 12.75em;">
+           <div style="background: {{ body_colors[cuser.body_colors.head] ?? "#fff" }}; top: 1.5em; left: 50%; transform: translate(-50%, -50%); width: 3em; height: 3em;"
+            class="pos-absolute round-4 border-light-1 border-box" id="avatar-head"></div>
+        
+            <div style="background: {{ body_colors[cuser.body_colors.torso] ?? "#fff" }}; top: 6.25em; left: 50%; transform: translate(-50%, -50%); width: 6.25em; height: 6em;"
+            class="pos-relative round-4 border-light-1 border-box" id="avatar-torso">
+              <div style="background:{{ body_colors[cuser.body_colors.right_arm] ?? "#fff" }}; top: 0; left: 100%; margin-left: 0.25em; width: 3em; height: 6em;"
+              class="pos-absolute round-4 border-light-1 border-box" id="avatar-right-arm"></div>
+
+              <div style="background: {{ body_colors[cuser.body_colors.left_arm] ?? "#fff" }}; top: 0; right: 100%; margin-right: 0.25em; width: 3em; height: 6em;"
+              class="pos-absolute round-4 border-light-1 border-box" id="avatar-left-arm"></div>
+
+              <div style="background: {{ body_colors[cuser.body_colors.left_leg] ?? "#fff" }}; top: 100%; left: 0; margin-top: 0.25em; width: 3em; height: 6em;"
+              class="pos-absolute round-4 border-light-1 border-box" id="avatar-left-leg"></div>
+              <div style="background: {{ body_colors[cuser.body_colors.right_leg] ?? "#fff" }}; top: 100%; right: 0; margin-top: 0.25em; width: 3em; height: 6em;"
+              class="pos-absolute round-4 border-light-1 border-box" id="avatar-right-leg"></div>
+              </div>
+            </div>
+
+            <div class="d-flex pos-absolute p-6 mt-auto round-circle border-light-1 mb-3 me-3"
+            style="background: #000; bottom: 0; right: 0;"
+            :title="`${color.name} (${color.id})`"
+            :style="{ background: color.hex }">
+            </div>
+          </div>
+          <div class="d-flex flex-column round-4 border-light-1" 
+          style="flex: 1 1 25em; overflow: hidden;">
+            <div class="p-3 d-grid gap-2" 
+            style="overflow-y: scroll; max-height: 17.5em; grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));">
+              {% for color in sorted_body_colors %} 
+              <div
+              class="round-circle border-light-1 border-box c-pointer"
+              @click="color.id = {{ color.id }}; color.hex = `{{ color.hex }}`;" 
+              title="{{color.id}}"
+              style="aspect-ratio: 1/1; width: 100%; background: {{color.hex}};"></div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <div x-transition:enter x-show="main_tab == `accessories`">accessories</div>
+    <div x-transition:enter x-show="main_tab == `clothing`">clothing</div>
   </div>
 
   <script defer async>
+  const body_parts = {
+    color: {
+      id: 1001,
+      hex: "#F8F8F8"
+    },
+  };
+
+  //integrate js with alpine so i can move variables
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('avatar_data', () => (body_parts));
+  });
   (async () => {
     await loaded;
     const limbs = {
@@ -63,8 +131,25 @@
       right_leg: elem("#avatar-right-leg"),
     }
 
-    Object.entries(limbs).forEach(([limb_name, limb]) => {
-      if(limb) limb.classList.add("c-pointer");
+    Object.entries(limbs).forEach(async ([limb_name, limb]) => {
+      if(limb) {
+        limb.classList.add("c-pointer");
+        limb.addEventListener("click", async (e) => {
+          e.stopPropagation(); // hack for torso to not color when clicking other limb
+          if(body_parts.color.hex == "none") return;
+          const resp = await fetch(`${api_endpoint.v1}/user/avatar/bodycolor/${limb_name}/${body_parts.color.id}`);
+          const json = await resp.json();
+          if(!json.success) {
+            popup.new({ 
+              type: 'error',
+              title: 'error while changing color', 
+              msg: json.message ?? "unknown", 
+              time: 3 
+            });
+          }
+          limb.style.background = body_parts.color.hex;
+        });
+      }
     });
 
     const body_pallete = elem("#avatar-body-pallete");

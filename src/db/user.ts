@@ -9,7 +9,7 @@ import entity_asset from "./asset";
 import { pcall } from "../utils/pcall";
 import ENUM from "../types/enums";
 import type ENUM_T from "../types/enums";
-import { membership_perks, type membership_types } from "../types/membership";
+import { membership_perks, membership_types } from "../types/membership";
 import entity_base, { query_builder } from "./base";
 import cooldown from "../utils/cooldown";
 import { xss_all } from "../utils/xss";
@@ -18,6 +18,7 @@ import entity_ban from "./ban";
 import fs from "fs";
 import path from "path";
 import rule_validator from "../utils/rule_validation";
+import body_colors from "../types/rbx/body_colors";
 
 class entity_user extends entity_base {
   table = "users";
@@ -154,7 +155,6 @@ class entity_user extends entity_base {
     if(!this.can_give_daily) return;
     const perks = membership_perks[(this.membership as (membership_types))];
 
-    console.log("hh");
     await sql`UPDATE ${sql(this.table)}
     SET currency = currency + ${perks.daily_currency},
     last_daily_currency = ${Date.now()}
@@ -178,12 +178,12 @@ class entity_user extends entity_base {
         return { success: false, messsage: "invalid value type"};
       }
       if(typeof value == "boolean") value = String(value);
-      // ts so ass :pray:
+      // this so ass
       await sql`UPDATE ${sql(this.table)} 
       SET settings = jsonb_set(settings::jsonb, ARRAY[${key}], ${value}::jsonb)::json 
       WHERE "id" = ${this.data?.id}`;
       await this._updateat();
-      return { success: true, message: "" };
+      return { success: true, message: "settings.set" };
     }
   }
 
@@ -323,7 +323,7 @@ class entity_user extends entity_base {
   }
 
   get what_membership() {
-    return (Date.now() < this.data?.membership_valid) ? this.data?.membership : 0;
+    return membership_types[this.membership] ?? "unknown";
   }
 
   async has_item(item_id: number) {
@@ -525,6 +525,37 @@ class entity_user extends entity_base {
     }
   }
 
+  get body_colors() {
+    return this.data?.body_colors;
+  }
+
+
+  async set_body_color(body_part: string = "head", color: number): Promise<message_type> {
+    const limbs = [
+      "head", 
+      "torso", 
+      "left_arm", 
+      "right_arm", 
+      "left_leg",
+      "right_leg",
+    ];
+    
+    const color_find = body_colors[Number(color)]
+    if(!color_find) {
+      return {success: false, message: "bodycolors.invalid_color"};
+    };
+    if(!limbs.includes(body_part)) {
+      return {success: false, message: "bodycolors.invalid_limb"};
+    };
+    const stmt = await sql`UPDATE ${sql(this.table)} SET body_colors = jsonb_set(body_colors::jsonb, ARRAY[${body_part}], ${color}::jsonb)::json WHERE "id" = ${this.data?.id} RETURNING *`;
+    if(stmt.length >= 1) {
+      this.data = stmt[0];
+      return {success: true, message: "bodycolors.set"};
+    }
+    await this._updateat();
+    return {success: false, message: "unknown"};
+  }
+
   get online() {
     return this.data?.online;
   }
@@ -630,7 +661,6 @@ class entity_user extends entity_base {
 
     if(!success) {
       //!!!
-      console.log(success);
       return { success: false, message: "password.no_hash_generated"};
     }
 

@@ -41,6 +41,13 @@ const utils = {
     const seconds = duration % 60;
     return `${String(minutes).padStart(1, "0")}:${String(seconds).padStart(2, "0")}`;
   },
+  format_currency: (nmb, fraction_digits = 0) => {
+    let value = (Number(nmb)).toLocaleString(
+      "en-us",
+      { minimumFractionDigits: Number(fraction_digits) ?? 0 }
+    );
+    return value;
+  },
   get_cookie: (name) => {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -64,6 +71,16 @@ let translate = {
   } 
 }
 
+const popup = {
+  new: (detail) => {
+    return window.dispatchEvent(
+      new CustomEvent('popup-new', { 
+        detail: detail
+      }
+    ));
+  }
+}
+
 const templater = {
   renderstr_elem: async (element, template, args = {}) => {
     if(translate.translation.length == 0) {
@@ -82,6 +99,18 @@ const templater = {
 }
 
 const cuser = {
+  data: {},
+  fetch_data: async () => {
+    let request = await fetch(`${api_endpoint.v1}/user/fetch`);
+    const data = await request.json();
+    if(data?.success) {
+      if(data.info && data.info.data) {
+        cuser.data = data.info.data;
+        return { success: true, message: data.message }
+      }
+    }
+    return { success: false, message: data.message ?? "failed to set data" }
+  },
   set_username: async (value) => {
     let request = await fetch(`${api_endpoint.v1}/user/username/set?username=${value}`);
     return request.json();
@@ -91,7 +120,16 @@ const cuser = {
     return request.json();
   },
   set_setting: async (key, value) => {
-    let request = await fetch(`${api_endpoint.v1}/user/setting/set?key=${key}&value=${value}`);
+    let request = await fetch(`${api_endpoint.v1}/user/setting/set`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({ 
+        key: key,
+        value: value
+      })
+    });
     return request.json();
   },
   set_money_locally: async (amount) => {
@@ -160,6 +198,7 @@ const cuser = {
   }
 
   if(loggedin.success) {
+    cuser.fetch_data();
     keep_alive();
     setInterval(async () => {
       await keep_alive();

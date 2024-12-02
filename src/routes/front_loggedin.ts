@@ -3,7 +3,7 @@ const routes = express.Router();
 //Max Keeble's Big Move
 import { notloggedin_handler, mod_handler, admin_handler, owner_handler } from "../utils/handlers";
 import { format_bytes } from "../utils/format";
-import {asset_types, asset_types_numbered} from "../types/assets"
+import {asset_types, asset_types_categorized, asset_types_numbered} from "../types/assets"
 import type { message_type } from "../types/message";
 import htmx_middleware from "../utils/express-extend";
 import cooldown from "../utils/cooldown";
@@ -28,6 +28,7 @@ import { xss_all } from "../utils/xss";
 import search_tags from "../utils/search_tags";
 import entity_ban from "../db/ban";
 import logs from "../utils/log";
+import body_colors, { sorted_body_colors } from "../types/rbx/body_colors";
 routes.use(htmx_middleware);
 
 routes.all("/redeem", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
@@ -187,56 +188,7 @@ routes.get("/users/:id/:name", notloggedin_handler, async_handler(async (req: Re
 }));
 
 routes.get("/catalog/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  const query = String(req.query?.q ?? "");
-  let page = Number(req.query.p);
-  if(Number.isNaN(page) || Number(page) <= 0) {
-    page = 1;
-  }
-
-  const type = String(req.query?.type);
-  const order = String(req.query?.order).toString();
-  const sort = String(req.query?.sort).toString();
-
-  let actual_type: number[] = asset_types_numbered.catalog.includes(Number(type)) 
-    ? [Number(type)]
-    : type !== undefined
-      ? ENUM.assets_categorized.catalog[type]
-      : asset_types_numbered.catalog;
-  actual_type = actual_type === undefined ? asset_types_numbered.catalog : actual_type;
-
-  let sql_tags: Array<postgres.PendingQuery<postgres.Row[]>> = [];
-  let matched_tags = search_tags.match_all(query);
-  let query_without_tags = query;
-
-  Object.values(matched_tags).forEach((tag) => {
-    query_without_tags = query_without_tags.replace(tag.full, "");
-
-    switch(String(tag.key).trim().toLowerCase()) {
-      case "min_price":
-        sql_tags.push(sql`CAST(data->>'price' AS numeric) >= ${Number(tag.value)}`)
-        break;
-      case "max_price":
-        sql_tags.push(sql`CAST(data->>'price' AS numeric) <= ${Number(tag.value)}`)
-        break;
-      case "price":
-        let valid_signs = [">=", "<=", "=", ">", "<"];
-        let sign = valid_signs.find(s => tag.value.startsWith(s));
-        sign = sign !== undefined ? sign : valid_signs[0];
-        sql_tags.push(sql`CAST(data->>'price' AS numeric) ${sql.unsafe(sign)} ${Number(tag.value.replace(sign, ""))}`);
-        break;
-      case "faggot": 
-        res.htmx.redirect(`https://x.com/${tag.value}`)
-        break;
-      case "offsale":
-        sql_tags.push(sql`data->>'offsale' = ${String(tag.value).toLowerCase() == "true" ? "true" : "false"}`)
-        break;
-    }
-  });
-
-  const catalog = await entity_asset.all(actual_type, 6, page, query_without_tags, sort, order, ENUM.privacy.PUBLIC, [
-    ...sql_tags,
-  ]);
-  res.render("catalog.twig", { ...catalog.info, catalog_types: ENUM.assets_categorized.catalog_categorized });
+  res.render("catalog.twig", { catalog_types: ENUM.assets_categorized.catalog_categorized });
 }));
 
 routes.get("/catalog/:id/:name", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
@@ -283,13 +235,17 @@ const settings_tabs: {[key: string]: any} = {
 }
 
 routes.get("/avatar/", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
-  res.render("avatar.twig");
+  
+  
+  res.render("avatar.twig", { 
+    sorted_body_colors: sorted_body_colors,
+    body_colors: body_colors,
+  });
 }));
 
 routes.get("/banned", notloggedin_handler, async_handler(async (req: Request, res: Response) => {
   if(res.locals.cuser.ban.is_banned) {
     let off_items = await res.locals.cuser.ban.get_items();
-    console.log(off_items)
     res.render("banned.twig", { ban_off_items: off_items });
   } else {
     res.htmx.redirect("/");
@@ -321,7 +277,7 @@ let sys_info = {
     name: user_info.username
   },
   host: {
-    ip: "0",
+    ip: "0.1.33.255",
     name: os.hostname()
   },
   cpu: { 
@@ -372,13 +328,15 @@ let update_sys_info = async () => {
   sys_info.cpu.usage = await si.currentLoad()
     .then(data => data.currentLoad.toFixed(1) + "%");
 
+  if(sys_info.inited) logs.custom(`set sys info`, colors.red(`admin`), true);
+  if(!sys_info.inited) logs.custom(`set sys info for the first time`, colors.red(`admin`), true);
   sys_info.inited = true;
   } catch(e) {
-    logs.custom(e, colors.red(`admin`));
+    logs.custom(e, colors.red(`admin`), true);
   }
 }
 update_sys_info();
-setInterval(update_sys_info, 30000);
+setInterval(update_sys_info, 240000);
 
 routes.get(`${admin_route_path}/`, notloggedin_handler, admin_handler, async_handler(async (req: Request, res: Response) => {
   res.render("admin/index.twig", {... sys_info });

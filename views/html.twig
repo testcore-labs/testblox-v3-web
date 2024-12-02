@@ -1,29 +1,69 @@
 <!doctype html>{% import "_macros.twig" as utils %}
-<html class="{% if cuser.what_membership == ENUM.membership.TIER_3 %}obc-bg{% endif %}" lang="en-US">
+<html class="{% if cuser.membership == ENUM.membership.TIER_3 %}obc-bg{% endif %}" lang="en-US">
   <head>
 {% include "head.twig" %}
   </head>
-  <body center class="body-backdrop" style="box-sizing: border-box;">
+  <body x-data="{ day: (new Date).getDate(), month: (new Date).getMonth()+ 1 }" center class="body-backdrop" style="box-sizing: border-box;">
     {% if not cuser.has_membership or cuser.settings.show_ads %}
       {% if showads ?? true %}
-      <div id="ad-skyscraper-1" class="pos-absolute" style="left: 0; top: 50%; transform: translate(0, -50%);">
+      <div id="ad-skyscraper-1" class="pos-absolute" style="z-index: 1; left: 0; top: 50%; transform: translate(0, -50%);">
         <img class="ratio-skyscraper w-100 ms-8" style="max-width: 128px;" src="/assets/img/ad-skyscraper.png">
       </div>
-      <div id="ad-skyscraper-2" class="pos-absolute" style="right: 0; top: 50%; transform: translate(0, -50%);">
+      <div id="ad-skyscraper-2" class="pos-absolute" style="z-index: 1; right: 0; top: 50%; transform: translate(0, -50%);">
         <img class="ratio-skyscraper w-100 me-8" style="max-width: 128px;" src="/assets/img/ad-skyscraper.png">
       </div>
       {% endif %}
     {% endif %}
-    <div class="container round-4 pos-relative {% if containershowborder ?? false %}border-light-1{% endif %}" style="padding: 0; {% if enablecontainerbg ?? true %} background: #121212;{% endif %} {{ container_styles }}">
-      {% if enablenavbar ?? true %}<nav class="border-light-b-1 d-flex flex-row flex-wrap gap-3 ai-center card card-dark-primary round-bx-0 py-2 p-3">
-        <div class="navbar-hover d-flex flex-row flex-wrap ai-center gap-5 flex-grow-1 flex-shrink-1 me-2" style="flex-basis: 10em;">
+  <template x-if="(month == 11 && day >= 20) || (month == 12)">
+  <div class="snowflakes" credit-to="https://pajasevi.github.io/CSSnowflakes/">
+  <div class="snowflake">
+    <div class="inner">❅</div>
+  </div>
+  <div class="snowflake">
+    <div class="inner">❅</div>
+  </div>
+  <div class="snowflake">
+    <div class="inner">❅</div>
+  </div>
+  <div class="snowflake">
+    <div class="inner">❅</div>
+  </div>
+  <div class="snowflake">
+    <div class="inner">❅</div>
+  </div>
+  <div class="snowflake">
+    <div class="inner">❅</div>
+  </div>
+  <div class="snowflake">
+    <div class="inner">❅</div>
+  </div>
+  <div class="snowflake">
+    <div class="inner">❅</div>
+  </div>
+  <div class="snowflake">
+    <div class="inner">❅</div>
+  </div>
+  <div class="snowflake">
+    <div class="inner">❅</div>
+  </div>
+  <div class="snowflake">
+    <div class="inner">❅</div>
+  </div>
+  <div class="snowflake">
+    <div class="inner">❅</div>
+  </div>
+  </div>
+  </template>
+    <div class="container round-4 pos-relative {% if containershowborder ?? false %}border-light-1{% endif %}" style="padding: 0; {% if enablecontainerbg ?? true %} background: #121212;{% endif %} z-index: 1; {{ container_styles }}">
+      {% if enablenavbar ?? true %}<nav class="pos-relative border-light-b-1 d-flex flex-row flex-wrap gap-3 ai-center card card-dark-primary round-bx-0 py-2 p-3">
+        <div class="navbar-hover d-flex flex-row flex-wrap ai-center gap-5 flex-grow-1 flex-shrink-1 me-2" style="flex-basis: 10em; z-index: 1;">
         <a class="nav-logo" href="/"></a>
         <a href="/games/"><b style="font-size: 1.025em;">{{ t.navbar.games }}</b></a>
         <a href="/catalog/"><b style="font-size: 1.025em;">{{ t.navbar.catalog }}</b></a>
         <a href="/library/"><b style="font-size: 1.025em;">{{ t.navbar.develop }}</b></a>
         </div>
 
-        <div class="pos-relative flex-autotofill searchbar-nav">
+        <div class="pos-relative flex-autotofill searchbar-nav" style="z-index: 1;">
           <div class="d-flex flex-row pillify shadow-1 round-4" style="height: 2.4em;">
             <input type="search" class="shadowless flex-1" style="box-shadow: unset; width: 100%;" id="navbar-search" placeholder="search.." name="qnavbar" hx-get="/api/v1/searchbar" hx-trigger="keyup delay:250ms changed" hx-target="#navbar-search-results" hx-on:htmx:config-request="document.getElementById('navbar-search-results').classList.remove('d-none');">
             <button type="submit" class="shadowless border-light-1 px-4" style="border-left: none !important; background: #000;"><h5 class="bi bi-search text-muted"></h5></button>
@@ -31,7 +71,7 @@
           <div id="navbar-search-results" class="d-flex flex-column gap-4 pos-absolute card black-bg mt-1 round-4 d-none" style="top: 100%; width: 100%; z-index: 5;"></div>
         </div>
 
-        <div class="d-flex flex-row ai-center gap-6 ms-2 flex-1">
+        <div class="d-flex flex-row ai-center gap-6 ms-2 flex-1" style="z-index: 1;">
         {% if isloggedin %}
         <div class="d-flex flex-row ai-center ms-auto gap-2 cuser-money-div" title="{{ cuser.money }}">
           <img src="/assets/img/currency.svg" width=18>
@@ -94,7 +134,7 @@
       </footer>{% endif %}
     </div>
 
-    <div x-data 
+    <div id="popup-manager" x-data 
     @popup-new.window="
     const args = $event.detail; 
     let time = Number(args.time);
@@ -159,8 +199,9 @@
       </template>
       <div x-ref="toasts" class="d-flex flex-column gap-3"></div>
     </div>
-
-    {% if isloggedin %}<div class="d-flex flex-column pos-fixed me-3" style="bottom: 0; right: 0; max-width: 20em; width: 100%;">
+    {# reminder for me #}
+    <b class="d-flex flex-column pos-fixed m-2 text-extramuted" style="bottom: 0; left: 0;">{{ 14 - 'now'|date("d") }}d left</b>
+    {% if isloggedin %}<div class="d-flex flex-column pos-fixed me-3" style="bottom: 0; right: 0; max-width: 20em; width: 100%;z-index: 1;">
       {% include "chat/index.twig" %}
     </div>{% endif %}
     <div class="d-none pos-absolute round-4 p-3" style="top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0, 0.33); backdrop-filter: blur(1em);" id="cmd_window">
