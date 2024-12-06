@@ -153,7 +153,8 @@
       }
     }, 1000);
 
-    $refs.toasts.appendChild(new_popup);"
+    $refs.toasts.appendChild(new_popup);
+    return new_popup;"
     class="pos-absolute" id="toasts" style="bottom: 0; left: 0; margin: 1em; z-index: 3;">
       <template x-ref="info">
       <div x-data @close="$el.classList.add('d-none')" class="d-flex flex-column round-4 overflow-hidden border-light-1" style="min-width: 10em; max-width: 25em; backdrop-filter: blur(0.35em)">

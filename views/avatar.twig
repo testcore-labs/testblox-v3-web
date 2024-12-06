@@ -2,35 +2,90 @@
 {% set title = "avatar customization" %}
 
 {% block content %}
-<div class="d-flex flex-row gap-4 flex-wrap" x-data="{ rig_type: `R6` }">
-  <div class="d-flex flex-column gap-3" style="flex-grow: 1; flex-shrink: 1; flex-basis: 5em;">
-    <div class="d-flex flex-column round-4 border-light-1 pos-relative w-100">
-      <div class="pos-absolute p-2" style="top: 0; right: 0;">
-        <button class="py-1 px-2"><h3 class="bi bi-arrow-clockwise"></h3></button>
-      </div>
-      <img width="256" class="mx-auto" src="{{ cuser.get_fullbody() }}">
-    </div>
-    <div class="d-flex flex-row ai-center gap-3 p-3 round-4 border-light-1">
-      <div>rig type</div>
-      <div class="d-flex flex-row pillify ms-auto">
-        <button class="px-5" :disabled="(rig_type == `R6`) && `true`" @click="rig_type = `R6`">r6</button>
-        <button class="px-5" :disabled="(rig_type == `R15`) && `true`" @click="rig_type = `R15`">r15</button>
-      </div>
-    </div>
-  </div>
+<div x-data="{ 
+      query: ``, sort: `id`, order: `DESC`, page: 1, requesting: true, res: response_skeleton,
 
-  <div style="flex-grow: 10; flex-basis: 30em;"
-    x-data="{ 
       main_tabs: [`accessories`, `clothing`, `body_parts`],
       main_tab: `accessories`,
       
       bp_tabs: [`parts`, `colors`],
-      bp_tab: `parts`
+      bp_tab: `parts`,
+
+      rig_type: cuser.data.rig ?? `R6`,
+      render_requesting: false,
     }" 
     @main-tab-switch="const tab = $event.detail.tab; 
     if(main_tabs.includes(tab)) { main_tab = tab; }"
     @bp-tab-switch="const tab = $event.detail.tab; 
     if(bp_tabs.includes(tab)) { bp_tab = tab; }"
+    @render="render_requesting = true; const resp = await fetch(`${api_endpoint.v1}/user/avatar/render`);
+    const json = await resp.json();
+    setTimeout(() => {
+    render_requesting = false;
+    if(json.success) {
+      if(json.info && json.info.fullbody) {
+        $refs.fullbody_img.src = json.info.fullbody.url;
+      }
+    } else {
+      popup.new({ 
+        type: 'error',
+        title: 'error while rendering', 
+        msg: json.message !== '' ? json.message : 'unknown', 
+        time: 3 
+      });
+    }
+    }, 200);" 
+    
+    @get-items="const type = $event.detail.type;
+requesting = true; 
+let req = await fetch(`${api_endpoint.v1}/catalog/fetch?`
++ new URLSearchParams({
+  q: `creator:{{cuser.id}} ` + query,
+  type: type,
+  sort: sort,
+  order: order,
+  p: page,
+}).toString());
+res = await req.json();
+requesting = false;
+if(res.status === 429) {
+  $dispatch('popup-new', { 
+    type: 'error', 
+    title: `request failed`,
+    hint: `timed out for ${utils.format_duration(
+      Math.ceil(res.info.time / 1000)
+    )}`, 
+    msg: res.message, 
+    time: 5,
+  });
+}"
+    @set-rig="const resp = await fetch(`${api_endpoint.v1}/user/avatar/rig/set?rig=${rig_type}`);
+    const json = await resp.json();
+    console.log(json);" 
+
+    x-init="$nextTick(() => { cuser.available.then(() => { 
+      rig_type = cuser.data.rig;
+      $dispatch('get-items', { type: main_tab });
+    }); })"
+  class="d-flex flex-row gap-4 flex-wrap">
+  <div class="d-flex flex-column gap-3" style="flex-grow: 1; flex-shrink: 1; flex-basis: 5em;">
+    <div class="d-flex flex-column round-4 border-light-1 pos-relative w-100" style="min-height: 2.5em;">
+      <div class="pos-absolute p-2" style="top: 0; right: 0;">
+        <button class="py-1 px-2" @click="$dispatch(`render`);"><h3 class="bi bi-arrow-clockwise"></h3></button>
+      </div>
+      <div x-show="render_requesting" class="pos-absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1;"><div class="spinner"></div></div>
+      <img width="256" :style="render_requesting ? { filter: `blur(0.25em)` } : {}" x-ref="fullbody_img" class="mx-auto" src="{{ cuser.get_fullbody() }}">
+    </div>
+    <div class="d-flex flex-row ai-center gap-3 p-3 round-4 border-light-1">
+      <div>rig type</div>
+      <div class="d-flex flex-row pillify ms-auto">
+        <button class="px-5" :disabled="(rig_type == `R6`) && `true`" @click="rig_type = `R6`; $dispatch('set-rig');">r6</button>
+        <button class="px-5" :disabled="(rig_type == `R15`) && `true`" @click="rig_type = `R15`; $dispatch('set-rig');">r15</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="flex-grow: 10; flex-basis: 30em;"
     class="d-flex flex-column gap-3 flex-1">
     <div id="avatar-tabs" class="d-flex flex-row overflow-hidden pillify round-4">
       <button x-bind:disabled="(main_tab == `accessories`) && 'true'" @click="$dispatch(`main-tab-switch`, { tab: `accessories` })" class="px-5 text-center flex-1">
@@ -104,7 +159,11 @@
         </div>
       </div>
 
-    <div x-transition:enter x-show="main_tab == `accessories`">accessories</div>
+    <div x-transition:enter x-show="main_tab == `accessories`">
+      <template x-for="item in res.info.items ?? []" :key="item.id">
+        <div x-text="item.id"></div>
+      </template>
+    </div>
     <div x-transition:enter x-show="main_tab == `clothing`">clothing</div>
   </div>
 

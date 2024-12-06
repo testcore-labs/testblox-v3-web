@@ -138,6 +138,22 @@ class entity_user extends entity_base {
   get description() {
     return String(this.data?.description);
   }
+
+  async set_description(description: string) {
+    const rules = new rule_validator(description, "description");
+    rules.filters.is_empty();
+    rules.filters.min_eq_len(1, true);
+    rules.filters.max_eq_len(250, true);
+    const resp = rules.validate();
+
+    if(!resp.success) {
+      return resp;
+    }
+    await sql`UPDATE ${sql(this.table)}
+    SET description = ${description}
+    WHERE id = ${this.id}`;
+    return { success: true, message: `description.set` };
+  }
   
   get money() {
     return Number(this.data?.currency);
@@ -149,6 +165,16 @@ class entity_user extends entity_base {
 
   get can_give_daily() {
     return (Date.now() - this.last_daily_money) >= (86400 * 1000);  
+  }
+
+  get rig() {
+    return String(this.data.rig_type);
+  }
+
+  async set_rig(rig_type: string) {
+    await sql`UPDATE ${sql(this.table)}
+    SET rig_type = ${rig_type}
+    WHERE id = ${this.id}`;
   }
 
   async daily_money() {

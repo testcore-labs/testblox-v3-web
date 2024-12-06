@@ -32,13 +32,13 @@ x-init="$nextTick(() => $dispatch(`fetch`));">
   <h2>{{ t.catalog.catalog }}</h2>
   <div class="d-flex flex-row flex-wrap gap-2 ms-auto ai-center w-autoto100-sm">
   <div class="d-flex flex-row border-light-1 round-4 overflow-hidden h-100">
-    <a @click="page <= 1 ? page : (page--)" :disabled="page <= 1"
+    <a @click="if(page <= 1) {page--; $dispatch('fetch');}" :disabled="page <= 1"
     class="btn-primary c-pointer round-0 border-none shadowless py-2 d-flex jc-center ai-center"><</a>
     <template x-for="i_page in (res.info.pages ?? [1])" :key="i_page">
-    <a @click="page = i_page" :disabled="i_page == page" x-text="i_page"
+    <a @click="if(i_page == page) { page = i_page; $dispatch('fetch'); }" :disabled="i_page == page" x-text="i_page"
     class="btn-primary c-pointer round-0 border-none shadowless py-2 d-flex jc-center ai-center">-</a>
     </template>
-    <a @click="page >= res.info.pages ? page : (page++)" :disabled="page >= res.info.pages"
+    <a @click="if(page < res.info.pages) { page++; $dispatch('fetch'); }" :disabled="page >= res.info.pages"
     class="btn-primary c-pointer round-0 border-none shadowless py-2 d-flex jc-center ai-center">></a>
   </div>
   <div class="d-flex flex-row pillify flex-grow-1" style="width: 25em;">
@@ -78,7 +78,7 @@ x-init="$nextTick(() => $dispatch(`fetch`));">
     </div>
     {% endmacro -%}
     {% import _self as self %} {# twig hack #}
-    <a :class="type == `` ? `text-extramuted` : `c-pointer` " class="py-2" @click="type = ``;">{{ t.catalog.types.all_types }}</a>
+    <a :class="type == `` ? `text-extramuted` : `c-pointer` " class="px-2 py-2" @click="type = ``;">{{ t.catalog.types.all_types }}</a>
     <hr class="my-2" nomargin>
     {{ self.generate_category("clothing", "clothing") }}
     {{ self.generate_category("body parts", "body_parts") }}

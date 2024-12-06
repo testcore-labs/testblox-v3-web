@@ -126,7 +126,7 @@ routes.post("/user/login", creation_and_login_limiter, async_handler(async (req:
     
     if(user.success) {
       if(user.info !== undefined) {
-        res.cookie(env.session.name, user.info["token"].toString(), { 
+        res.cookie(env.session.name, String(user.info.token), { 
           expires: new Date(Date.now() + Number(env.session.expires)), 
           secure: env.production ? true : false, 
           sameSite: env.production ? 'strict' : 'lax' 
@@ -177,6 +177,43 @@ routes.get("/user/gamble", notloggedin_api_handler, async_handler(async (req: Re
   res.json(gambled);
 }));
 
+routes.get("/user/avatar/rig/set", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
+  const cuser = res.locals.cuser as entity_user;
+  const rig = String(req.query.rig).toUpperCase();
+
+  switch(rig) {
+    case "R15":
+      break;
+    case "R6":
+      break;
+    default:
+      res.send({ success: false, message: "avatar.invalid_rig_type" })
+      return;
+  }
+  await cuser.set_rig(rig);
+  res.send({ success: true, message: "avatar.set_rig_type" })
+}));
+
+routes.get("/user/avatar/render", generic_limiter({
+  timeframe: 5000,
+  max_reqs: 1,
+  consequence: 10000,
+}), notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
+  const user = res.locals.cuser as entity_user;
+  // TODO: RENDER!!
+  res.json({ 
+    success: false, 
+    message: "", 
+    info: { 
+      headshot: {
+        url: await user.get_headshot(),
+      },
+      fullbody: {
+        url: await user.get_fullbody(),
+      }
+    } 
+  });
+}));
 routes.get("/user/avatar/bodycolor/all", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
   res.json(res.locals.cuser.body_colors);
 }));
@@ -231,6 +268,8 @@ routes.get("/user/fetch", notloggedin_api_handler, async_handler(async (req: Req
           url: await user.get_fullbody(),
         }
       },
+      bodycolors: user.body_colors,
+      rig: user.rig,
       updated_at: {
         timestamp: user.updatedat
       },
@@ -290,6 +329,13 @@ routes.get("/user/password/set", notloggedin_api_handler, async_handler(async (r
     return;
   }
 }));
+
+routes.all("/user/description/set", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
+  const description = String(req.query.desc);
+  let set_ting = await res.locals.cuser.set_description(description);
+  res.json(set_ting);
+}));
+
 
 routes.all("/user/setting/set", notloggedin_api_handler, async_handler(async (req: Request, res: Response) => {
   let key = String(req.query?.key ?? req.body?.key);
@@ -536,12 +582,12 @@ routes.get("/catalog/fetch", generic_limiter({ timeframe: 8000}), notloggedin_ap
 
   let limit = Number(req.query.limit);
   if(Number.isNaN(limit)) {
-    limit = 5;
+    limit = 30;
   } else if(limit == 0) {
     res.json({ success: false, message: `catalog.limit_equal_0` });
     return;
-  } else if(limit > 30) {
-    res.json({ success: false, message: `catalog.not.max_eq_len_30` });
+  } else if(limit > 50) {
+    res.json({ success: false, message: `catalog.not.max_eq_len_50` });
     return
   }
   const type = String(req.query?.type);
@@ -574,6 +620,9 @@ routes.get("/catalog/fetch", generic_limiter({ timeframe: 8000}), notloggedin_ap
         let sign = valid_signs.find(s => tag.value.startsWith(s));
         sign = sign !== undefined ? sign : valid_signs[0];
         sql_tags.push(sql`CAST(data->>'price' AS numeric) ${sql.unsafe(sign)} ${Number(tag.value.replace(sign, ""))}`);
+        break;
+      case "creator":
+        sql_tags.push(sql`creator = ${Number(tag.value)}`)
         break;
       case "faggot": 
         res.htmx.redirect(`https://x.com/${tag.value}`)

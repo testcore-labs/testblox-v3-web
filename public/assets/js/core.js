@@ -98,28 +98,41 @@ const templater = {
   }
 }
 
-const cuser = {
-  data: {},
-  fetch_data: async () => {
-    let request = await fetch(`${api_endpoint.v1}/user/fetch`);
+const cuser = new (class {
+  data = {};
+
+  available = new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if(Object.keys(this.data).length > 0) {
+        //console.log("data avail");
+        clearInterval(interval);
+        resolve();
+      } else {
+        //console.log("data unavail");
+      }
+    }, 100);
+  })
+
+  async fetch_data() {
+    const request = await fetch(`${api_endpoint.v1}/user/fetch`);
     const data = await request.json();
     if(data?.success) {
       if(data.info && data.info.data) {
-        cuser.data = data.info.data;
+        this.data = data.info.data;
         return { success: true, message: data.message }
       }
     }
     return { success: false, message: data.message ?? "failed to set data" }
-  },
-  set_username: async (value) => {
+  }
+  async set_username(value) {
     let request = await fetch(`${api_endpoint.v1}/user/username/set?username=${value}`);
     return request.json();
-  },
-  set_password: async (value) => {
+  }
+  async set_password(value) {
     let request = await fetch(`${api_endpoint.v1}/user/password/set?password=${value}`);
     return request.json();
-  },
-  set_setting: async (key, value) => {
+  }
+  async set_setting(key, value) {
     let request = await fetch(`${api_endpoint.v1}/user/setting/set`, {
       method: "POST",
       headers: {
@@ -131,8 +144,8 @@ const cuser = {
       })
     });
     return request.json();
-  },
-  set_money_locally: async (amount) => {
+  }
+  async set_money_locally(amount) {
     await loaded;
     amount = Number(amount);
     if(!Number.isNaN(amount)) {
@@ -147,8 +160,8 @@ const cuser = {
       money_div.setAttribute("title", amount);
       money_amount.textContent = amount_formatted;
     }
-  },
-  play: async (place_id, job_id = null) => {
+  }
+  async play(place_id, job_id = null) {
     let resp = await fetch(`/game/${place_id}/play?job_id=${job_id}`);
     let data = await resp.json();
     if(data) {
@@ -159,7 +172,7 @@ const cuser = {
     }
     return false;
   }
-};
+});
 
 // if image fails to load, this will set a fallback.
 (async () => {
